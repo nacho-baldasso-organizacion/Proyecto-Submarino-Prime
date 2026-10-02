@@ -18,11 +18,14 @@ fun main() {
         casco = casco
     )
 
+    val presionInicial = CalculadoraHidrostatica.calcularPresion(submarino.posY)
+
     println("Estado inicial:")
     println("  Posición: (X: ${submarino.posX}, Y: ${submarino.posY})")
     println("  Batería: ${submarino.bateria}%")
     println("  Casco: ${submarino.casco}")
-    println("  Destruido: ${submarino.estaDestruido}\n")
+    println("  Destruido: ${submarino.estaDestruido}")
+    println("  Presión hidrostática: ${String.format("%.2f", presionInicial)} Pa\n")
 
     // Simular movimiento: 30 unidades adelante (X) y 20 unidades hacia abajo (Y)
     println("--- Movimiento 1: Avanzar 30 unidades y descender 20 unidades ---")
@@ -32,7 +35,8 @@ fun main() {
     println("  Posición: (X: ${submarino.posX}, Y: ${submarino.posY})")
     println("  Batería: ${String.format("%.2f", submarino.bateria)}%")
     println("  Casco: ${submarino.casco}")
-    println("  Destruido: ${submarino.estaDestruido}\n")
+    println("  Destruido: ${submarino.estaDestruido}")
+    println("  Presión hidrostática: ${String.format("%.2f", CalculadoraHidrostatica.calcularPresion(submarino.posY))} Pa\n")
 
     // Simular segundo movimiento: 15 unidades adelante y 10 unidades más hacia abajo
     println("--- Movimiento 2: Avanzar 15 unidades y descender 10 unidades ---")
@@ -42,7 +46,8 @@ fun main() {
     println("  Posición: (X: ${submarino.posX}, Y: ${submarino.posY})")
     println("  Batería: ${String.format("%.2f", submarino.bateria)}%")
     println("  Casco: ${submarino.casco}")
-    println("  Destruido: ${submarino.estaDestruido}\n")
+    println("  Destruido: ${submarino.estaDestruido}")
+    println("  Presión hidrostática: ${String.format("%.2f", CalculadoraHidrostatica.calcularPresion(submarino.posY))} Pa\n")
 
     // Intentar subir a la superficie (Y negativo - debería quedarse en 0)
     println("--- Movimiento 3: Intentar subir 50 unidades (debería quedarse en superficie Y=0) ---")
@@ -52,17 +57,25 @@ fun main() {
     println("  Posición: (X: ${submarino.posX}, Y: ${submarino.posY})")
     println("  Batería: ${String.format("%.2f", submarino.bateria)}%")
     println("  Casco: ${submarino.casco}")
-    println("  Destruido: ${submarino.estaDestruido}\n")
+    println("  Destruido: ${submarino.estaDestruido}")
+    println("  Presión hidrostática: ${String.format("%.2f", CalculadoraHidrostatica.calcularPresion(submarino.posY))} Pa\n")
 
-    // Verificar integridad a gran profundidad (simular 100m = ~1,000,000 Pa)
-    println("--- Verificación de integridad a 100m profundidad (1,000,000 Pa) ---")
-    submarino.verificarIntegridad(1_000_000.0)
+    // Descender 100m para probar la integridad a gran profundidad
+    println("--- Movimiento 4: Descender 100 metros ---")
+    submarino.mover(deltaX = 0.0, deltaY = 100.0)
+    println("  Posición: (X: ${submarino.posX}, Y: ${submarino.posY})")
+    println("  Presión hidrostática: ${String.format("%.2f", CalculadoraHidrostatica.calcularPresion(submarino.posY))} Pa\n")
+
+    // Verificar integridad usando la presión hidrostática real calculada por la profundidad actual
+    println("--- Verificación de integridad a la profundidad actual (${submarino.posY}m) ---")
+    submarino.verificarIntegridad(CalculadoraHidrostatica.calcularPresion(submarino.posY))
 
     println("\nEstado final:")
     println("  Posición: (X: ${submarino.posX}, Y: ${submarino.posY})")
     println("  Batería: ${String.format("%.2f", submarino.bateria)}%")
     println("  Casco: ${submarino.casco}")
     println("  Destruido: ${submarino.estaDestruido}")
+    println("  Presión hidrostática: ${String.format("%.2f", CalculadoraHidrostatica.calcularPresion(submarino.posY))} Pa")
 
     println("\n=== Fin de la simulación ===")
 }

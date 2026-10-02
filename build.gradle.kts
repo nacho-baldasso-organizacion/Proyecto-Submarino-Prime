@@ -15,7 +15,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("submarino.MainKt")
+    mainClass.set("submarino.PruebaConjuntaKt")
 }
 
 java {
