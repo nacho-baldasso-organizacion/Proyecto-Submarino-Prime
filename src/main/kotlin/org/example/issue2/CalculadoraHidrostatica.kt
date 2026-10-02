@@ -1,45 +1,73 @@
 package submarino
 
 /**
- * Objeto singleton que encapsula la física hidrostática del submarino.
- *
- * Calcula la presión según la profundidad (eje Y) aplicando la fórmula:
- *      P = P0 + (ρ * g * h)
- * donde:
- *      P0 = presión atmosférica en la superficie (Pa)
- *      ρ  = densidad del agua de mar (kg/m³)
- *      g  = aceleración de la gravedad (m/s²)
- *      h  = profundidad (m)
+ * ============================================================================
+ * FÍSICA HIDROSTÁTICA - PRINCIPIOS SOLID (ISP, DIP, OCP)
+ * ============================================================================
  */
-object CalculadoraHidrostatica {
 
-    // Constantes físicas universales
-    const val DENSIDAD_AGUA_MAR: Double = 1025.0    // kg/m³
-    const val GRAVEDAD: Double = 9.81                // m/s²
-    const val PRESION_ATMOSFERICA: Double = 101325.0 // Pa
+/**
+ * Segregación de Interfaces (ISP) e Inversión de Dependencias (DIP):
+ * Contrato que define el cálculo de presiones y profundidades máximas
+ * en cualquier medio fluido.
+ */
+interface CalculadorPresion {
+    val densidadFluido: Double
+    val gravedad: Double
+    val presionAtmosferica: Double
 
     /**
      * Calcula la presión hidrostática en Pascales a una profundidad dada.
      *
-     * @param profundidad Profundidad en metros a la que se encuentra el submarino (eje Y)
-     * @return Presión total en Pascales (P0 + ρ*g*h)
+     * @param profundidad Profundidad en metros (eje Y)
+     * @return Presión total en Pascales
      */
-    fun calcularPresion(profundidad: Double): Double {
-        val h = maxOf(profundidad, 0.0) // no hay presiones inferiores a la de superficie
-        return PRESION_ATMOSFERICA + (DENSIDAD_AGUA_MAR * GRAVEDAD * h)
-    }
+    fun calcularPresion(profundidad: Double): Double
 
     /**
-     * Calcula la profundidad máxima en metros a la que un casco puede descender
-     * antes de colapsar, a partir de su presión máxima soportada.
+     * Calcula la profundidad máxima admisible en metros antes de colapso de un casco.
      *
-     * Despejando h de la fórmula: h = (P_max - P0) / (ρ * g)
-     *
-     * @param presionMaximaPa Presión máxima en Pascales que soporta el casco
-     * @return Profundidad límite en metros (0.0 si la presión máxima no supera la atmosférica)
+     * @param presionMaximaPa Presión máxima que tolera la estructura
+     * @return Profundidad límite en metros
      */
-    fun calcularProfundidadMaxima(presionMaximaPa: Double): Double {
-        val presionHidrostaticaMaxima = presionMaximaPa - PRESION_ATMOSFERICA
-        return maxOf(presionHidrostaticaMaxima / (DENSIDAD_AGUA_MAR * GRAVEDAD), 0.0)
+    fun calcularProfundidadMaxima(presionMaximaPa: Double): Double
+}
+
+/**
+ * Principio Abierto/Cerrado (OCP):
+ * Implementación abierta y configurable para cualquier fluido y entorno gravitacional.
+ * Permite instanciar física de agua dulce, salada o atmósferas extraterrestres sin modificar la clase.
+ *
+ * Fórmula: P = P0 + (ρ * g * h)
+ */
+open class CalculadoraPresionFluido(
+    override val densidadFluido: Double = 1025.0,    // kg/m³
+    override val gravedad: Double = 9.81,            // m/s²
+    override val presionAtmosferica: Double = 101325.0 // Pa
+) : CalculadorPresion {
+
+    override fun calcularPresion(profundidad: Double): Double {
+        val h = maxOf(profundidad, 0.0) // no hay presiones inferiores a la de superficie
+        return presionAtmosferica + (densidadFluido * gravedad * h)
     }
+
+    override fun calcularProfundidadMaxima(presionMaximaPa: Double): Double {
+        val presionHidrostaticaMaxima = presionMaximaPa - presionAtmosferica
+        return maxOf(presionHidrostaticaMaxima / (densidadFluido * gravedad), 0.0)
+    }
+}
+
+/**
+ * Objeto singleton que encapsula la física hidrostática estándar para agua de mar en la Tierra.
+ * Extiende [CalculadoraPresionFluido] preservando retrocompatibilidad total con el código existente.
+ */
+object CalculadoraHidrostatica : CalculadoraPresionFluido(
+    densidadFluido = 1025.0,
+    gravedad = 9.81,
+    presionAtmosferica = 101325.0
+) {
+    // Constantes físicas universales para compatibilidad directa
+    const val DENSIDAD_AGUA_MAR: Double = 1025.0    // kg/m³
+    const val GRAVEDAD: Double = 9.81                // m/s²
+    const val PRESION_ATMOSFERICA: Double = 101325.0 // Pa
 }

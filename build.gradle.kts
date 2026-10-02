@@ -12,10 +12,15 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    testImplementation(kotlin("test"))
 }
 
 application {
-    mainClass.set("submarino.PruebaConjuntaKt")
+    mainClass.set("submarino.MainKt")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 java {
