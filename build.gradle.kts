@@ -30,6 +30,13 @@ tasks.register<JavaExec>("runIssue5") {
     mainClass.set("submarino.MainPruebaIssue5Kt")
 }
 
+tasks.register<JavaExec>("runIssue6") {
+    group = "application"
+    description = "Ejecuta la prueba de la Issue #6: Cálculo de peso total y física de flotabilidad/ascenso"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("submarino.MainPruebaIssue6Kt")
+}
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))

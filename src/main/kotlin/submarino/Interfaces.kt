@@ -10,26 +10,44 @@ interface Posicionable {
 }
 
 /**
+ * Segregación de Interfaces (ISP):
+ * Contrato para cualquier entidad u objeto en el dominio que posee masa o peso medible en kilogramos.
+ */
+interface Pesable {
+    val peso: Double
+}
+
+/**
+ * Segregación de Interfaces (ISP):
+ * Contrato para objetos capaces de ser transportados o cargados en un compartimento de almacenamiento.
+ * Hereda de [Pesable], garantizando que todo objeto cargable posee una masa cuantificable.
+ */
+interface Cargable : Pesable
+
+/**
  * Contrato que define un elemento del juego que puede ser recolectado y almacenado.
- * Extiende [Posicionable] para garantizar que todo recolectable posee una ubicación espacial.
+ * Extiende [Posicionable] y [Cargable] para garantizar que todo recolectable posee ubicación y masa.
  * Aplica OCP (Open/Closed Principle) y LSP (Liskov Substitution Principle),
  * permitiendo que cualquier nuevo objeto recolectable (minerales, artefactos, restos)
  * sea procesado uniformemente por el sistema sin alterar el código existente.
  */
-interface Recolectable : Posicionable {
+interface Recolectable : Posicionable, Cargable {
     val id: String
     val nombre: String
-    val peso: Double
+    override val peso: Double
     val valor: Int
     var recolectado: Boolean
 }
 
 /**
  * Contrato para sistemas de inventario y almacenamiento de ítems recolectables.
+ * Implementa [Pesable] reportando su peso actual acumulado.
  * Aplica DIP (Dependency Inversion Principle) y OCP al operar únicamente contra la abstracción [Recolectable].
  */
-interface Almacenamiento {
+interface Almacenamiento : Pesable {
     val pesoActual: Double
+    override val peso: Double
+        get() = pesoActual
     val capacidadMaxima: Double
 
     /**
