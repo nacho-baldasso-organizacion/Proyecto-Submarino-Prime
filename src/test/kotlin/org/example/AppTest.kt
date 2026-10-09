@@ -1,18 +1,23 @@
 package org.example
 
+import submarino.Bodega
 import submarino.CalculadoraHidrostatica
 import submarino.CalculadoraPresionFluido
 import submarino.Casco
 import submarino.CascoReforzado
 import submarino.EntidadFisica
+import submarino.EstrategiaAscensoLineal
+import submarino.Mineral
 import submarino.ModuloCasco
 import submarino.Movible
 import submarino.Navegable
 import submarino.Notificador
 import submarino.NotificadorSilencioso
+import submarino.Pesable
 import submarino.PruebaConjunta
 import submarino.SimuladorSubmarino
 import submarino.Submarino
+import submarino.TipoMineral
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -178,5 +183,76 @@ class SubmarinoIntegrationTest {
         assertTrue(mensajesCapturados.isNotEmpty())
         assertTrue(mensajesCapturados.any { it.contains("colapsado") })
         assertTrue(mensajesCapturados.any { it.contains("destruido") })
+    }
+
+    // =========================================================================
+    // PRUEBAS DE INTEGRACIÓN ISSUE #6: PESO TOTAL Y FÍSICA DE ASCENSO
+    // =========================================================================
+
+    @Test
+    fun testCalculoPesoTotalYVariacionVelocidadAscensoIssue6() {
+        val bodega = Bodega(capacidadMaxima = 20.0)
+        val submarino = Submarino(
+            casco = ModuloCasco(500_000.0),
+            pesoBase = 1000.0,
+            bodega = bodega,
+            velocidad = 10.0,
+            estrategiaAscenso = EstrategiaAscensoLineal(factorReduccionMaximo = 0.5),
+            notificador = NotificadorSilencioso
+        )
+
+        // 1. Bodega vacía
+        assertEquals(1000.0, submarino.pesoTotal)
+        assertEquals(10.0, submarino.velocidadAscenso)
+        assertEquals(1.0, submarino.factorAscenso)
+
+        // 2. Media carga (10.0 kg / 20.0 kg)
+        bodega.agregar(Mineral("M1", TipoMineral.TITANIO_CRISTALINO, 0, 0)) // 5.0 kg
+        bodega.agregar(Mineral("M2", TipoMineral.TITANIO_CRISTALINO, 0, 1)) // 5.0 kg
+        assertEquals(1010.0, submarino.pesoTotal)
+        assertEquals(7.5, submarino.velocidadAscenso)
+        assertEquals(0.75, submarino.factorAscenso)
+
+        // 3. Bodega llena (20.0 kg / 20.0 kg)
+        bodega.agregar(Mineral("M3", TipoMineral.TITANIO_CRISTALINO, 0, 2)) // 5.0 kg
+        bodega.agregar(Mineral("M4", TipoMineral.TITANIO_CRISTALINO, 0, 3)) // 5.0 kg
+        assertEquals(1020.0, submarino.pesoTotal)
+        assertEquals(5.0, submarino.velocidadAscenso)
+        assertEquals(0.50, submarino.factorAscenso)
+    }
+
+    @Test
+    fun testManiobraAscensoRalentizadaPorCargaIssue6() {
+        val bodega = Bodega(capacidadMaxima = 20.0)
+        val sub = Submarino(
+            posX = 0.0,
+            posY = 50.0,
+            velocidad = 10.0,
+            casco = ModuloCasco(500_000.0),
+            pesoBase = 1000.0,
+            bodega = bodega,
+            estrategiaAscenso = EstrategiaAscensoLineal(factorReduccionMaximo = 0.5),
+            notificador = NotificadorSilencioso
+        )
+
+        // Llenar bodega al 100%
+        for (i in 1..4) {
+            bodega.agregar(Mineral("M$i", TipoMineral.TITANIO_CRISTALINO, 0, i))
+        }
+
+        // Con 100% de carga, el factor es 0.50. Ascender 10 metros nominales desplaza 5 metros efectivos.
+        sub.ascender(10.0)
+        assertEquals(45.0, sub.posY)
+    }
+
+    @Test
+    fun testPolimorfismoPesableSubmarinoIssue6() {
+        val sub: Pesable = Submarino(
+            casco = ModuloCasco(500_000.0),
+            pesoBase = 1500.0,
+            bodega = null,
+            notificador = NotificadorSilencioso
+        )
+        assertEquals(1500.0, sub.peso)
     }
 }
