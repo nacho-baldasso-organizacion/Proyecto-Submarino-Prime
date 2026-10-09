@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="submarino.Issue5Test" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-09T11:16:22.693Z" hostname="etec-AB350M-DS3H-V2" time="0.078">
+  <properties/>
+  <testcase name="test obtener mineral por profundidad batimetrica()" classname="submarino.Issue5Test" time="0.024"/>
+  <testcase name="test bodega controla limite de peso maximo y agrega items respetando capacidad()" classname="submarino.Issue5Test" time="0.005"/>
+  <testcase name="test servicio recoleccion administra flujo completo y DIP()" classname="submarino.Issue5Test" time="0.01"/>
+  <testcase name="test generador paredes coloca minerales unicamente en los limites()" classname="submarino.Issue5Test" time="0.018"/>
+  <testcase name="test catalogo de minerales cumple con tabla de especificacion de Issue 5()" classname="submarino.Issue5Test" time="0.001"/>
+  <testcase name="test detector de colisiones detecta coincidencia exacta de coordenadas()" classname="submarino.Issue5Test" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

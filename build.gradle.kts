@@ -12,10 +12,23 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    testImplementation(kotlin("test"))
 }
 
+tasks.test {
+    useJUnitPlatform()
+}
+
+val customMainClass = project.findProperty("mainClass") as String? ?: "submarino.MainKt"
 application {
-    mainClass.set("submarino.MainKt")
+    mainClass.set(customMainClass)
+}
+
+tasks.register<JavaExec>("runIssue5") {
+    group = "application"
+    description = "Ejecuta la prueba de la Issue #5: Minerales y Recolección"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("submarino.MainPruebaIssue5Kt")
 }
 
 java {
