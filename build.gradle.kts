@@ -23,6 +23,13 @@ tasks.test {
     useJUnitPlatform()
 }
 
+tasks.register<JavaExec>("runIssue5") {
+    group = "application"
+    description = "Ejecuta la prueba de la Issue #5: Minerales y Recolección"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("submarino.MainPruebaIssue5Kt")
+}
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
