@@ -63,7 +63,14 @@ class EstacionAcople(
         private set
 
     override val hayNaveAcoplada: Boolean
-        get() = naveAcoplada != null
+        get() {
+            val nave = naveAcoplada
+            if (nave != null && !nave.estaAcoplado) {
+                naveAcoplada = null
+                return false
+            }
+            return nave != null
+        }
 
     /**
      * Verifica si una posición en coordenadas (x, y) es apta para acople y la estación está disponible.

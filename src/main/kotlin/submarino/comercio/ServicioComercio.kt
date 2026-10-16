@@ -41,12 +41,12 @@ sealed class ResultadoComercio {
     /**
      * El intento de venta fue rechazado debido a que la nave no se encuentra amarrada/acoplada en la estación.
      */
-    object NaveNoAcoplada : ResultadoComercio()
+    data object NaveNoAcoplada : ResultadoComercio()
 
     /**
      * El intento de venta fue rechazado porque el compartimento de carga no contiene ningún ítem comercializable.
      */
-    object BodegaVacia : ResultadoComercio()
+    data object BodegaVacia : ResultadoComercio()
 }
 
 /**
@@ -156,6 +156,9 @@ class ServicioComercio(
      * @return [ResultadoComercio] con el resultado de la operación.
      */
     fun venderBodegaSubmarino(submarino: Submarino): ResultadoComercio {
+        if (!submarino.estaAcoplado) {
+            return ResultadoComercio.NaveNoAcoplada
+        }
         val bodega = submarino.bodega ?: return ResultadoComercio.BodegaVacia
         return venderBodega(
             acoplable = submarino,

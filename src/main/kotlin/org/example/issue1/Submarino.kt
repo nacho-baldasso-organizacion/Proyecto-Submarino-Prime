@@ -50,7 +50,9 @@ class Submarino(
      * Concreta el acople del submarino en la estación.
      */
     override fun acoplar() {
-        estaAcoplado = true
+        if (!estaDestruido) {
+            estaAcoplado = true
+        }
     }
 
     /**

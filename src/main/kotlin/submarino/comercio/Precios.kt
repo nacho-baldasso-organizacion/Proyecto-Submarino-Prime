@@ -33,7 +33,7 @@ class EstrategiaPreciosMultiplicador(
         }
     }
 
-    override fun calcularPrecio(item: Vendible): Int = (item.valor * factor).toInt()
+    override fun calcularPrecio(item: Vendible): Int = kotlin.math.round(item.valor * factor).toInt()
 }
 
 /**

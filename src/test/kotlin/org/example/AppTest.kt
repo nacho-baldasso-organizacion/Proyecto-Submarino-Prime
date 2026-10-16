@@ -7,17 +7,22 @@ import submarino.Casco
 import submarino.CascoReforzado
 import submarino.EntidadFisica
 import submarino.EstrategiaAscensoLineal
+import submarino.EstacionAcople
 import submarino.Mineral
 import submarino.ModuloCasco
+import submarino.Monedero
 import submarino.Movible
 import submarino.Navegable
 import submarino.Notificador
 import submarino.NotificadorSilencioso
 import submarino.Pesable
 import submarino.PruebaConjunta
+import submarino.ResultadoComercio
+import submarino.ServicioComercio
 import submarino.SimuladorSubmarino
 import submarino.Submarino
 import submarino.TipoMineral
+import submarino.ZonaSuperficie
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -254,5 +259,106 @@ class SubmarinoIntegrationTest {
             notificador = NotificadorSilencioso
         )
         assertEquals(1500.0, sub.peso)
+    }
+
+    // =========================================================================
+    // PRUEBAS DE INTEGRACIÓN ISSUE #7: ZONA DE ACOPLE, VENTA Y MONEDAS
+    // =========================================================================
+
+    @Test
+    fun testIntegracionAcopleSuperficieYVentaComercialIssue7() {
+        val bodega = Bodega(capacidadMaxima = 30.0)
+        val billetera = Monedero(saldoInicial = 100)
+        val submarino = Submarino(
+            posX = 50.0,
+            posY = 0.0,
+            casco = ModuloCasco(500_000.0),
+            bodega = bodega,
+            billetera = billetera,
+            notificador = NotificadorSilencioso
+        )
+
+        val mineral1 = Mineral("M1", TipoMineral.TITANIO_CRISTALINO, 0, 0) // $220, 5kg
+        val mineral2 = Mineral("M2", TipoMineral.NODULO_DE_MANGANESO, 0, 0) // $90, 4kg
+        bodega.agregar(mineral1)
+        bodega.agregar(mineral2)
+
+        val estacion = EstacionAcople(zonaAcople = ZonaSuperficie())
+        val servicioComercio = ServicioComercio()
+
+        // 1. Detectar superficie y zona de acople
+        assertTrue(submarino.estaEnSuperficie)
+        assertTrue(submarino.estaEnZonaAcople(estacion.zonaAcople))
+
+        // 2. Acoplar en estación
+        assertTrue(estacion.acoplar(submarino, submarino.posX, submarino.posY))
+        assertTrue(submarino.estaAcoplado)
+        assertTrue(estacion.hayNaveAcoplada)
+
+        // 3. Venta de minerales y acreditación de saldo
+        val resultado = servicioComercio.venderBodegaSubmarino(submarino)
+        assertTrue(resultado is ResultadoComercio.Exito)
+        assertEquals(310, resultado.transaccion.totalCreditos) // 220 + 90
+        assertEquals(410, submarino.billetera.saldo) // 100 inicial + 310 venta
+        assertEquals(0.0, bodega.pesoActual, 0.001)
+        assertEquals(0, bodega.cantidadItems)
+
+        // 4. Desacople
+        assertTrue(estacion.desacoplar())
+        assertFalse(submarino.estaAcoplado)
+        assertFalse(estacion.hayNaveAcoplada)
+    }
+
+    @Test
+    fun testRechazoVentaEnInmersionSinAcopleIssue7() {
+        val bodega = Bodega(capacidadMaxima = 20.0)
+        val billetera = Monedero(saldoInicial = 50)
+        val submarino = Submarino(
+            posX = 0.0,
+            posY = 50.0, // Sumergido
+            casco = ModuloCasco(500_000.0),
+            bodega = bodega,
+            billetera = billetera,
+            notificador = NotificadorSilencioso
+        )
+        bodega.agregar(Mineral("M1", TipoMineral.ARENA_DE_CUARZO, 0, 50))
+
+        val servicioComercio = ServicioComercio()
+        val resultado = servicioComercio.venderBodegaSubmarino(submarino)
+
+        assertTrue(resultado is ResultadoComercio.NaveNoAcoplada)
+        assertEquals(50, submarino.billetera.saldo)
+        assertEquals(1, bodega.cantidadItems)
+    }
+
+    @Test
+    fun testRestauracionVelocidadAscensoTrasVentaEnEstacionIssue7() {
+        val bodega = Bodega(capacidadMaxima = 20.0)
+        val submarino = Submarino(
+            posX = 0.0,
+            posY = 0.0,
+            velocidad = 10.0,
+            casco = ModuloCasco(500_000.0),
+            bodega = bodega,
+            estrategiaAscenso = EstrategiaAscensoLineal(factorReduccionMaximo = 0.5),
+            notificador = NotificadorSilencioso
+        )
+
+        // Llenar bodega al 100% -> velocidad se reduce al 50% (5.0 m/s)
+        for (i in 1..4) {
+            bodega.agregar(Mineral("M$i", TipoMineral.TITANIO_CRISTALINO, 0, i)) // 5kg c/u
+        }
+        assertEquals(5.0, submarino.velocidadAscenso, 0.001)
+
+        // Acoplar y vender
+        submarino.acoplar()
+        val servicioComercio = ServicioComercio()
+        val resultado = servicioComercio.venderBodegaSubmarino(submarino)
+
+        assertTrue(resultado is ResultadoComercio.Exito)
+        assertEquals(0.0, bodega.pesoActual, 0.001)
+        // La velocidad de ascenso nominal se restaura completamente a 10.0 m/s
+        assertEquals(10.0, submarino.velocidadAscenso, 0.001)
+        assertEquals(1.0, submarino.factorAscenso, 0.001)
     }
 }

@@ -62,12 +62,4 @@ class Monedero(
     }
 
     override fun toString(): String = "Monedero(saldo=$$saldo)"
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is ConsultableSaldo) return false
-        return saldo == other.saldo
-    }
-
-    override fun hashCode(): Int = saldo.hashCode()
 }

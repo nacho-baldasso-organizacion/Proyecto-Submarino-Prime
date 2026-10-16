@@ -568,4 +568,62 @@ class Issue7Test {
             )
         }
     }
+
+    @Test
+    fun `test intento de venta sin acoplar en submarino sin bodega retorna NaveNoAcoplada`() {
+        val subSinBodega = Submarino(
+            posX = 0.0,
+            posY = 100.0,
+            casco = ModuloCasco(500_000.0),
+            bodega = null,
+            notificador = NotificadorSilencioso
+        )
+        assertFalse(subSinBodega.estaAcoplado)
+
+        val servicio = ServicioComercio()
+        val resultado = servicio.venderBodegaSubmarino(subSinBodega)
+        assertEquals(ResultadoComercio.NaveNoAcoplada, resultado)
+    }
+
+    @Test
+    fun `test desplazamiento de submarino amarrado libera la estacion de acople automaticamente`() {
+        val estacion = EstacionAcople()
+        val sub = Submarino(posX = 0.0, posY = 0.0, casco = ModuloCasco(500_000.0), notificador = NotificadorSilencioso)
+
+        assertTrue(estacion.acoplar(sub, 0.0, 0.0))
+        assertTrue(sub.estaAcoplado)
+        assertTrue(estacion.hayNaveAcoplada)
+
+        // El submarino navega hacia adelante (se desacopla internamente)
+        sub.navegar(15.0)
+        assertFalse(sub.estaAcoplado)
+
+        // La estación reconoce reactivamente que la nave se alejó y queda disponible
+        assertFalse(estacion.hayNaveAcoplada)
+        assertTrue(estacion.puedeAcoplar(0.0, 0.0))
+    }
+
+    @Test
+    fun `test submarino destruido no puede acoplarse`() {
+        val sub = Submarino(
+            posX = 0.0,
+            posY = 0.0,
+            casco = ModuloCasco(presionMaximaPa = 100_000.0, integridad = 0.1),
+            notificador = NotificadorSilencioso
+        )
+
+        // Provocar destrucción por sobrepresión
+        sub.verificarIntegridad(500_000.0)
+        assertTrue(sub.estaDestruido)
+
+        // Intentar acople
+        sub.acoplar()
+        assertFalse(sub.estaAcoplado, "Un submarino destruido no puede acoplarse")
+    }
+
+    @Test
+    fun `test toString de ResultadoComercio usa formato limpio con data object`() {
+        assertEquals("NaveNoAcoplada", ResultadoComercio.NaveNoAcoplada.toString())
+        assertEquals("BodegaVacia", ResultadoComercio.BodegaVacia.toString())
+    }
 }
