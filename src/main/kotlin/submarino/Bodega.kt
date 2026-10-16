@@ -82,7 +82,7 @@ class Bodega(
     /**
      * Limpia el inventario de la bodega.
      */
-    fun vaciar() {
+    override fun vaciar() {
         items.clear()
     }
 

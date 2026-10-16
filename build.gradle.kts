@@ -37,6 +37,13 @@ tasks.register<JavaExec>("runIssue6") {
     mainClass.set("submarino.MainPruebaIssue6Kt")
 }
 
+tasks.register<JavaExec>("runIssue7") {
+    group = "application"
+    description = "Ejecuta la prueba de la Issue #7: Zona de acople, venta de minerales y monedas"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("submarino.MainPruebaIssue7")
+}
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
@@ -44,5 +51,7 @@ java {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "21"
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+    }
 }
