@@ -46,6 +46,14 @@ interface Casco {
      * @return Nivel de integridad resultante tras el impacto de presión.
      */
     fun recibirPresion(presionActualPa: Double): Double
+
+    /**
+     * Refuerza la presión máxima admisible que el casco puede tolerar.
+     * Implementación por defecto no-op para preservar el Principio de Sustitución de Liskov (LSP).
+     *
+     * @param incrementoPresionPa Cantidad de Pascales a adicionar al límite de resistencia.
+     */
+    fun reforzar(incrementoPresionPa: Double) {}
 }
 
 /**

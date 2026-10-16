@@ -13,7 +13,7 @@ class Submarino(
     val casco: Casco,
     val pesoBase: Double = PESO_BASE_DEFAULT,
     val bodega: Almacenamiento? = Bodega(capacidadMaxima = BODEGA_CAPACIDAD_DEFAULT),
-    val velocidadAscensoBase: Double = if (velocidad > 0.0) velocidad else VELOCIDAD_ASCENSO_DEFAULT,
+    velocidadAscensoBase: Double = if (velocidad > 0.0) velocidad else VELOCIDAD_ASCENSO_DEFAULT,
     val calculadorPeso: CalculadorPeso = CalculadorPesoSubmarino(),
     val estrategiaAscenso: EstrategiaAscenso = EstrategiaAscensoLineal(),
     val billetera: Billetera = Monedero(0),
@@ -26,9 +26,52 @@ class Submarino(
         const val VELOCIDAD_ASCENSO_DEFAULT: Double = 5.0
     }
 
+    var velocidadAscensoBase: Double = velocidadAscensoBase
+        private set
+
     init {
         require(pesoBase >= 0.0) { "El peso base no puede ser negativo: $pesoBase" }
         require(velocidadAscensoBase >= 0.0) { "La velocidad de ascenso base no puede ser negativa: $velocidadAscensoBase" }
+    }
+
+    /**
+     * Incrementa la capacidad de carga en kilogramos de la bodega a bordo (Issue #8).
+     *
+     * @param incremento Kilos adicionales a añadir a la capacidad máxima.
+     */
+    fun aumentarCapacidadBodega(incremento: Double) {
+        require(incremento > 0.0) { "El incremento de capacidad debe ser positivo: $incremento" }
+        bodega?.aumentarCapacidad(incremento)
+    }
+
+    /**
+     * Incrementa la velocidad nominal base de ascenso del submarino (Issue #8).
+     *
+     * @param incremento Magnitud de velocidad vertical en m/s a añadir.
+     */
+    fun aumentarVelocidadAscenso(incremento: Double) {
+        require(incremento > 0.0) { "El incremento de velocidad de ascenso debe ser positivo: $incremento" }
+        velocidadAscensoBase += incremento
+    }
+
+    /**
+     * Refuerza la resistencia estructural del casco aumentando la presión máxima tolerable (Issue #8).
+     *
+     * @param incrementoPa Pascales adicionales de resistencia a la sobrepresión.
+     */
+    fun aumentarResistenciaCasco(incrementoPa: Double) {
+        require(incrementoPa > 0.0) { "El incremento de resistencia debe ser positivo: $incrementoPa" }
+        casco.reforzar(incrementoPa)
+    }
+
+    /**
+     * Incrementa la velocidad de desplazamiento y propulsión horizontal del motor (Issue #8).
+     *
+     * @param incremento Magnitud de velocidad de propulsión a añadir.
+     */
+    fun aumentarVelocidadPropulsion(incremento: Double) {
+        require(incremento > 0.0) { "El incremento de velocidad de propulsión debe ser positivo: $incremento" }
+        velocidad += incremento
     }
 
     var bateria: Double = 100.0
