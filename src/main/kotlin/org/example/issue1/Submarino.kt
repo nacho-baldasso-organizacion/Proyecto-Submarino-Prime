@@ -16,8 +16,9 @@ class Submarino(
     val velocidadAscensoBase: Double = if (velocidad > 0.0) velocidad else VELOCIDAD_ASCENSO_DEFAULT,
     val calculadorPeso: CalculadorPeso = CalculadorPesoSubmarino(),
     val estrategiaAscenso: EstrategiaAscenso = EstrategiaAscensoLineal(),
+    val billetera: Billetera = Monedero(0),
     private val notificador: Notificador = NotificadorConsola
-) : EntidadFisica(posX, posY, velocidad), Navegable, Pesable {
+) : EntidadFisica(posX, posY, velocidad), Navegable, Pesable, Acoplable {
 
     companion object {
         const val PESO_BASE_DEFAULT: Double = 1000.0
@@ -38,6 +39,39 @@ class Submarino(
      */
     val estaDestruido: Boolean
         get() = casco.estaDestruido
+
+    /**
+     * Estado actual de acople en la estación o muelle de superficie.
+     */
+    override var estaAcoplado: Boolean = false
+        private set
+
+    /**
+     * Concreta el acople del submarino en la estación.
+     */
+    override fun acoplar() {
+        if (!estaDestruido) {
+            estaAcoplado = true
+        }
+    }
+
+    /**
+     * Desacopla el submarino de la estación.
+     */
+    override fun desacoplar() {
+        estaAcoplado = false
+    }
+
+    /**
+     * Indica si el submarino se encuentra en la superficie (cota vertical Y <= 0.0).
+     */
+    val estaEnSuperficie: Boolean
+        get() = posY <= 0.0
+
+    /**
+     * Verifica si el submarino está dentro de una zona de acople especificada.
+     */
+    fun estaEnZonaAcople(zona: ZonaAcople): Boolean = zona.estaEnZona(posX, posY)
 
     /**
      * Retorna el peso/masa total actual del submarino delegando en [CalculadorPeso] (SRP, DIP).
@@ -132,6 +166,11 @@ class Submarino(
         actualizarPosX(posX + deltaX)
         actualizarPosY(posY + deltaY)
 
+        // Si la nave estaba acoplada y se desplaza, se desacopla automáticamente
+        if (estaAcoplado && (deltaX != 0.0 || deltaY != 0.0)) {
+            desacoplar()
+        }
+
         // Verificar si la batería se agotó durante el movimiento
         if (bateria <= 0.0) {
             bateria = 0.0
@@ -188,6 +227,6 @@ class Submarino(
     fun ascender(): Boolean = mover(deltaX = 0.0, deltaY = -velocidadAscenso)
 
     override fun toString(): String {
-        return "Submarino(posX=$posX, posY=$posY, pesoTotal=${"%.2f".format(pesoTotal)}kg, velocidadAscenso=${"%.2f".format(velocidadAscenso)}m/s, bateria=${"%.2f".format(bateria)}%, estaDestruido=$estaDestruido, casco=$casco)"
+        return "Submarino(posX=$posX, posY=$posY, pesoTotal=${"%.2f".format(pesoTotal)}kg, velocidadAscenso=${"%.2f".format(velocidadAscenso)}m/s, saldo=$${billetera.saldo}, estaAcoplado=$estaAcoplado, bateria=${"%.2f".format(bateria)}%, estaDestruido=$estaDestruido, casco=$casco)"
     }
 }

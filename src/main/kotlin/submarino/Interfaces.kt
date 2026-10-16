@@ -31,11 +31,11 @@ interface Cargable : Pesable
  * permitiendo que cualquier nuevo objeto recolectable (minerales, artefactos, restos)
  * sea procesado uniformemente por el sistema sin alterar el código existente.
  */
-interface Recolectable : Posicionable, Cargable {
+interface Recolectable : Posicionable, Cargable, Vendible {
     val id: String
     val nombre: String
     override val peso: Double
-    val valor: Int
+    override val valor: Int
     var recolectado: Boolean
 }
 
@@ -61,6 +61,11 @@ interface Almacenamiento : Pesable {
      * Retorna una lista inmutable de los elementos almacenados actualmente.
      */
     fun obtenerElementos(): List<Recolectable>
+
+    /**
+     * Limpia o vacía los elementos almacenados en el contenedor.
+     */
+    fun vaciar() {}
 }
 
 /**
