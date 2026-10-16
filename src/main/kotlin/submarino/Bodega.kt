@@ -12,13 +12,28 @@ package submarino
  * @property capacidadMaxima Peso máximo en kilogramos que la bodega puede albergar.
  */
 class Bodega(
-    override val capacidadMaxima: Double
+    capacidadMaxima: Double
 ) : Almacenamiento {
+
+    override var capacidadMaxima: Double = capacidadMaxima
+        private set
 
     init {
         require(capacidadMaxima >= 0.0) {
             "La capacidad máxima de la bodega no puede ser negativa: $capacidadMaxima"
         }
+    }
+
+    /**
+     * Amplía la capacidad máxima de peso en kilogramos de la bodega.
+     *
+     * @param incremento Cantidad de kilogramos a adicionar a la capacidad máxima actual.
+     */
+    override fun aumentarCapacidad(incremento: Double) {
+        require(incremento > 0.0) {
+            "El incremento de capacidad debe ser estrictamente positivo: $incremento"
+        }
+        capacidadMaxima += incremento
     }
 
     private val items: MutableList<Recolectable> = mutableListOf()

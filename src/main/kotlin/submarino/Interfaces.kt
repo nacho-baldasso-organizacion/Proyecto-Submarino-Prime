@@ -66,6 +66,12 @@ interface Almacenamiento : Pesable {
      * Limpia o vacía los elementos almacenados en el contenedor.
      */
     fun vaciar() {}
+
+    /**
+     * Amplía la capacidad máxima de almacenamiento en kilogramos.
+     * Implementación por defecto no-op para preservar compatibilidad LSP.
+     */
+    fun aumentarCapacidad(incremento: Double) {}
 }
 
 /**

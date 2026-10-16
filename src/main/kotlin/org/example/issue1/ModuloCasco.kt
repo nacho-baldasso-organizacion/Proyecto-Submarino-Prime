@@ -10,13 +10,26 @@ package submarino
  * @param notificador Manejador de alertas desacoplado de la consola (DIP / SRP).
  */
 class ModuloCasco(
-    override val presionMaximaPa: Double,
+    presionMaximaPa: Double,
     integridad: Double = 100.0,
     private val notificador: Notificador = NotificadorConsola
 ) : Casco {
 
+    override var presionMaximaPa: Double = presionMaximaPa
+        private set
+
     override var integridad: Double = integridad
         private set
+
+    /**
+     * Refuerza la presión máxima admisible que el módulo de casco estándar puede tolerar.
+     */
+    override fun reforzar(incrementoPresionPa: Double) {
+        require(incrementoPresionPa > 0.0) {
+            "El incremento de presión debe ser estrictamente positivo: $incrementoPresionPa"
+        }
+        presionMaximaPa += incrementoPresionPa
+    }
 
     /**
      * Indica si el casco ha colapsado o ha sido destruido en su totalidad (integridad <= 0.0).
@@ -67,14 +80,24 @@ class ModuloCasco(
  * @param factorAbsorcion Porcentaje de absorción del daño recibido (0.0 sin protección adicional, 0.5 absorbe 50%).
  */
 class CascoReforzado(
-    override val presionMaximaPa: Double,
+    presionMaximaPa: Double,
     integridad: Double = 100.0,
     val factorAbsorcion: Double = 0.5,
     private val notificador: Notificador = NotificadorConsola
 ) : Casco {
 
+    override var presionMaximaPa: Double = presionMaximaPa
+        private set
+
     override var integridad: Double = integridad
         private set
+
+    override fun reforzar(incrementoPresionPa: Double) {
+        require(incrementoPresionPa > 0.0) {
+            "El incremento de presión debe ser estrictamente positivo: $incrementoPresionPa"
+        }
+        presionMaximaPa += incrementoPresionPa
+    }
 
     override val estaDestruido: Boolean
         get() = integridad <= 0.0
