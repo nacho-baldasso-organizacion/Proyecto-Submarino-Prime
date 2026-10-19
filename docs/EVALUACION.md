@@ -3,7 +3,7 @@
 
 > Documento **generado automáticamente** por la cátedra de Programación II (RepoSense + análisis de calidad POO/SOLID). **No editar a mano**: se regenera en cada evaluación.
 > Rama evaluada: `main`. Análisis **heurístico** (regex + métricas): es una criba para orientar la revisión, **no una nota**.
-> Generado: 2026-10-17.
+> Generado: 2026-10-19.
 
 ## 1. Veredicto
 
@@ -15,7 +15,7 @@
 | Clases (bien usadas) | 115 (43 OK) |
 | Código dentro de clases (%POO) | 85% |
 | Funciones fuera de clases | 2 |
-| Duplicación | 11.6% |
+| Duplicación lógica | 7.2% |
 | Señales S/O/L/I/D | 30/9/6/0/20 |
 | Tope duro aplicado | `SUELTAS` → índice ≤ 60 |
 
@@ -35,7 +35,7 @@ Criterios de `CRITERIOS-CALIDAD.md`. **Aprobar** se juega con el perfil `estanda
 | Criterio | Requisito | Tu resultado | Cumple |
 |---|---|---|---|
 | Código dentro de clases (%POO) | ≥ 85% | 85% | sí |
-| Duplicación | ≤ 10% | 7.6% | sí |
+| Duplicación lógica | ≤ 10% | 7.2% | sí |
 | Funciones fuera de clases | ≤ 1 | 2 | no |
 | Señales POO/SOLID críticas | ninguna | Clase demasiado grande (SRP), Baja cohesión (LCOM), Acoplamiento alto (CBO), Switch sobre tipos (OCP), Override vacío / 'no implementado' (LSP) | no |
 
@@ -44,7 +44,7 @@ Criterios de `CRITERIOS-CALIDAD.md`. **Aprobar** se juega con el perfil `estanda
 | Criterio | Requisito | Tu resultado | Cumple |
 |---|---|---|---|
 | Código dentro de clases (%POO) | ≥ 95% | 85% | no |
-| Duplicación | ≤ 5% | 11.6% | no |
+| Duplicación lógica | ≤ 5% | 7.2% | no |
 | Funciones fuera de clases | ≤ 0 | 2 | no |
 | Señales POO/SOLID críticas | ninguna | Clase demasiado grande (SRP), Baja cohesión (LCOM), Complejidad alta, Acoplamiento alto (CBO), Switch sobre tipos (OCP), Override vacío / 'no implementado' (LSP) | no |
 | Índice de calidad POO/SOLID | ≥ 60 | 3/100 | no |
@@ -67,11 +67,11 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 - **Por qué importa:** Ordena y prioriza la revisión: un índice bajo indica varias señales que conviene mirar juntas.
 - **Tu resultado:** índice **3/100**
 
-### 2. Duplicación (DRY) (duplicacion) — con señales
+### 2. Duplicación lógica (DRY) (duplicacion) — con señales
 
-- **Qué mide:** Porcentaje de bloques de código repetidos (similitud) en el repositorio.
-- **Por qué importa:** Cada copia se mantiene por separado: un arreglo hay que repetirlo y los defectos se multiplican.
-- **Tu resultado:** **11.6%** de duplicación
+- **Qué mide:** Porcentaje de bloques de LÓGICA repetidos. Quedan fuera imports/includes, anotaciones, declaraciones de campos y comentarios/Javadoc/docstrings: esos bloques son boilerplate, no lógica.
+- **Por qué importa:** Cada copia de lógica se mantiene por separado: un arreglo hay que repetirlo y los defectos se multiplican.
+- **Tu resultado:** **7.2%** de duplicación lógica
 - **Para investigar la causa:**
     - ¿El trabajo se repartió por pantallas o archivos y se integró copiando y pegando bloques?
     - ¿Qué zonas del sistema cambiaron juntas más de una vez (señal de lógica compartida)?
@@ -345,20 +345,20 @@ xychart-beta
     title "Índice POO/SOLID a lo largo de los commits"
     x-axis ["dbfd5be", "f3d175b", "493b71f", "ae28d33", "0e5cb85", "1120c1a", "086d3a6", "c792a2f", "8f4e517"]
     y-axis "Índice" 0 --> 100
-    line [0, 0, 18, 18, 14, 5, 4, 4, 3]
+    line [0, 0, 25, 23, 13, 5, 4, 4, 3]
 ```
 
 | # | Fecha | Commit | Autor | LOC | Índice | %POO | Duplic. | Sueltas |
 |---|---|---|---|---:|---:|---:|---:|---:|
 | 1 | 2026-08-14 | `dbfd5be` | ibaldasso-elpepe | 0 | 0 | 0% | 0.0% | 0 |
 | 2 | 2026-08-24 | `f3d175b` | dqmdz-etec | 0 | 0 | 0% | 0.0% | 0 |
-| 3 | 2026-08-28 | `493b71f` | ibaldasso-elpepe | 180 | 18 | 46% | 7.0% | 1 |
-| 4 | 2026-10-02 | `ae28d33` | ibaldasso-elpepe | 302 | 18 | 39% | 6.6% | 2 |
-| 5 | 2026-10-05 | `0e5cb85` | ibaldasso-elpepe | 702 | 14 | 78% | 6.4% | 0 |
-| 6 | 2026-10-09 | `1120c1a` | ibaldasso-elpepe | 1,469 | 5 | 90% | 4.2% | 1 |
-| 7 | 2026-10-09 | `086d3a6` | ibaldasso-elpepe | 2,351 | 4 | 86% | 9.7% | 2 |
-| 8 | 2026-10-16 | `c792a2f` | ibaldasso-elpepe | 3,625 | 4 | 87% | 9.5% | 2 |
-| 9 | 2026-10-16 | `8f4e517` | ibaldasso-elpepe | 5,355 | 3 | 85% | 11.6% | 2 |
+| 3 | 2026-08-28 | `493b71f` | ibaldasso-elpepe | 180 | 25 | 46% | 0.0% | 1 |
+| 4 | 2026-10-02 | `ae28d33` | ibaldasso-elpepe | 302 | 23 | 39% | 0.0% | 2 |
+| 5 | 2026-10-05 | `0e5cb85` | ibaldasso-elpepe | 702 | 13 | 78% | 8.8% | 0 |
+| 6 | 2026-10-09 | `1120c1a` | ibaldasso-elpepe | 1,469 | 5 | 90% | 4.3% | 1 |
+| 7 | 2026-10-09 | `086d3a6` | ibaldasso-elpepe | 2,351 | 4 | 86% | 5.9% | 2 |
+| 8 | 2026-10-16 | `c792a2f` | ibaldasso-elpepe | 3,625 | 4 | 87% | 6.6% | 2 |
+| 9 | 2026-10-16 | `8f4e517` | ibaldasso-elpepe | 5,355 | 3 | 85% | 7.2% | 2 |
 
 ---
 _Informe generado por la cátedra. Los criterios y umbrales de medición corresponden al perfil `exigente` de `calidad.py`; el semáforo de aprobación, a `CRITERIOS-CALIDAD.md` (ver `README.md`). Ante dudas, revisá el archivo señalado._
