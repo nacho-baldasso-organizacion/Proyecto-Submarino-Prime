@@ -9,44 +9,64 @@ package submarino
 
 /**
  * Recibo inmutable que representa una transacción comercial concretada exitosamente.
- *
- * @property itemsVendidos Lista inmutable de ítems que fueron comercializados.
- * @property totalCreditos Valor monetario total obtenido por la venta.
- * @property cantidadItems Número total de unidades vendidas.
- * @property timestamp Estampa temporal en milisegundos en la que se efectuó la transacción.
  */
 data class TransaccionComercial(
     val itemsVendidos: List<Vendible>,
     val totalCreditos: Int,
     val cantidadItems: Int,
     val timestamp: Long = System.currentTimeMillis()
-)
+) {
+    /**
+     * Calcula el promedio de créditos obtenidos por cada unidad vendida.
+     */
+    fun valorPromedioPorItem(): Double =
+        if (cantidadItems > 0) totalCreditos.toDouble() / cantidadItems else 0.0
+
+    /**
+     * Retorna una síntesis textual del comprobante de venta.
+     */
+    fun resumen(): String =
+        "Transacción: $cantidadItems ítems por $$totalCreditos créditos (Promedio: $${"%.2f".format(valorPromedioPorItem())}/ítem)."
+}
 
 /**
  * Jerarquía sellada exhaustiva que modela los posibles desenlaces de un intento de transacción.
- * Facilita el manejo exhaustivo con `when` sin riesgo de estados no controlados (LSP).
+ * Provee métodos polimórficos para evitar comprobaciones de tipo `is`/`when` en clientes (OCP).
  */
 sealed class ResultadoComercio {
+
+    abstract val esExitoso: Boolean
+    abstract fun obtenerResumen(): String
+
     /**
      * La transacción se completó con éxito, transfiriendo los fondos y vaciando el inventario.
-     *
-     * @property transaccion Recibo inmutable con el desglose de la venta.
-     * @property saldoActualizado Saldo remanente final en el receptor de fondos.
      */
     data class Exito(
         val transaccion: TransaccionComercial,
         val saldoActualizado: Int
-    ) : ResultadoComercio()
+    ) : ResultadoComercio() {
+        override val esExitoso: Boolean = true
+        override fun obtenerResumen(): String =
+            "Venta concretada: ${transaccion.cantidadItems} ítems comercializados por $${transaccion.totalCreditos}. Saldo actualizado: $$saldoActualizado."
+    }
 
     /**
      * El intento de venta fue rechazado debido a que la nave no se encuentra amarrada/acoplada en la estación.
      */
-    data object NaveNoAcoplada : ResultadoComercio()
+    data object NaveNoAcoplada : ResultadoComercio() {
+        override val esExitoso: Boolean = false
+        override fun obtenerResumen(): String =
+            "Operación rechazada: la nave debe encontrarse amarrada en la estación de acople."
+    }
 
     /**
      * El intento de venta fue rechazado porque el compartimento de carga no contiene ningún ítem comercializable.
      */
-    data object BodegaVacia : ResultadoComercio()
+    data object BodegaVacia : ResultadoComercio() {
+        override val esExitoso: Boolean = false
+        override fun obtenerResumen(): String =
+            "Operación rechazada: no hay recursos comercializables en el compartimento de carga."
+    }
 }
 
 /**
@@ -59,11 +79,21 @@ class ObservadorComercioConsola : ObservadorComercio {
 }
 
 /**
- * Implementación silenciosa de [ObservadorComercio] para ejecución en tests y modo headless.
+ * Implementación silenciada de [ObservadorComercio] para pruebas unitarias y modo headless.
+ * Almacena el historial transaccional en memoria en lugar de descartarlo con un bloque vacío (LSP).
  */
 class ObservadorComercioSilencioso : ObservadorComercio {
+    private val historialTransacciones: MutableList<TransaccionComercial> = mutableListOf()
+
     override fun alRealizarVenta(transaccion: TransaccionComercial) {
-        // No-op intencional
+        historialTransacciones.add(transaccion)
+    }
+
+    val transacciones: List<TransaccionComercial>
+        get() = historialTransacciones.toList()
+
+    fun limpiar() {
+        historialTransacciones.clear()
     }
 }
 
@@ -71,51 +101,25 @@ class ObservadorComercioSilencioso : ObservadorComercio {
  * Servicio coordinador del proceso transaccional y comercial en la estación de acople.
  *
  * Cumple con:
- * - Single Responsibility Principle (SRP): se dedica exclusivamente a coordinar la transacción
- *   económica (validar acople, valuar ítems, acreditar fondos, vaciar carga y notificar observadores).
- * - Dependency Inversion Principle (DIP): depende únicamente de contratos abstractos
- *   ([CalculadoraPrecios], [Acoplable], [Almacenamiento], [ReceptorFondos], [ObservadorComercio]).
- * - Open/Closed Principle (OCP): admite cualquier estrategia de precios y cualquier nuevo ítem vendible.
- * - Liskov Substitution Principle (LSP): manejo de resultados tipados y cero casteos inseguros.
- *
- * @param calculadoraPrecios Abstracción para el cómputo del valor comercial de los ítems.
+ * - Single Responsibility Principle (SRP)
+ * - Dependency Inversion Principle (DIP)
+ * - Open/Closed Principle (OCP)
+ * - Liskov Substitution Principle (LSP)
  */
 class ServicioComercio(
-    val calculadoraPrecios: CalculadoraPrecios = CalculadoraPreciosEstandar()
+    private val calculadoraPrecios: CalculadoraPrecios = CalculadoraPreciosEstandar()
 ) : ProcesadorComercio {
 
     private val observadores: MutableList<ObservadorComercio> = mutableListOf()
 
-    /**
-     * Registra un observador para desacoplamiento con interfaz gráfica o sistemas de registro (Observer).
-     */
     fun registrarObservador(observador: ObservadorComercio) {
         observadores.add(observador)
     }
 
-    /**
-     * Desregistra un observador comercial.
-     */
     fun eliminarObservador(observador: ObservadorComercio) {
         observadores.remove(observador)
     }
 
-    /**
-     * Ejecuta el proceso de venta de todos los ítems contenidos en el almacenamiento indicado:
-     * 1. Verifica si la nave se encuentra amarrada/acoplada ([Acoplable.estaAcoplado]).
-     *    Si no está acoplada, rechaza la operación informando [ResultadoComercio.NaveNoAcoplada].
-     * 2. Obtiene los elementos del [Almacenamiento]. Si está vacío, retorna [ResultadoComercio.BodegaVacia].
-     * 3. Calcula el valor total de los recursos mediante la [CalculadoraPrecios].
-     * 4. Acredita la suma monetaria en el [ReceptorFondos].
-     * 5. Vacía el inventario del [Almacenamiento].
-     * 6. Emite un evento a los [ObservadorComercio] registrados.
-     * 7. Retorna [ResultadoComercio.Exito] con el recibo inmutable y el nuevo balance.
-     *
-     * @param acoplable Abstracción de estado de amarre de la nave vendedora.
-     * @param almacenamiento Contenedor o bodega de donde se extraen los minerales.
-     * @param receptorFondos Billetera o cuenta donde se acreditan las ganancias.
-     * @return [ResultadoComercio] describiendo el resultado de la transacción.
-     */
     override fun venderBodega(
         acoplable: Acoplable,
         almacenamiento: Almacenamiento,
@@ -148,13 +152,6 @@ class ServicioComercio(
         )
     }
 
-    /**
-     * Sobrecarga de conveniencia semántica que procesa la venta de la bodega del [Submarino].
-     * Extrae automáticamente la bodega y la billetera del submarino sin acoplar la lógica central.
-     *
-     * @param submarino Instancia del submarino que realiza la venta.
-     * @return [ResultadoComercio] con el resultado de la operación.
-     */
     fun venderBodegaSubmarino(submarino: Submarino): ResultadoComercio {
         if (!submarino.estaAcoplado) {
             return ResultadoComercio.NaveNoAcoplada

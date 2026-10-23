@@ -3,24 +3,31 @@ package submarino
 /**
  * ============================================================================
  * EFECTOS DE MEJORAS SOBRE ESTADÍSTICAS DEL SUBMARINO (ISSUE #8)
- * PRINCIPIOS SOLID (SRP = 0 violaciones, OCP = 0 violaciones, LSP = 0 violaciones)
+ * PRINCIPIOS SOLID (SRP, OCP, LSP, DRY)
  * ============================================================================
  */
 
 /**
- * Efecto de mejora que incrementa la capacidad máxima de carga en la bodega del submarino.
- *
- * @param magnitud Kilogramos adicionales otorgados a la bodega por cada nivel adquirido.
+ * Clase base común para todos los efectos cuantitativos de mejora.
+ * Elimina la duplicación de validación y almacenamiento de magnitud (DRY).
  */
-class EfectoCapacidadBodega(
+abstract class EfectoBase(
     override val magnitud: Double
 ) : EfectoMejora {
 
     init {
         require(magnitud > 0.0) {
-            "La magnitud del incremento de capacidad debe ser estrictamente positiva: $magnitud"
+            "La magnitud del incremento debe ser estrictamente positiva: $magnitud"
         }
     }
+}
+
+/**
+ * Efecto de mejora que incrementa la capacidad máxima de carga en la bodega del submarino.
+ */
+class EfectoCapacidadBodega(
+    magnitud: Double
+) : EfectoBase(magnitud) {
 
     override fun aplicar(submarino: Submarino) {
         submarino.aumentarCapacidadBodega(magnitud)
@@ -31,18 +38,10 @@ class EfectoCapacidadBodega(
 
 /**
  * Efecto de mejora que incrementa la velocidad nominal base de ascenso vertical del submarino.
- *
- * @param magnitud Metros por segundo (m/s) adicionales añadidos a la velocidad base vertical.
  */
 class EfectoVelocidadAscenso(
-    override val magnitud: Double
-) : EfectoMejora {
-
-    init {
-        require(magnitud > 0.0) {
-            "La magnitud del incremento de velocidad de ascenso debe ser estrictamente positiva: $magnitud"
-        }
-    }
+    magnitud: Double
+) : EfectoBase(magnitud) {
 
     override fun aplicar(submarino: Submarino) {
         submarino.aumentarVelocidadAscenso(magnitud)
@@ -53,18 +52,10 @@ class EfectoVelocidadAscenso(
 
 /**
  * Efecto de mejora que refuerza el casco aumentando la presión máxima admisible antes de colapsar.
- *
- * @param magnitud Pascales (Pa) adicionales añadidos a la resistencia estructural del casco.
  */
 class EfectoResistenciaCasco(
-    override val magnitud: Double
-) : EfectoMejora {
-
-    init {
-        require(magnitud > 0.0) {
-            "La magnitud del incremento de resistencia debe ser estrictamente positiva: $magnitud"
-        }
-    }
+    magnitud: Double
+) : EfectoBase(magnitud) {
 
     override fun aplicar(submarino: Submarino) {
         submarino.aumentarResistenciaCasco(magnitud)
@@ -75,18 +66,10 @@ class EfectoResistenciaCasco(
 
 /**
  * Efecto de mejora que incrementa la velocidad del motor para desplazamiento y navegación horizontal.
- *
- * @param magnitud Magnitud adicional de velocidad de propulsión horizontal.
  */
 class EfectoVelocidadPropulsion(
-    override val magnitud: Double
-) : EfectoMejora {
-
-    init {
-        require(magnitud > 0.0) {
-            "La magnitud del incremento de propulsión debe ser estrictamente positiva: $magnitud"
-        }
-    }
+    magnitud: Double
+) : EfectoBase(magnitud) {
 
     override fun aplicar(submarino: Submarino) {
         submarino.aumentarVelocidadPropulsion(magnitud)

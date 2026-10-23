@@ -31,9 +31,6 @@ interface Navegable : Movible {
 /**
  * Inversión de Dependencias (DIP) y Abierto/Cerrado (OCP):
  * Abstracción que representa la resistencia física y estructural de un casco.
- * Permite que Submarino dependa de esta interfaz y no de una implementación concreta,
- * facilitando la incorporación de nuevos tipos de cascos (reforzados, experimentales, escudos)
- * sin modificar la lógica del submarino.
  */
 interface Casco {
     val presionMaximaPa: Double
@@ -49,18 +46,15 @@ interface Casco {
 
     /**
      * Refuerza la presión máxima admisible que el casco puede tolerar.
-     * Implementación por defecto no-op para preservar el Principio de Sustitución de Liskov (LSP).
      *
      * @param incrementoPresionPa Cantidad de Pascales a adicionar al límite de resistencia.
      */
-    fun reforzar(incrementoPresionPa: Double) {}
+    fun reforzar(incrementoPresionPa: Double)
 }
 
 /**
  * Responsabilidad Única (SRP) e Inversión de Dependencias (DIP):
  * Abstracción para el desacoplamiento de mensajes y alertas del sistema.
- * Evita que las entidades de dominio llamen directamente a `println`, permitiendo
- * redirigir avisos a consolas, interfaces gráficas, logs o silenciarlos en tests unitarios.
  */
 interface Notificador {
     fun notificar(mensaje: String)
@@ -76,10 +70,20 @@ object NotificadorConsola : Notificador {
 }
 
 /**
- * Implementación silenciosa de Notificador para pruebas unitarias o ejecución headless.
+ * Implementación silenciada de Notificador para pruebas unitarias y ejecución en segundo plano.
+ * Registra los avisos en memoria para verificación sin producir salida en la consola de comandos.
  */
 object NotificadorSilencioso : Notificador {
+    private val historialMensajes: MutableList<String> = mutableListOf()
+
     override fun notificar(mensaje: String) {
-        // No-op intencional
+        historialMensajes.add(mensaje)
+    }
+
+    val mensajes: List<String>
+        get() = historialMensajes.toList()
+
+    fun limpiar() {
+        historialMensajes.clear()
     }
 }

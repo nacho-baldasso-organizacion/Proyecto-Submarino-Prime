@@ -1,29 +1,24 @@
 package submarino
 
 /**
- * Representa el módulo de casco estándar del submarino (Issue #3).
- * Implementa [Casco] cumpliendo con el Principio de Responsabilidad Única (SRP),
- * Inversión de Dependencias (DIP) y encapsulamiento de estado estricto.
- *
- * @param presionMaximaPa Presión máxima que puede soportar el casco en Pascales antes de sufrir daños.
- * @param integridad Nivel actual de integridad del casco (porcentaje de 0.0 a 100.0).
- * @param notificador Manejador de alertas desacoplado de la consola (DIP / SRP).
+ * Clase base abstracta que encapsula el comportamiento común y el estado de cualquier [Casco].
+ * Cumple con SRP, OCP (Template Method) y DRY eliminando la duplicación estructural entre cascos.
  */
-class ModuloCasco(
+abstract class CascoBase(
     presionMaximaPa: Double,
     integridad: Double = 100.0,
-    private val notificador: Notificador = NotificadorConsola
+    protected val notificador: Notificador = NotificadorConsola
 ) : Casco {
 
-    override var presionMaximaPa: Double = presionMaximaPa
-        private set
+    final override var presionMaximaPa: Double = presionMaximaPa
+        protected set
 
-    override var integridad: Double = integridad
-        private set
+    final override var integridad: Double = integridad
+        protected set
 
-    /**
-     * Refuerza la presión máxima admisible que el módulo de casco estándar puede tolerar.
-     */
+    override val estaDestruido: Boolean
+        get() = integridad <= 0.0
+
     override fun reforzar(incrementoPresionPa: Double) {
         require(incrementoPresionPa > 0.0) {
             "El incremento de presión debe ser estrictamente positivo: $incrementoPresionPa"
@@ -31,38 +26,34 @@ class ModuloCasco(
         presionMaximaPa += incrementoPresionPa
     }
 
-    /**
-     * Indica si el casco ha colapsado o ha sido destruido en su totalidad (integridad <= 0.0).
-     */
-    override val estaDestruido: Boolean
-        get() = integridad <= 0.0
-
-    /**
-     * Recibe la presión externa en Pascales.
-     * Si supera la presión máxima admisible, reduce la integridad proporcionalmente al exceso de presión.
-     *
-     * @param presionActualPa Presión actual en Pascales a la que se somete el casco.
-     * @return El valor resultante de la integridad tras recibir la presión.
-     */
     override fun recibirPresion(presionActualPa: Double): Double {
         if (presionActualPa > presionMaximaPa) {
-            val danio = (presionActualPa - presionMaximaPa) / presionMaximaPa
+            val exceso = presionActualPa - presionMaximaPa
+            val danio = calcularDanio(exceso)
             integridad = maxOf(integridad - danio, 0.0)
             if (estaDestruido) {
-                notificador.notificar("¡ALERTA CRÍTICA: El casco ha colapsado por exceso de presión hidrostática!")
+                notificarColapso()
             }
         }
         return integridad
     }
 
-    override fun toString(): String {
-        return "ModuloCasco(presionMaximaPa=$presionMaximaPa, integridad=${"%.2f".format(integridad)}%)"
+    /**
+     * Algoritmo de cálculo de daño estructural según el exceso de presión experimentado.
+     */
+    protected abstract fun calcularDanio(excesoPresion: Double): Double
+
+    /**
+     * Emite la alerta de colapso a través del notificador desacoplado.
+     */
+    protected open fun notificarColapso() {
+        notificador.notificar("¡ALERTA CRÍTICA: El casco ha colapsado por exceso de presión hidrostática!")
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is Casco) return false
-        return presionMaximaPa == other.presionMaximaPa && integridad == other.integridad
+        val otherCasco = other as? Casco ?: return false
+        return presionMaximaPa == otherCasco.presionMaximaPa && integridad == otherCasco.integridad
     }
 
     override fun hashCode(): Int {
@@ -73,61 +64,49 @@ class ModuloCasco(
 }
 
 /**
- * Ejemplo directo del Principio Abierto/Cerrado (OCP):
- * Especialización de Casco con blindaje cerámico/aleación de titanio que reduce el daño por sobrepresión.
- * Se incorpora una nueva funcionalidad sin alterar ni una sola línea de [Submarino] ni de [ModuloCasco].
+ * Representa el módulo de casco estándar del submarino (Issue #3).
+ */
+class ModuloCasco(
+    presionMaximaPa: Double,
+    integridad: Double = 100.0,
+    notificador: Notificador = NotificadorConsola
+) : CascoBase(presionMaximaPa, integridad, notificador) {
+
+    override fun calcularDanio(excesoPresion: Double): Double {
+        return excesoPresion / presionMaximaPa
+    }
+
+    override fun toString(): String {
+        return "ModuloCasco(presionMaximaPa=$presionMaximaPa, integridad=${"%.2f".format(integridad)}%)"
+    }
+}
+
+/**
+ * Especialización de Casco con blindaje cerámico/aleación de titanio que reduce el daño por sobrepresión (OCP).
  *
  * @param factorAbsorcion Porcentaje de absorción del daño recibido (0.0 sin protección adicional, 0.5 absorbe 50%).
  */
 class CascoReforzado(
     presionMaximaPa: Double,
     integridad: Double = 100.0,
-    val factorAbsorcion: Double = 0.5,
-    private val notificador: Notificador = NotificadorConsola
-) : Casco {
+    private val factorAbsorcion: Double = 0.5,
+    notificador: Notificador = NotificadorConsola
+) : CascoBase(presionMaximaPa, integridad, notificador) {
 
-    override var presionMaximaPa: Double = presionMaximaPa
-        private set
+    val factorBlindaje: Double
+        get() = factorAbsorcion
 
-    override var integridad: Double = integridad
-        private set
-
-    override fun reforzar(incrementoPresionPa: Double) {
-        require(incrementoPresionPa > 0.0) {
-            "El incremento de presión debe ser estrictamente positivo: $incrementoPresionPa"
-        }
-        presionMaximaPa += incrementoPresionPa
+    override fun calcularDanio(excesoPresion: Double): Double {
+        val danioBase = excesoPresion / presionMaximaPa
+        val mitigacion = (1.0 - factorAbsorcion.coerceIn(0.0, 1.0))
+        return danioBase * mitigacion
     }
 
-    override val estaDestruido: Boolean
-        get() = integridad <= 0.0
-
-    override fun recibirPresion(presionActualPa: Double): Double {
-        if (presionActualPa > presionMaximaPa) {
-            val exceso = presionActualPa - presionMaximaPa
-            val danioBase = exceso / presionMaximaPa
-            val danioMitigado = danioBase * (1.0 - factorAbsorcion.coerceIn(0.0, 1.0))
-            integridad = maxOf(integridad - danioMitigado, 0.0)
-            if (estaDestruido) {
-                notificador.notificar("¡ALERTA CRÍTICA: El casco reforzado ha colapsado por sobrepresión extrema!")
-            }
-        }
-        return integridad
+    override fun notificarColapso() {
+        notificador.notificar("¡ALERTA CRÍTICA: El casco reforzado ha colapsado por sobrepresión extrema!")
     }
 
     override fun toString(): String {
         return "CascoReforzado(presionMaximaPa=$presionMaximaPa, integridad=${"%.2f".format(integridad)}%, blindaje=${(factorAbsorcion * 100).toInt()}%)"
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Casco) return false
-        return presionMaximaPa == other.presionMaximaPa && integridad == other.integridad
-    }
-
-    override fun hashCode(): Int {
-        var result = presionMaximaPa.hashCode()
-        result = 31 * result + integridad.hashCode()
-        return result
     }
 }

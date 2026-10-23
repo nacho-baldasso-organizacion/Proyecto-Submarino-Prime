@@ -14,8 +14,8 @@ class Submarino(
     val pesoBase: Double = PESO_BASE_DEFAULT,
     val bodega: Almacenamiento? = Bodega(capacidadMaxima = BODEGA_CAPACIDAD_DEFAULT),
     velocidadAscensoBase: Double = if (velocidad > 0.0) velocidad else VELOCIDAD_ASCENSO_DEFAULT,
-    val calculadorPeso: CalculadorPeso = CalculadorPesoSubmarino(),
-    val estrategiaAscenso: EstrategiaAscenso = EstrategiaAscensoLineal(),
+    private val calculadorPeso: CalculadorPeso = CalculadorPesoSubmarino(),
+    private val estrategiaAscenso: EstrategiaAscenso = EstrategiaAscensoLineal(),
     val billetera: Billetera = Monedero(0),
     private val notificador: Notificador = NotificadorConsola
 ) : EntidadFisica(posX, posY, velocidad), Navegable, Pesable, Acoplable {
@@ -24,6 +24,7 @@ class Submarino(
         const val PESO_BASE_DEFAULT: Double = 1000.0
         const val BODEGA_CAPACIDAD_DEFAULT: Double = 50.0
         const val VELOCIDAD_ASCENSO_DEFAULT: Double = 5.0
+        const val CONSUMO_BATERIA_POR_METRO: Double = 0.5
     }
 
     var velocidadAscensoBase: Double = velocidadAscensoBase
@@ -34,105 +35,36 @@ class Submarino(
         require(velocidadAscensoBase >= 0.0) { "La velocidad de ascenso base no puede ser negativa: $velocidadAscensoBase" }
     }
 
-    /**
-     * Incrementa la capacidad de carga en kilogramos de la bodega a bordo (Issue #8).
-     *
-     * @param incremento Kilos adicionales a añadir a la capacidad máxima.
-     */
-    fun aumentarCapacidadBodega(incremento: Double) {
-        require(incremento > 0.0) { "El incremento de capacidad debe ser positivo: $incremento" }
-        bodega?.aumentarCapacidad(incremento)
-    }
-
-    /**
-     * Incrementa la velocidad nominal base de ascenso del submarino (Issue #8).
-     *
-     * @param incremento Magnitud de velocidad vertical en m/s a añadir.
-     */
-    fun aumentarVelocidadAscenso(incremento: Double) {
-        require(incremento > 0.0) { "El incremento de velocidad de ascenso debe ser positivo: $incremento" }
-        velocidadAscensoBase += incremento
-    }
-
-    /**
-     * Refuerza la resistencia estructural del casco aumentando la presión máxima tolerable (Issue #8).
-     *
-     * @param incrementoPa Pascales adicionales de resistencia a la sobrepresión.
-     */
-    fun aumentarResistenciaCasco(incrementoPa: Double) {
-        require(incrementoPa > 0.0) { "El incremento de resistencia debe ser positivo: $incrementoPa" }
-        casco.reforzar(incrementoPa)
-    }
-
-    /**
-     * Incrementa la velocidad de desplazamiento y propulsión horizontal del motor (Issue #8).
-     *
-     * @param incremento Magnitud de velocidad de propulsión a añadir.
-     */
-    fun aumentarVelocidadPropulsion(incremento: Double) {
-        require(incremento > 0.0) { "El incremento de velocidad de propulsión debe ser positivo: $incremento" }
-        velocidad += incremento
-    }
-
     var bateria: Double = 100.0
         private set
 
-    /**
-     * Delega el estado de destrucción al [Casco].
-     */
     val estaDestruido: Boolean
         get() = casco.estaDestruido
 
-    /**
-     * Estado actual de acople en la estación o muelle de superficie.
-     */
     override var estaAcoplado: Boolean = false
         private set
 
-    /**
-     * Concreta el acople del submarino en la estación.
-     */
+    val estaEnSuperficie: Boolean
+        get() = posY <= 0.0
+
     override fun acoplar() {
         if (!estaDestruido) {
             estaAcoplado = true
         }
     }
 
-    /**
-     * Desacopla el submarino de la estación.
-     */
     override fun desacoplar() {
         estaAcoplado = false
     }
 
-    /**
-     * Indica si el submarino se encuentra en la superficie (cota vertical Y <= 0.0).
-     */
-    val estaEnSuperficie: Boolean
-        get() = posY <= 0.0
-
-    /**
-     * Verifica si el submarino está dentro de una zona de acople especificada.
-     */
     fun estaEnZonaAcople(zona: ZonaAcople): Boolean = zona.estaEnZona(posX, posY)
 
-    /**
-     * Retorna el peso/masa total actual del submarino delegando en [CalculadorPeso] (SRP, DIP).
-     * Suma el [pesoBase] constante más el peso total acumulado de todos los minerales guardados en la [bodega].
-     */
     val pesoTotal: Double
         get() = calculadorPeso.calcularPesoTotal(pesoBase, bodega)
 
-    /**
-     * Implementación del contrato [Pesable] (ISP) que reporta la masa total del submarino.
-     */
     override val peso: Double
         get() = pesoTotal
 
-    /**
-     * Retorna la velocidad dinámica de ascenso actual calculada por la [estrategiaAscenso] (OCP).
-     * A mayor peso cargado en la bodega, menor es esta velocidad de ascenso.
-     */
     val velocidadAscenso: Double
         get() = estrategiaAscenso.calcularVelocidadAscenso(
             velocidadBase = velocidadAscensoBase,
@@ -141,9 +73,6 @@ class Submarino(
             capacidadCargaMaxima = bodega?.capacidadMaxima ?: 0.0
         )
 
-    /**
-     * Retorna el factor multiplicador de rendimiento vertical dictado por la masa total (entre 0.0 y 1.0).
-     */
     val factorAscenso: Double
         get() = estrategiaAscenso.calcularFactorVelocidad(
             pesoTotal = pesoTotal,
@@ -151,19 +80,10 @@ class Submarino(
             capacidadCargaMaxima = bodega?.capacidadMaxima ?: 0.0
         )
 
-    /**
-     * Consulta semántica del peso total de la nave.
-     */
     fun calcularPesoTotal(): Double = pesoTotal
 
-    /**
-     * Consulta semántica de la velocidad dinámica de ascenso de la nave.
-     */
     fun calcularVelocidadAscenso(): Double = velocidadAscenso
 
-    /**
-     * Obtiene una instantánea inmutable con todos los parámetros de peso y dinámica de ascenso.
-     */
     fun obtenerEstadoAscenso(): EstadoAscenso {
         val pesoCarga = bodega?.pesoActual ?: 0.0
         val capMax = bodega?.capacidadMaxima ?: 0.0
@@ -178,81 +98,69 @@ class Submarino(
         )
     }
 
-    /**
-     * Mueve el submarino en los ejes X e Y.
-     * Impide que posY sea menor a 0.0.
-     * Consume 0.5% de batería por cada unidad de distancia recorrida.
-     *
-     * @param deltaX Desplazamiento en el eje X (navegación horizontal / propulsión)
-     * @param deltaY Desplazamiento en el eje Y (inmersión hacia abajo o ascenso hacia la superficie)
-     * @return true si el desplazamiento se efectuó correctamente; false si la nave está destruida o sin batería.
-     */
+    fun aumentarCapacidadBodega(incremento: Double) {
+        require(incremento > 0.0) { "El incremento de capacidad debe ser positivo: $incremento" }
+        bodega?.aumentarCapacidad(incremento)
+    }
+
+    fun aumentarVelocidadAscenso(incremento: Double) {
+        require(incremento > 0.0) { "El incremento de velocidad de ascenso debe ser positivo: $incremento" }
+        velocidadAscensoBase += incremento
+    }
+
+    fun aumentarResistenciaCasco(incrementoPa: Double) {
+        require(incrementoPa > 0.0) { "El incremento de resistencia debe ser positivo: $incrementoPa" }
+        casco.reforzar(incrementoPa)
+    }
+
+    fun aumentarVelocidadPropulsion(incremento: Double) {
+        require(incremento > 0.0) { "El incremento de velocidad de propulsión debe ser positivo: $incremento" }
+        velocidad += incremento
+    }
+
     override fun mover(deltaX: Double, deltaY: Double): Boolean {
         if (estaDestruido) {
             notificador.notificar("El submarino está destruido y no puede moverse.")
             return false
         }
-
         if (bateria <= 0.0) {
             notificador.notificar("Batería agotada. El submarino no puede moverse.")
             return false
         }
 
-        // Distancia euclidiana usando Math.hypot para máxima precisión numérica
         val distancia = Math.hypot(deltaX, deltaY)
+        actualizarBateria(distancia)
 
-        // Consumir 0.5% de batería por unidad de distancia
-        val consumoBateria = distancia * 0.5
-        bateria = maxOf(bateria - consumoBateria, 0.0)
-
-        // Actualizar posiciones físicas
         actualizarPosX(posX + deltaX)
         actualizarPosY(posY + deltaY)
 
-        // Si la nave estaba acoplada y se desplaza, se desacopla automáticamente
         if (estaAcoplado && (deltaX != 0.0 || deltaY != 0.0)) {
             desacoplar()
         }
 
-        // Verificar si la batería se agotó durante el movimiento
         if (bateria <= 0.0) {
-            bateria = 0.0
             notificador.notificar("¡Batería agotada tras el movimiento!")
         }
 
         return true
     }
 
-    /**
-     * Delega la verificación de integridad y recepción de presión al [Casco].
-     *
-     * @param presionActualPa Presión actual en Pascales a la profundidad actual.
-     * @return El nivel de integridad resultante del casco.
-     */
+    private fun actualizarBateria(distancia: Double) {
+        val consumo = distancia * CONSUMO_BATERIA_POR_METRO
+        bateria = maxOf(bateria - consumo, 0.0)
+    }
+
     fun verificarIntegridad(presionActualPa: Double): Double = casco.recibirPresion(presionActualPa)
 
-    /**
-     * Sobrecarga que permite evaluar la integridad delegando el cálculo de presión
-     * a un [CalculadorPresion] (DIP).
-     */
     fun verificarIntegridadConCalculador(calculador: CalculadorPresion): Double {
         val presion = calculador.calcularPresion(posY)
         return verificarIntegridad(presion)
     }
 
-    /**
-     * Métodos semánticos para navegación y maniobras de motor e inmersión (ISP).
-     */
     override fun navegar(deltaX: Double): Boolean = mover(deltaX = deltaX, deltaY = 0.0)
+
     override fun sumergir(deltaY: Double): Boolean = mover(deltaX = 0.0, deltaY = deltaY)
 
-    /**
-     * Asciende hacia la superficie (reduce posY).
-     * Aplica la ralentización dinámica de la física de ascenso según la masa total acumulada (Issue #6).
-     *
-     * @param deltaY Desplazamiento vertical nominal pretendido en metros.
-     * @return true si el desplazamiento se efectuó correctamente; false si la nave está destruida o sin batería.
-     */
     override fun ascender(deltaY: Double): Boolean {
         val desplazamientoEfectivo = estrategiaAscenso.calcularDesplazamientoAscenso(
             deltaYNominal = deltaY,
@@ -263,10 +171,6 @@ class Submarino(
         return mover(deltaX = 0.0, deltaY = -desplazamientoEfectivo)
     }
 
-    /**
-     * Maniobra semántica de ascenso continuo utilizando la velocidad dinámica efectiva de ascenso.
-     * Desplaza al submarino verticalmente durante 1 unidad de tiempo hacia la superficie.
-     */
     fun ascender(): Boolean = mover(deltaX = 0.0, deltaY = -velocidadAscenso)
 
     override fun toString(): String {

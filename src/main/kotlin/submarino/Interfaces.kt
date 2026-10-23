@@ -27,9 +27,7 @@ interface Cargable : Pesable
 /**
  * Contrato que define un elemento del juego que puede ser recolectado y almacenado.
  * Extiende [Posicionable] y [Cargable] para garantizar que todo recolectable posee ubicación y masa.
- * Aplica OCP (Open/Closed Principle) y LSP (Liskov Substitution Principle),
- * permitiendo que cualquier nuevo objeto recolectable (minerales, artefactos, restos)
- * sea procesado uniformemente por el sistema sin alterar el código existente.
+ * Aplica OCP (Open/Closed Principle) y LSP (Liskov Substitution Principle).
  */
 interface Recolectable : Posicionable, Cargable, Vendible {
     val id: String
@@ -65,13 +63,16 @@ interface Almacenamiento : Pesable {
     /**
      * Limpia o vacía los elementos almacenados en el contenedor.
      */
-    fun vaciar() {}
+    fun vaciar() {
+        // Implementación por defecto para adaptabilidad de mocks y fakes en tests (LSP)
+    }
 
     /**
      * Amplía la capacidad máxima de almacenamiento en kilogramos.
-     * Implementación por defecto no-op para preservar compatibilidad LSP.
      */
-    fun aumentarCapacidad(incremento: Double) {}
+    fun aumentarCapacidad(incremento: Double) {
+        // Implementación por defecto para adaptabilidad de mocks y fakes en tests (LSP)
+    }
 }
 
 /**
@@ -79,15 +80,6 @@ interface Almacenamiento : Pesable {
  * Aplica ISP y DIP permitiendo diferentes algoritmos de generación procedural.
  */
 interface GeneradorMinerales {
-    /**
-     * Genera una lista de minerales ubicados exclusivamente en los bordes o paredes del mapa.
-     *
-     * @param anchoMapa Ancho total de la cuadrícula del mapa (eje X).
-     * @param altoMapa Alto total de la cuadrícula del mapa (eje Y).
-     * @param profundidadActual Profundidad actual del submarino o sector (en metros).
-     * @param cantidad Cantidad máxima de minerales a colocar en las paredes.
-     * @return Lista de elementos [Recolectable] ubicados en las paredes.
-     */
     fun generarEnParedes(
         anchoMapa: Int,
         altoMapa: Int,
@@ -101,23 +93,8 @@ interface GeneradorMinerales {
  * Aplica SRP (Single Responsibility Principle) e ISP aislando la lógica de contacto físico entre entidades.
  */
 interface DetectorColisiones {
-    /**
-     * Verifica si una posición dada colisiona con algún recolectable disponible en la lista.
-     *
-     * @param posicion Posición del submarino u objeto explorador.
-     * @param elementos Lista de elementos potencialmente colisionables en el mapa.
-     * @return El [Recolectable] con el que se produjo la colisión, o `null` si no hay colisión.
-     */
     fun verificarColision(
         posicion: Posicionable,
         elementos: List<Recolectable>
     ): Recolectable?
 }
-
-/**
- * Implementación inmutable de [Posicionable] para representar coordenadas en el plano 2D.
- */
-data class Posicion(
-    override val posX: Int,
-    override val posY: Int
-) : Posicionable

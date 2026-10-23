@@ -3,27 +3,15 @@ package submarino
 /**
  * ============================================================================
  * PROCESADOR DE COMPRAS Y TRANSACCIONES DE UPGRADES (ISSUE #8)
- * PRINCIPIOS SOLID (SRP, OCP, LSP, ISP, DIP = 0 violaciones)
- *
- * Cumple con:
- * - Single Responsibility Principle (SRP): se dedica exclusivamente a validar,
- *   debitar fondos, avanzar el nivel, aplicar el efecto al submarino y notificar.
- * - Dependency Inversion Principle (DIP): depende exclusivamente de contratos
- *   abstractos ([ConsultableCatalogo], [Pagable], [ObservadorTienda]).
- * - Open/Closed Principle (OCP): admite cualquier nueva mejora y cualquier nueva
- *   fuente pagable sin modificar su lógica transaccional.
- * - Liskov Substitution Principle (LSP): manejo estricto de resultados sellados sin
- *   casteos `is`/`as` dentro de la lógica interna ni excepciones descontroladas.
+ * PRINCIPIOS SOLID (SRP, OCP, LSP, ISP, DIP)
  * ============================================================================
  */
 
 /**
  * Servicio coordinador del proceso de compra y aplicación de mejoras.
- *
- * @param catalogo Abstracción para la consulta de mejoras disponibles en la tienda (DIP).
  */
 class ServicioUpgrades(
-    val catalogo: ConsultableCatalogo
+    private val catalogo: ConsultableCatalogo
 ) : ProcesadorCompras, GestorObservadoresTienda {
 
     private val observadores: MutableList<ObservadorTienda> = mutableListOf()
@@ -38,25 +26,6 @@ class ServicioUpgrades(
         observadores.remove(observador)
     }
 
-    /**
-     * Ejecuta el proceso transaccional de compra de una mejora:
-     * 1. Consulta la mejora por su identificador en el [ConsultableCatalogo].
-     *    Si no existe, retorna [ResultadoCompra.MejoraNoEncontrada].
-     * 2. Verifica si la mejora se encuentra en su nivel máximo ([LimiteNivel.esNivelMaximo]).
-     *    Si ya está al tope, retorna [ResultadoCompra.NivelMaximoAlcanzado].
-     * 3. Evalúa si el [Pagable] posee saldo suficiente para cubrir el costo actual.
-     *    Si no alcanza, retorna [ResultadoCompra.FondosInsuficientes].
-     * 4. Debita el costo monetario del [Pagable].
-     * 5. Incrementa el nivel de la mejora ([Mejorable.subirNivel]).
-     * 6. Aplica el efecto sobre el [Submarino] ([AplicableSubmarino.aplicar]).
-     * 7. Emite las notificaciones pertinentes a todos los [ObservadorTienda] registrados.
-     * 8. Retorna [ResultadoCompra.Exito] con el desglose inmutable de la operación.
-     *
-     * @param idMejora Clave única de la mejora que se desea adquirir.
-     * @param pagable Entidad desde la cual se debitan los créditos (billetera/monedero).
-     * @param submarino Entidad que recibe el incremento en sus estadísticas.
-     * @return [ResultadoCompra] describiendo el desenlace tipado de la operación.
-     */
     override fun comprarMejora(
         idMejora: String,
         pagable: Pagable,
@@ -139,14 +108,29 @@ class ObservadorTiendaConsola : ObservadorTienda {
 }
 
 /**
- * Implementación silenciosa de [ObservadorTienda] para tests unitarios o ejecución headless.
+ * Implementación silenciada de [ObservadorTienda] para pruebas unitarias.
+ * Registra en memoria las adquisiciones y rechazos para verificación sin violar LSP con métodos vacíos.
  */
 class ObservadorTiendaSilencioso : ObservadorTienda {
+    private val compras: MutableList<Mejora> = mutableListOf()
+    private val rechazos: MutableList<Pair<String, String>> = mutableListOf()
+
     override fun alComprarMejora(mejora: Mejora, saldoRestante: Int) {
-        // No-op intencional
+        compras.add(mejora)
     }
 
     override fun alRechazarCompra(idMejora: String, motivo: String) {
-        // No-op intencional
+        rechazos.add(idMejora to motivo)
+    }
+
+    val mejorasCompradas: List<Mejora>
+        get() = compras.toList()
+
+    val rechazosRegistrados: List<Pair<String, String>>
+        get() = rechazos.toList()
+
+    fun limpiar() {
+        compras.clear()
+        rechazos.clear()
     }
 }
