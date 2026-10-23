@@ -16,7 +16,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("submarino.MainKt")
+    mainClass.set("submarino.Main")
 }
 
 tasks.test {
@@ -27,14 +27,14 @@ tasks.register<JavaExec>("runIssue5") {
     group = "application"
     description = "Ejecuta la prueba de la Issue #5: Minerales y Recolección"
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("submarino.MainPruebaIssue5Kt")
+    mainClass.set("submarino.MainPruebaIssue5")
 }
 
 tasks.register<JavaExec>("runIssue6") {
     group = "application"
     description = "Ejecuta la prueba de la Issue #6: Cálculo de peso total y física de flotabilidad/ascenso"
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("submarino.MainPruebaIssue6Kt")
+    mainClass.set("submarino.MainPruebaIssue6")
 }
 
 tasks.register<JavaExec>("runIssue7") {

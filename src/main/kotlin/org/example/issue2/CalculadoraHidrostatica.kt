@@ -66,8 +66,18 @@ object CalculadoraHidrostatica : CalculadoraPresionFluido(
     gravedad = 9.81,
     presionAtmosferica = 101325.0
 ) {
-    // Constantes físicas universales para compatibilidad directa
     const val DENSIDAD_AGUA_MAR: Double = 1025.0    // kg/m³
     const val GRAVEDAD: Double = 9.81                // m/s²
     const val PRESION_ATMOSFERICA: Double = 101325.0 // Pa
+
+    /**
+     * Retorna la presión de referencia en superficie marina (Y = 0.0 m).
+     */
+    fun calcularPresionSuperficie(): Double = calcularPresion(0.0)
+
+    /**
+     * Calcula el margen de seguridad de presión remanente antes del colapso del casco.
+     */
+    fun calcularMargenSeguridad(presionActualPa: Double, presionMaximaPa: Double): Double =
+        maxOf(presionMaximaPa - presionActualPa, 0.0)
 }

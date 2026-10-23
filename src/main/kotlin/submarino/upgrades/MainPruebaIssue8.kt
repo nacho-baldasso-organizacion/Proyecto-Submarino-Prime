@@ -5,14 +5,14 @@ package submarino
  * DEMOSTRACIÓN INTEGRAL DE LA ISSUE #8:
  * "Sistema de Upgrades / Mejoras para el submarino"
  *
- * Cumple estrictamente con la regla de CERO funciones sueltas:
- * Todo método se encuentra formalmente encapsulado en [MainPruebaIssue8].
+ * Encapsulado en [MainPruebaIssue8] respetando la regla de CERO funciones sueltas
+ * y división en métodos modulares de baja complejidad ciclomática.
  * ============================================================================
  */
 object MainPruebaIssue8 {
 
     @JvmStatic
-    fun main(args: Array<String>) {
+    fun main(args: Array<String> = emptyArray()) {
         ejecutarDemostracion()
     }
 
@@ -20,123 +20,127 @@ object MainPruebaIssue8 {
      * Coordina el flujo completo de simulación de upgrades, economía y verificación de estadísticas.
      */
     fun ejecutarDemostracion() {
+        imprimirEncabezado()
+
+        val catalogo = FabricaMejoras.crearCatalogoEstandar()
+        val servicioUpgrades = ServicioUpgrades(catalogo)
+        servicioUpgrades.registrarObservador(ObservadorTiendaConsola())
+
+        val tienda = TiendaMejoras(catalogo, servicioUpgrades)
+        val servicioComercio = ServicioComercio(CalculadoraPreciosEstandar())
+
+        val submarino = configurarSubmarino()
+        demostrarCatalogo(catalogo)
+        demostrarRechazoFondos(tienda, submarino)
+        demostrarVentaBodega(servicioComercio, submarino)
+        demostrarCompraExitosa(tienda, submarino)
+        demostrarProgresionYCap(tienda, submarino)
+
+        imprimirCierre()
+    }
+
+    private fun imprimirEncabezado() {
         println("================================================================================")
         println("       SUBMARINO PRIME - PRUEBA DE ISSUE #8: SISTEMA DE UPGRADES / MEJORAS      ")
         println("================================================================================\n")
+    }
 
-        // 1. Configuración de dependencias e inyección (DIP estricto)
-        val catalogo: CatalogoUpgrades = FabricaMejoras.crearCatalogoEstandar()
-        val servicioUpgrades = ServicioUpgrades(catalogo)
-        val observadorConsola = ObservadorTiendaConsola()
-        servicioUpgrades.registrarObservador(observadorConsola)
-
-        val tienda = TiendaMejoras(
-            catalogo = catalogo,
-            procesadorCompras = servicioUpgrades
-        )
-
-        // 2. Inicialización del Submarino con estadísticas base
-        val bodega = Bodega(capacidadMaxima = 20.0)
-        val casco = ModuloCasco(presionMaximaPa = 200_000.0)
-        val submarino = Submarino(
-            posX = 50.0,
+    private fun configurarSubmarino(): Submarino {
+        println("1. INICIALIZACIÓN DE LA NAVE Y ESTADO BASE:")
+        val sub = Submarino(
+            posX = 0.0,
             posY = 0.0,
-            velocidad = 10.0,
-            casco = casco,
-            bodega = bodega,
-            velocidadAscensoBase = 5.0,
+            velocidad = 5.0,
+            casco = ModuloCasco(presionMaximaPa = 250_000.0),
+            pesoBase = 1000.0,
+            bodega = Bodega(capacidadMaxima = 10.0),
+            velocidadAscensoBase = 4.0,
             billetera = Monedero(saldoInicial = 0)
         )
+        println("   • Saldo inicial     : $${sub.billetera.saldo}")
+        println("   • Capacidad bodega  : ${sub.bodega?.capacidadMaxima} kg")
+        println("   • Velocidad ascenso : ${sub.velocidadAscensoBase} m/s")
+        println("   • Resistencia casco : ${sub.casco.presionMaximaPa} Pa")
+        println("   • Propulsión motor  : ${sub.velocidad} m/s\n")
+        return sub
+    }
 
-        println("1. ESTADO INICIAL DEL SUBMARINO:")
-        println("   • Saldo en billetera          : $${submarino.billetera.saldo} créditos")
-        println("   • Capacidad máxima de bodega  : ${submarino.bodega?.capacidadMaxima} kg")
-        println("   • Velocidad base de ascenso   : ${submarino.velocidadAscensoBase} m/s")
-        println("   • Resistencia de casco        : ${submarino.casco.presionMaximaPa} Pa")
-        println("   • Velocidad de propulsión     : ${submarino.velocidad} m/s\n")
-
-        // 3. Catálogo de Mejoras disponible en la tienda (desacoplado para UI)
-        println("2. CATÁLOGO DE MEJORAS DISPONIBLES EN LA TIENDA (RENDERIZABLE POR UI):")
-        for (mejora in tienda.listarMejoras()) {
-            val etiquetaCosto = if (mejora.esNivelMaximo) "ALCANZADO TOPE" else "$${mejora.costo}"
-            println("   • [${mejora.id}] ${mejora.nombre}")
-            println("     Nivel: ${mejora.nivel}/${mejora.nivelMaximo} | Próximo costo: $etiquetaCosto")
-            println("     Descripción: ${mejora.descripcion}")
+    private fun demostrarCatalogo(catalogo: CatalogoUpgrades) {
+        println("--------------------------------------------------------------------------------")
+        println(" 2. CATÁLOGO DISPONIBLE EN LA TIENDA DE MEJORAS")
+        println("--------------------------------------------------------------------------------")
+        catalogo.obtenerTodas().forEachIndexed { idx, it ->
+            println("   [$idx] ID: ${it.id} | ${it.nombre} | Nivel: ${it.nivel}/${it.nivelMaximo} | Costo: $$${it.costo}")
+            println("        -> Efecto: ${it.descripcion}")
         }
         println()
+    }
 
-        // 4. Intento de compra con saldo insuficiente (rechazo esperado)
-        println("3. INTENTO DE COMPRA SIN FONDOS (FALLO ESPERADO):")
+    private fun demostrarRechazoFondos(tienda: TiendaMejoras, submarino: Submarino) {
+        println("--------------------------------------------------------------------------------")
+        println(" 3. INTENTO DE COMPRA SIN FONDOS (RECHAZO CONTROLADO)")
+        println("--------------------------------------------------------------------------------")
         val resultadoSinFondos = tienda.comprarParaSubmarino(FabricaMejoras.ID_BODEGA, submarino)
-        println("   • Resultado de transacción: $resultadoSinFondos")
-        println("   • Nivel de bodega intacto : ${tienda.obtenerMejora(FabricaMejoras.ID_BODEGA)?.nivel}")
-        println("   • Saldo de billetera      : $${submarino.billetera.saldo}\n")
+        println("   -> ${resultadoSinFondos.obtenerMensaje()}")
+        println("   • Saldo en billetera: $${submarino.billetera.saldo} (sin cambios)\n")
+    }
 
-        // 5. Integración con Issue #7: expedición, recolección y venta en superficie
-        println("4. EXPEDICIÓN SUBMARINA Y VENTA COMERCIAL DE MINERALES (ISSUE #7):")
-        submarino.bodega?.agregar(Mineral("MIN-01", TipoMineral.TITANIO_CRISTALINO, 0, 50)) // $220
-        submarino.bodega?.agregar(Mineral("MIN-02", TipoMineral.GEMA_DE_SALMUERA, 0, 80))    // $500
-        submarino.bodega?.agregar(Mineral("MIN-03", TipoMineral.ARTEFACTO_HUNDIDO, 0, 150))  // $1200
-
+    private fun demostrarVentaBodega(servicioComercio: ServicioComercio, submarino: Submarino) {
+        println("--------------------------------------------------------------------------------")
+        println(" 4. CARGA DE MINERALES, ACOPLE Y VENTA PARA OBTENER FONDOS")
+        println("--------------------------------------------------------------------------------")
+        submarino.bodega?.agregar(Mineral("M-1", TipoMineral.TITANIO_CRISTALINO, 0, 0))
+        submarino.bodega?.agregar(Mineral("M-2", TipoMineral.TITANIO_CRISTALINO, 0, 0))
         submarino.acoplar()
-        val servicioComercio = ServicioComercio()
+
         val resultadoVenta = servicioComercio.venderBodegaSubmarino(submarino)
-        println("   • Venta de minerales completada con éxito.")
-        println("   • Nuevo saldo en billetera: $${submarino.billetera.saldo} créditos\n")
+        println("   -> ${resultadoVenta.obtenerResumen()}")
+        println("   • Saldo disponible tras venta: $${submarino.billetera.saldo}\n")
+    }
 
-        // 6. Proceso de compras de mejoras de diversos tipos
-        println("5. PROCESO DE COMPRA DE MEJORAS EN LA TIENDA:")
+    private fun demostrarCompraExitosa(tienda: TiendaMejoras, submarino: Submarino) {
+        println("--------------------------------------------------------------------------------")
+        println(" 5. ADQUISICIÓN DE MEJORAS Y AUMENTO DINÁMICO DE ESTADÍSTICAS")
+        println("--------------------------------------------------------------------------------")
 
-        // Mejora 1: Capacidad de Bodega
-        println("   -> Comprando mejora de capacidad de bodega...")
         val resBodega = tienda.comprarParaSubmarino(FabricaMejoras.ID_BODEGA, submarino)
-        println("   • Resultado: $resBodega")
-        println("   • Nueva capacidad de bodega: ${submarino.bodega?.capacidadMaxima} kg\n")
+        println("   A) Compra Bodega: ${resBodega.obtenerMensaje()}")
+        println("      -> Nueva capacidad de bodega: ${submarino.bodega?.capacidadMaxima} kg (antes 10.0 kg)")
 
-        // Mejora 2: Velocidad de Ascenso
-        println("   -> Comprando mejora de velocidad de ascenso...")
         val resAscenso = tienda.comprarParaSubmarino(FabricaMejoras.ID_ASCENSO, submarino)
-        println("   • Resultado: $resAscenso")
-        println("   • Nueva velocidad de ascenso: ${submarino.velocidadAscensoBase} m/s\n")
+        println("\n   B) Compra Ascenso: ${resAscenso.obtenerMensaje()}")
+        println("      -> Nueva velocidad ascenso: ${submarino.velocidadAscensoBase} m/s (antes 4.0 m/s)")
 
-        // Mejora 3: Resistencia de Casco
-        println("   -> Comprando mejora de resistencia de casco...")
         val resCasco = tienda.comprarParaSubmarino(FabricaMejoras.ID_CASCO, submarino)
-        println("   • Resultado: $resCasco")
-        println("   • Nueva resistencia de casco: ${submarino.casco.presionMaximaPa} Pa\n")
+        println("\n   C) Compra Blindaje: ${resCasco.obtenerMensaje()}")
+        println("      -> Nueva resistencia casco: ${submarino.casco.presionMaximaPa} Pa (antes 250,000 Pa)")
 
-        // Mejora 4: Propulsión horizontal
-        println("   -> Comprando mejora de propulsión de motor...")
         val resMotor = tienda.comprarParaSubmarino(FabricaMejoras.ID_PROPULSION, submarino)
-        println("   • Resultado: $resMotor")
-        println("   • Nueva velocidad de propulsión: ${submarino.velocidad} m/s\n")
+        println("\n   D) Compra Propulsión: ${resMotor.obtenerMensaje()}")
+        println("      -> Nueva velocidad motor: ${submarino.velocidad} m/s (antes 5.0 m/s)")
+        println("   • Saldo restante: $${submarino.billetera.saldo}\n")
+    }
 
-        // 7. Progresión consecutiva hasta el nivel máximo (Cap)
-        println("6. PROGRESIÓN DE NIVELES CONSECUTIVOS HASTA EL TOPE (CAP):")
-        val mejoraBodega = tienda.obtenerMejora(FabricaMejoras.ID_BODEGA)!!
-        while (!mejoraBodega.esNivelMaximo) {
-            println("   -> Subiendo '${mejoraBodega.nombre}' de nivel ${mejoraBodega.nivel} a ${mejoraBodega.nivel + 1}...")
+    private fun demostrarProgresionYCap(tienda: TiendaMejoras, submarino: Submarino) {
+        println("--------------------------------------------------------------------------------")
+        println(" 6. PROGRESIÓN HASTA NIVEL MÁXIMO (CAP)")
+        println("--------------------------------------------------------------------------------")
+        submarino.billetera.acreditar(5000)
+
+        for (i in 2..5) {
             val resProg = tienda.comprarParaSubmarino(FabricaMejoras.ID_BODEGA, submarino)
-            println("      $resProg | Capacidad actual: ${submarino.bodega?.capacidadMaxima} kg")
+            println("   -> Ascenso a nivel $i: ${resProg.obtenerMensaje()}")
         }
-        println("   • Nivel alcanzado: ${mejoraBodega.nivel}/${mejoraBodega.nivelMaximo} (esNivelMaximo=${mejoraBodega.esNivelMaximo})\n")
 
-        // 8. Intento de compra en nivel máximo (rechazo esperado)
-        println("7. INTENTO DE COMPRA EN NIVEL MÁXIMO (RECHAZO ESPERADO):")
+        println("\n-> Intento de compra sobre mejora en nivel máximo:")
         val resCap = tienda.comprarParaSubmarino(FabricaMejoras.ID_BODEGA, submarino)
-        println("   • Resultado: $resCap")
-        println("   • Saldo billetera final: $${submarino.billetera.saldo} (sin cargos indebidos)\n")
+        println("   -> ${resCap.obtenerMensaje()}")
+        println("   • Capacidad final de bodega: ${submarino.bodega?.capacidadMaxima} kg\n")
+    }
 
-        // 9. Balance final de estadísticas del submarino
-        println("8. RESUMEN FINAL DEL SUBMARINO TRAS UPGRADES:")
-        println("   • Capacidad de Bodega       : ${submarino.bodega?.capacidadMaxima} kg (Base: 20.0 kg -> +60.0 kg ganados)")
-        println("   • Velocidad de Ascenso      : ${submarino.velocidadAscensoBase} m/s (Base: 5.0 m/s -> +2.0 m/s ganados)")
-        println("   • Resistencia de Casco      : ${submarino.casco.presionMaximaPa} Pa (Base: 200,000 Pa -> +150,000 Pa ganados)")
-        println("   • Velocidad de Propulsión   : ${submarino.velocidad} m/s (Base: 10.0 m/s -> +2.5 m/s ganados)")
-        println("   • Saldo remanente           : $${submarino.billetera.saldo} créditos")
-
-        println("\n================================================================================")
-        println("               DEMOSTRACIÓN ISSUE #8 COMPLETADA CON TOTAL ÉXITO                 ")
+    private fun imprimirCierre() {
+        println("================================================================================")
+        println("              DEMOSTRACIÓN DE UPGRADES FINALIZADA CON ÉXITO                     ")
         println("================================================================================")
     }
 }

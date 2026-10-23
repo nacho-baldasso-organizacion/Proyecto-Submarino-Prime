@@ -3,32 +3,25 @@ package submarino
 /**
  * ============================================================================
  * FÁBRICA Y RAÍZ DE COMPOSICIÓN DE UPGRADES (ISSUE #8)
- * PRINCIPIOS SOLID (DIP, SRP, OCP = 0 violaciones)
- *
- * Encapsula la instanciación de dependencias concretas para el ensamble del
- * sistema de mejoras, garantizando que ninguna clase de dominio instancie a otra
- * directamente dentro de sus constructores o métodos de negocio (DIP estricto).
+ * PRINCIPIOS SOLID (DIP, SRP, OCP)
  * ============================================================================
  */
-object FabricaMejoras {
+object FabricaMejoras : FabricaUpgrades {
 
     const val ID_BODEGA = "UPG-BODEGA"
     const val ID_ASCENSO = "UPG-ASCENSO"
     const val ID_CASCO = "UPG-CASCO"
     const val ID_PROPULSION = "UPG-PROPULSION"
 
-    /**
-     * Construye una mejora de capacidad de bodega con valores estándar o personalizados.
-     */
-    fun crearMejoraBodega(
-        id: String = ID_BODEGA,
-        nombre: String = "Expansión de Bodega",
-        descripcion: String = "Incrementa la capacidad de carga en kilogramos (+15.0 kg por nivel)",
-        nivelInicial: Int = 1,
-        nivelMaximo: Int = 5,
-        incrementoCapacidadKg: Double = 15.0,
-        costoBase: Int = 100,
-        incrementoPorNivel: Int = 50
+    override fun crearMejoraBodega(
+        id: String,
+        nombre: String,
+        descripcion: String,
+        nivelInicial: Int,
+        nivelMaximo: Int,
+        incrementoCapacidadKg: Double,
+        costoBase: Int,
+        incrementoPorNivel: Int
     ): MejoraCapacidadBodega {
         val efecto: EfectoMejora = EfectoCapacidadBodega(incrementoCapacidadKg)
         val estrategiaCosto: EstrategiaCosto = EstrategiaCostoLineal(costoBase, incrementoPorNivel)
@@ -43,9 +36,6 @@ object FabricaMejoras {
         )
     }
 
-    /**
-     * Construye una mejora de velocidad nominal de ascenso con progresión geométrica de costo.
-     */
     fun crearMejoraVelocidadAscenso(
         id: String = ID_ASCENSO,
         nombre: String = "Turbina de Ascenso Vertical",
@@ -69,9 +59,6 @@ object FabricaMejoras {
         )
     }
 
-    /**
-     * Construye una mejora de resistencia de casco ante la presión hidrostática profunda.
-     */
     fun crearMejoraResistenciaCasco(
         id: String = ID_CASCO,
         nombre: String = "Blindaje de Presión Abisal",
@@ -95,9 +82,6 @@ object FabricaMejoras {
         )
     }
 
-    /**
-     * Construye una mejora de velocidad de propulsión y navegación horizontal de motor.
-     */
     fun crearMejoraVelocidadPropulsion(
         id: String = ID_PROPULSION,
         nombre: String = "Motor Náutico de Alto Flujo",
@@ -121,10 +105,7 @@ object FabricaMejoras {
         )
     }
 
-    /**
-     * Ensambla un catálogo estándar completo con todas las mejoras oficiales del juego.
-     */
-    fun crearCatalogoEstandar(): CatalogoUpgrades {
+    override fun crearCatalogoEstandar(): CatalogoUpgrades {
         val lista = listOf(
             crearMejoraBodega(),
             crearMejoraVelocidadAscenso(),
@@ -134,10 +115,7 @@ object FabricaMejoras {
         return CatalogoUpgrades(lista)
     }
 
-    /**
-     * Ensambla una instancia completamente cableada de [TiendaMejoras] lista para operar.
-     */
-    fun crearTiendaEstandar(): TiendaMejoras {
+    override fun crearTiendaEstandar(): TiendaMejoras {
         val catalogo: ConsultableCatalogo = crearCatalogoEstandar()
         val procesadorCompras: ProcesadorCompras = ServicioUpgrades(catalogo)
         return TiendaMejoras(
