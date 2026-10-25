@@ -3,21 +3,20 @@
 
 > Documento **generado automáticamente** por la cátedra de Programación II (RepoSense + análisis de calidad POO/SOLID). **No editar a mano**: se regenera en cada evaluación.
 > Rama evaluada: `main`. Análisis **heurístico** (regex + métricas): es una criba para orientar la revisión, **no una nota**.
-> Generado: 2026-10-19.
+> Generado: 2026-10-25.
 
 ## 1. Veredicto
 
 | Aspecto | Resultado |
 |---|---|
-| Índice de calidad POO/SOLID | **3/100** |
-| Código (LOC) | 5,355 |
-| Archivos de código | 38 |
-| Clases (bien usadas) | 115 (43 OK) |
-| Código dentro de clases (%POO) | 85% |
-| Funciones fuera de clases | 2 |
-| Duplicación lógica | 7.2% |
-| Señales S/O/L/I/D | 30/9/6/0/20 |
-| Tope duro aplicado | `SUELTAS` → índice ≤ 60 |
+| Índice de calidad POO/SOLID | **4/100** |
+| Código (LOC) | 4,849 |
+| Archivos de código | 42 |
+| Clases (bien usadas) | 122 (53 OK) |
+| Código dentro de clases (%POO) | 87% |
+| Funciones fuera de clases | 0 |
+| Duplicación lógica | 6.7% |
+| Señales S/O/L/I/D | 25/2/2/0/19 |
 
 > Este informe **describe** lo que el análisis midió con los criterios ya establecidos de la materia. No es una nota.
 
@@ -27,33 +26,33 @@ Criterios de `CRITERIOS-CALIDAD.md`. **Aprobar** se juega con el perfil `estanda
 
 | Semáforo | Resultado |
 |---|---|
-| Aprobar (`estandar`) | **no cumple** — 2/4 |
-| Destacar (`exigente`) | **no cumple** — 0/5 |
+| Aprobar (`estandar`) | **no cumple** — 3/4 |
+| Destacar (`exigente`) | **no cumple** — 1/5 |
 
 **Criterios para aprobar**
 
 | Criterio | Requisito | Tu resultado | Cumple |
 |---|---|---|---|
-| Código dentro de clases (%POO) | ≥ 85% | 85% | sí |
-| Duplicación lógica | ≤ 10% | 7.2% | sí |
-| Funciones fuera de clases | ≤ 1 | 2 | no |
+| Código dentro de clases (%POO) | ≥ 85% | 87% | sí |
+| Duplicación lógica | ≤ 10% | 6.7% | sí |
+| Funciones fuera de clases | ≤ 1 | 0 | sí |
 | Señales POO/SOLID críticas | ninguna | Clase demasiado grande (SRP), Baja cohesión (LCOM), Acoplamiento alto (CBO), Switch sobre tipos (OCP), Override vacío / 'no implementado' (LSP) | no |
 
 **Criterios para destacar**
 
 | Criterio | Requisito | Tu resultado | Cumple |
 |---|---|---|---|
-| Código dentro de clases (%POO) | ≥ 95% | 85% | no |
-| Duplicación lógica | ≤ 5% | 7.2% | no |
-| Funciones fuera de clases | ≤ 0 | 2 | no |
+| Código dentro de clases (%POO) | ≥ 95% | 87% | no |
+| Duplicación lógica | ≤ 5% | 6.7% | no |
+| Funciones fuera de clases | ≤ 0 | 0 | sí |
 | Señales POO/SOLID críticas | ninguna | Clase demasiado grande (SRP), Baja cohesión (LCOM), Complejidad alta, Acoplamiento alto (CBO), Switch sobre tipos (OCP), Override vacío / 'no implementado' (LSP) | no |
-| Índice de calidad POO/SOLID | ≥ 60 | 3/100 | no |
+| Índice de calidad POO/SOLID | ≥ 60 | 4/100 | no |
 
 ## 2. Autoría (RepoSense)
 
 | Autor | Commits | Código (LOC) | Tests (LOC) | Docs (LOC) | Días activos | % del código |
 |---|---:|---:|---:|---:|---:|---:|
-| ibaldasso-elpepe | 10 | 3,837 | 2,342 | 1 | 8 | 100% |
+| ibaldasso-elpepe | 11 | 3,475 | 2,231 | 1 | 9 | 100% |
 
 > _El LOC de autoría lo calcula RepoSense sobre el historial y puede diferir del LOC de código del análisis de calidad (que mira solo el estado de `main`)._
 
@@ -65,13 +64,13 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Un resumen numérico (0-100) que combina la riqueza de clases bien usadas con la penalización por señales POO/SOLID y duplicación, y luego aplica topes duros.
 - **Por qué importa:** Ordena y prioriza la revisión: un índice bajo indica varias señales que conviene mirar juntas.
-- **Tu resultado:** índice **3/100**
+- **Tu resultado:** índice **4/100**
 
 ### 2. Duplicación lógica (DRY) (duplicacion) — con señales
 
 - **Qué mide:** Porcentaje de bloques de LÓGICA repetidos. Quedan fuera imports/includes, anotaciones, declaraciones de campos y comentarios/Javadoc/docstrings: esos bloques son boilerplate, no lógica.
 - **Por qué importa:** Cada copia de lógica se mantiene por separado: un arreglo hay que repetirlo y los defectos se multiplican.
-- **Tu resultado:** **7.2%** de duplicación lógica
+- **Tu resultado:** **6.7%** de duplicación lógica
 - **Para investigar la causa:**
     - ¿El trabajo se repartió por pantallas o archivos y se integró copiando y pegando bloques?
     - ¿Qué zonas del sistema cambiaron juntas más de una vez (señal de lógica compartida)?
@@ -81,23 +80,19 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Qué porción del código vive dentro de clases (no de funciones sueltas).
 - **Por qué importa:** El diseño orientado a objetos es el eje de la materia: el comportamiento debería vivir como método de una clase.
-- **Tu resultado:** **85.2%** del código dentro de clases
+- **Tu resultado:** **86.7%** del código dentro de clases
 
-### 4. Funciones fuera de clases (sueltas) — con señales
+### 4. Funciones fuera de clases (sueltas) — sin señales
 
 - **Qué mide:** Funciones de nivel de módulo que no pertenecen a ninguna clase (en esta materia el comportamiento debe ser método de una clase).
 - **Por qué importa:** Son la forma más directa de código procedural en un proyecto que debería ser orientado a objetos.
-- **Tu resultado:** **2** función(es) fuera de clases
-- **Para investigar la causa:**
-    - ¿Esa función se dejó suelta por urgencia o por desconocer dónde ubicarla?
-    - ¿Qué clase debería ser responsable de ese comportamiento?
-    - ¿Había una convención sobre dónde poner cada cosa?
+- **Tu resultado:** **0** función(es) fuera de clases
 
 ### 5. Clase demasiado grande (SRP) (god) — con señales
 
 - **Qué mide:** Clases con muchas líneas, métodos o campos a la vez.
 - **Por qué importa:** Una clase que hace de todo cambia por muchos motivos y cuesta entenderla y probarla.
-- **Tu resultado:** **11** clase(s) demasiado grande(s)
+- **Tu resultado:** **10** clase(s) demasiado grande(s)
 - **Para investigar la causa:**
     - ¿La clase creció por acumulación de responsabilidades?
     - ¿Qué partes de la clase se usan siempre juntas y cuáles no?
@@ -117,7 +112,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Complejidad ciclomática: cantidad de caminos posibles dentro de un método o función (condicionales, bucles, casos).
 - **Por qué importa:** Muchos caminos = difícil de seguir y de probar; suelen esconderse casos sin cubrir.
-- **Tu resultado:** **2** método(s)/función(es) con complejidad alta
+- **Tu resultado:** **1** método(s)/función(es) con complejidad alta
 - **Para investigar la causa:**
     - ¿Se agregaron condiciones a medida que aparecían casos nuevos?
     - ¿Se probaron todos los caminos o solo el caso principal?
@@ -127,7 +122,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Tamaño de los métodos/funciones y cantidad de parámetros.
 - **Por qué importa:** Una función que hace varias cosas cuesta leerla, nombrarla y reutilizarla.
-- **Tu resultado:** **8** método(s)/función(es) largos o con muchos parámetros
+- **Tu resultado:** **5** método(s)/función(es) largos o con muchos parámetros
 - **Para investigar la causa:**
     - ¿La función creció por acumulación de pasos?
     - ¿Agrupa operaciones que podrían describirse por separado?
@@ -137,7 +132,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Cuánto depende una clase de otros tipos del proyecto.
 - **Por qué importa:** Piezas muy enlazadas hacen que un cambio se propague y que sea difícil reemplazar partes.
-- **Tu resultado:** **27** clase(s) muy acoplada(s)
+- **Tu resultado:** **22** clase(s) muy acoplada(s)
 - **Para investigar la causa:**
     - ¿La clase conoce detalles internos de muchas otras?
     - ¿Se puede cambiar una parte sin tocar las demás?
@@ -153,7 +148,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Chequeos repetidos de tipo (`instanceof`/`is`/`typeof`) que equivalen a un switch sobre el tipo.
 - **Por qué importa:** Cada tipo nuevo obliga a tocar varios lugares, en vez de extender con una implementación nueva.
-- **Tu resultado:** **9** clase(s) con switch sobre tipos
+- **Tu resultado:** **2** clase(s) con switch sobre tipos
 - **Para investigar la causa:**
     - ¿Qué operación se resuelve preguntando el tipo?
     - ¿Qué se toca cada vez que aparece un tipo o caso nuevo?
@@ -169,7 +164,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Métodos sobrescritos que quedan vacíos o lanzan 'no implementado'.
 - **Por qué importa:** Suele indicar que la jerarquía no representa bien el problema y rompe la sustitución entre clases.
-- **Tu resultado:** **6** override(s) vacío(s) o 'no implementado'
+- **Tu resultado:** **2** override(s) vacío(s) o 'no implementado'
 - **Para investigar la causa:**
     - ¿Por qué ese método no tiene comportamiento en esa clase?
     - ¿La clase hereda algo que en realidad no le corresponde?
@@ -179,7 +174,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Instanciación directa de clases concretas y ausencia de interfaces o clases abstractas pese al acoplamiento.
 - **Por qué importa:** Depender de implementaciones concretas dificulta cambiar o probar una parte sin arrastrar las demás.
-- **Tu resultado:** **20** dependencia(s) de concretos sin abstracciones
+- **Tu resultado:** **19** dependencia(s) de concretos sin abstracciones
 - **Para investigar la causa:**
     - ¿La clase crea por dentro a sus colaboradores en vez de recibirlos?
     - ¿Hay puntos de variación que convendría expresar como abstracción?
@@ -189,7 +184,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Clases que solo acumulan campos y no tienen comportamiento.
 - **Por qué importa:** Separar datos de comportamiento reparte por el proyecto la lógica que debería estar cerca de esos datos.
-- **Tu resultado:** **17** clase(s) sin métodos (solo datos)
+- **Tu resultado:** **13** clase(s) sin métodos (solo datos)
 - **Para investigar la causa:**
     - ¿Dónde vive el comportamiento que opera sobre esos datos?
     - ¿La clase representa un concepto del dominio o un contenedor técnico?
@@ -199,7 +194,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Clases que exponen campos sin control de acceso.
 - **Por qué importa:** Expone el estado interno y hace que cualquier cambio dependa de quién lo modifica desde afuera.
-- **Tu resultado:** **27** clase(s) con campos públicos
+- **Tu resultado:** **21** clase(s) con campos públicos
 - **Para investigar la causa:**
     - ¿Se accede al campo desde otras clases para evitar un método?
     - ¿Qué reglas deberían respetarse al modificar ese estado?
@@ -217,12 +212,12 @@ Archivos donde el análisis encontró cada señal (sin número de línea, a prop
 
 **Clase demasiado grande (SRP) (god)** — 10 archivo(s):
 - `src/main/kotlin/org/example/issue1/Submarino.kt`
+- `src/main/kotlin/submarino/MainPruebaIssue5.kt`
 - `src/main/kotlin/submarino/Mineral.kt`
-- `src/main/kotlin/submarino/ServicioRecoleccion.kt`
-- `src/main/kotlin/submarino/upgrades/ContratosUpgrades.kt`
+- `src/main/kotlin/submarino/upgrades/MainPruebaIssue8.kt`
 - `src/main/kotlin/submarino/upgrades/Mejora.kt`
+- `src/main/kotlin/submarino/upgrades/ResultadoCompra.kt`
 - `src/test/kotlin/org/example/AppTest.kt`
-- `src/test/kotlin/submarino/Issue5Test.kt`
 - `src/test/kotlin/submarino/Issue6Test.kt`
 - `src/test/kotlin/submarino/Issue7Test.kt`
 - `src/test/kotlin/submarino/Issue8Test.kt`
@@ -233,30 +228,26 @@ Archivos donde el análisis encontró cada señal (sin número de línea, a prop
 - `src/test/kotlin/submarino/Issue7Test.kt`
 - `src/test/kotlin/submarino/Issue8Test.kt`
 
-**Complejidad alta (complejidad)** — 2 archivo(s):
-- `src/main/kotlin/submarino/MainPruebaIssue5.kt`
-- `src/main/kotlin/submarino/upgrades/MainPruebaIssue8.kt`
+**Complejidad alta (complejidad)** — 1 archivo(s):
+- `src/main/kotlin/submarino/comercio/MainPruebaIssue7.kt`
 
-**Métodos/funciones largos o con muchos parámetros (tamano)** — 7 archivo(s):
+**Métodos/funciones largos o con muchos parámetros (tamano)** — 4 archivo(s):
 - `src/main/kotlin/org/example/issue2/PruebaConjunta.kt`
+- `src/main/kotlin/submarino/comercio/ServicioComercio.kt`
+- `src/test/kotlin/org/example/AppTest.kt`
+- `src/test/kotlin/submarino/Issue6Test.kt`
+
+**Acoplamiento alto (CBO) (acoplamiento)** — 22 archivo(s):
+- `src/main/kotlin/org/example/issue1/Submarino.kt`
+- `src/main/kotlin/org/example/issue2/PruebaConjunta.kt`
+- `src/main/kotlin/submarino/Bodega.kt`
+- `src/main/kotlin/submarino/GeneradorParedes.kt`
+- `src/main/kotlin/submarino/Interfaces.kt`
 - `src/main/kotlin/submarino/MainPruebaIssue5.kt`
 - `src/main/kotlin/submarino/MainPruebaIssue6.kt`
-- `src/main/kotlin/submarino/comercio/MainPruebaIssue7.kt`
-- `src/main/kotlin/submarino/upgrades/ContratosUpgrades.kt`
-- `src/main/kotlin/submarino/upgrades/MainPruebaIssue8.kt`
-- `src/test/kotlin/org/example/AppTest.kt`
-
-**Acoplamiento alto (CBO) (acoplamiento)** — 23 archivo(s):
-- `src/main/kotlin/org/example/issue1/ModuloCasco.kt`
-- `src/main/kotlin/org/example/issue1/Submarino.kt`
-- `src/main/kotlin/org/example/issue2/PruebaConjunta.kt`
-- `src/main/kotlin/submarino/Bodega.kt`
-- `src/main/kotlin/submarino/FisicaAscenso.kt`
-- `src/main/kotlin/submarino/GeneradorParedes.kt`
-- `src/main/kotlin/submarino/Interfaces.kt`
-- `src/main/kotlin/submarino/Mineral.kt`
+- `src/main/kotlin/submarino/ResultadoRecoleccion.kt`
 - `src/main/kotlin/submarino/ServicioRecoleccion.kt`
-- `src/main/kotlin/submarino/comercio/EstacionAcople.kt`
+- `src/main/kotlin/submarino/TipoMineral.kt`
 - `src/main/kotlin/submarino/comercio/MainPruebaIssue7.kt`
 - `src/main/kotlin/submarino/comercio/ServicioComercio.kt`
 - `src/main/kotlin/submarino/upgrades/CatalogoUpgrades.kt`
@@ -264,35 +255,28 @@ Archivos donde el análisis encontró cada señal (sin número de línea, a prop
 - `src/main/kotlin/submarino/upgrades/MainPruebaIssue8.kt`
 - `src/main/kotlin/submarino/upgrades/Mejora.kt`
 - `src/main/kotlin/submarino/upgrades/ServicioUpgrades.kt`
-- `src/main/kotlin/submarino/upgrades/TiendaMejoras.kt`
 - `src/test/kotlin/org/example/AppTest.kt`
 - `src/test/kotlin/submarino/Issue5Test.kt`
 - `src/test/kotlin/submarino/Issue6Test.kt`
 - `src/test/kotlin/submarino/Issue7Test.kt`
 - `src/test/kotlin/submarino/Issue8Test.kt`
 
-**Switch sobre tipos (OCP) (ocp)** — 8 archivo(s):
-- `src/main/kotlin/org/example/issue1/ModuloCasco.kt`
-- `src/main/kotlin/submarino/comercio/MainPruebaIssue7.kt`
-- `src/main/kotlin/submarino/upgrades/Mejora.kt`
-- `src/test/kotlin/org/example/AppTest.kt`
-- `src/test/kotlin/submarino/Issue5Test.kt`
-- `src/test/kotlin/submarino/Issue6Test.kt`
+**Switch sobre tipos (OCP) (ocp)** — 2 archivo(s):
 - `src/test/kotlin/submarino/Issue7Test.kt`
 - `src/test/kotlin/submarino/Issue8Test.kt`
 
-**Override vacío o 'no implementado' (LSP) (lsp)** — 4 archivo(s):
-- `src/main/kotlin/org/example/issue1/Contratos.kt`
-- `src/main/kotlin/submarino/comercio/ServicioComercio.kt`
-- `src/main/kotlin/submarino/upgrades/ServicioUpgrades.kt`
+**Override vacío o 'no implementado' (LSP) (lsp)** — 1 archivo(s):
 - `src/test/kotlin/submarino/Issue7Test.kt`
 
-**Dependencia de concretos y falta de abstracciones (DIP) (dip)** — 16 archivo(s):
+**Dependencia de concretos y falta de abstracciones (DIP) (dip)** — 19 archivo(s):
 - `src/main/kotlin/org/example/issue1/Submarino.kt`
 - `src/main/kotlin/org/example/issue2/PruebaConjunta.kt`
 - `src/main/kotlin/submarino/GeneradorParedes.kt`
-- `src/main/kotlin/submarino/Mineral.kt`
+- `src/main/kotlin/submarino/MainPruebaIssue5.kt`
+- `src/main/kotlin/submarino/MainPruebaIssue6.kt`
+- `src/main/kotlin/submarino/ResultadoRecoleccion.kt`
 - `src/main/kotlin/submarino/ServicioRecoleccion.kt`
+- `src/main/kotlin/submarino/TipoMineral.kt`
 - `src/main/kotlin/submarino/comercio/MainPruebaIssue7.kt`
 - `src/main/kotlin/submarino/comercio/ServicioComercio.kt`
 - `src/main/kotlin/submarino/upgrades/CatalogoUpgrades.kt`
@@ -305,47 +289,42 @@ Archivos donde el análisis encontró cada señal (sin número de línea, a prop
 - `src/test/kotlin/submarino/Issue7Test.kt`
 - `src/test/kotlin/submarino/Issue8Test.kt`
 
-**Clase sin métodos (solo datos) (data)** — 9 archivo(s):
+**Clase sin métodos (solo datos) (data)** — 7 archivo(s):
 - `src/main/kotlin/org/example/issue2/CalculadoraHidrostatica.kt`
 - `src/main/kotlin/submarino/FisicaAscenso.kt`
-- `src/main/kotlin/submarino/GeneradorParedes.kt`
 - `src/main/kotlin/submarino/Interfaces.kt`
+- `src/main/kotlin/submarino/ResultadoRecoleccion.kt`
 - `src/main/kotlin/submarino/ServicioRecoleccion.kt`
 - `src/main/kotlin/submarino/comercio/EstacionAcople.kt`
-- `src/main/kotlin/submarino/comercio/ServicioComercio.kt`
-- `src/main/kotlin/submarino/upgrades/ContratosUpgrades.kt`
-- `src/test/kotlin/submarino/Issue5Test.kt`
+- `src/main/kotlin/submarino/upgrades/ResultadoCompra.kt`
 
-**Campos públicos (encapsulación) (encapsulacion)** — 18 archivo(s):
-- `src/main/kotlin/org/example/issue1/ModuloCasco.kt`
+**Campos públicos (encapsulación) (encapsulacion)** — 15 archivo(s):
 - `src/main/kotlin/org/example/issue1/Submarino.kt`
 - `src/main/kotlin/submarino/Bodega.kt`
 - `src/main/kotlin/submarino/FisicaAscenso.kt`
-- `src/main/kotlin/submarino/GeneradorParedes.kt`
 - `src/main/kotlin/submarino/Interfaces.kt`
 - `src/main/kotlin/submarino/Mineral.kt`
-- `src/main/kotlin/submarino/ServicioRecoleccion.kt`
+- `src/main/kotlin/submarino/ResultadoRecoleccion.kt`
+- `src/main/kotlin/submarino/TipoMineral.kt`
 - `src/main/kotlin/submarino/comercio/EstacionAcople.kt`
 - `src/main/kotlin/submarino/comercio/ServicioComercio.kt`
-- `src/main/kotlin/submarino/upgrades/ContratosUpgrades.kt`
 - `src/main/kotlin/submarino/upgrades/FabricaMejoras.kt`
 - `src/main/kotlin/submarino/upgrades/Mejora.kt`
+- `src/main/kotlin/submarino/upgrades/ResultadoCompra.kt`
 - `src/main/kotlin/submarino/upgrades/ServicioUpgrades.kt`
-- `src/test/kotlin/submarino/Issue5Test.kt`
-- `src/test/kotlin/submarino/Issue6Test.kt`
 - `src/test/kotlin/submarino/Issue7Test.kt`
 - `src/test/kotlin/submarino/Issue8Test.kt`
 
 ## 5. Evolución por commit
 
-Métricas calculadas sobre el estado de `main` en **cada commit** (9 commits con trabajo), del primero al último. La calidad usa el perfil `exigente`; el aporte de código lo mide RepoSense. El índice puede **bajar** al crecer el proyecto: se acumulan señales.
+Métricas calculadas sobre el estado de `main` en **cada commit** (10 commits con trabajo), del primero al último. La calidad usa el perfil `exigente`; el aporte de código lo mide RepoSense. El índice puede **bajar** al crecer el proyecto: se acumulan señales.
 
 ```mermaid
 xychart-beta
     title "Índice POO/SOLID a lo largo de los commits"
-    x-axis ["dbfd5be", "f3d175b", "493b71f", "ae28d33", "0e5cb85", "1120c1a", "086d3a6", "c792a2f", "8f4e517"]
+    x-axis ["dbfd5be", "f3d175b", "493b71f", "ae28d33", "0e5cb85", "1120c1a", "086d3a6", "c792a2f", "8f4e517", "a3e5d7a"]
     y-axis "Índice" 0 --> 100
-    line [0, 0, 25, 23, 13, 5, 4, 4, 3]
+    line [0, 0, 25, 23, 13, 5, 4, 4, 3, 4]
 ```
 
 | # | Fecha | Commit | Autor | LOC | Índice | %POO | Duplic. | Sueltas |
@@ -359,6 +338,7 @@ xychart-beta
 | 7 | 2026-10-09 | `086d3a6` | ibaldasso-elpepe | 2,351 | 4 | 86% | 5.9% | 2 |
 | 8 | 2026-10-16 | `c792a2f` | ibaldasso-elpepe | 3,625 | 4 | 87% | 6.6% | 2 |
 | 9 | 2026-10-16 | `8f4e517` | ibaldasso-elpepe | 5,355 | 3 | 85% | 7.2% | 2 |
+| 10 | 2026-10-23 | `a3e5d7a` | ibaldasso-elpepe | 4,849 | 4 | 87% | 6.7% | 0 |
 
 ---
 _Informe generado por la cátedra. Los criterios y umbrales de medición corresponden al perfil `exigente` de `calidad.py`; el semáforo de aprobación, a `CRITERIOS-CALIDAD.md` (ver `README.md`). Ante dudas, revisá el archivo señalado._
