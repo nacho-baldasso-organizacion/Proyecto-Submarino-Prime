@@ -8,8 +8,7 @@ package submarino
  * - Single Responsibility Principle (SRP): se ocupa exclusivamente de la gestión del inventario y del límite de carga.
  * - Open/Closed Principle (OCP): almacena cualquier objeto que cumpla con [Recolectable] sin requerir modificaciones.
  * - Liskov Substitution Principle (LSP): cualquier implementación de [Recolectable] es válida y almacenable.
- *
- * @property capacidadMaxima Peso máximo en kilogramos que la bodega puede albergar.
+ * - Encapsulamiento estricto: campos y variables con visibilidad privada o 'private set'.
  */
 class Bodega(
     capacidadMaxima: Double
@@ -24,6 +23,8 @@ class Bodega(
         }
     }
 
+    private val items: MutableList<Recolectable> = mutableListOf()
+
     /**
      * Amplía la capacidad máxima de peso en kilogramos de la bodega.
      *
@@ -36,8 +37,6 @@ class Bodega(
         capacidadMaxima += incremento
     }
 
-    private val items: MutableList<Recolectable> = mutableListOf()
-
     /**
      * Peso acumulado actual en kilogramos de todos los elementos contenidos en la bodega.
      */
@@ -47,35 +46,28 @@ class Bodega(
     /**
      * Capacidad de peso remanente disponible en la bodega en kilogramos.
      */
-    val capacidadDisponible: Double
+    override val capacidadDisponible: Double
         get() = (capacidadMaxima - pesoActual).coerceAtLeast(0.0)
 
     /**
      * Cantidad total de elementos almacenados en la bodega.
      */
-    val cantidadItems: Int
+    override val cantidadItems: Int
         get() = items.size
 
     /**
      * Valor total acumulado en dólares ($) de todos los ítems guardados en la bodega.
      */
-    val valorTotal: Int
+    override val valorTotal: Int
         get() = items.sumOf { it.valor }
 
     /**
      * Indica si la bodega ha alcanzado o superado su capacidad de peso máximo.
      */
-    fun estaLlena(): Boolean = pesoActual >= capacidadMaxima
+    override fun estaLlena(): Boolean = pesoActual >= capacidadMaxima
 
     /**
      * Intenta almacenar un ítem en la bodega respetando la capacidad máxima soportada.
-     * Si el peso actual sumado al peso del ítem no sobrepasa la [capacidadMaxima],
-     * el ítem es agregado a la bodega, se marca su estado [Recolectable.recolectado] en true
-     * y se retorna `true`.
-     * Si sobrepasa la capacidad o ya fue recolectado, se rechaza y retorna `false`.
-     *
-     * @param item Objeto recolectable que se pretende almacenar.
-     * @return `true` si el almacenamiento fue exitoso; `false` si excede la capacidad o ya fue recolectado.
      */
     override fun agregar(item: Recolectable): Boolean {
         if (item.recolectado) {
@@ -83,7 +75,7 @@ class Bodega(
         }
         if (pesoActual + item.peso <= capacidadMaxima) {
             items.add(item)
-            item.recolectado = true
+            item.marcarRecolectado()
             return true
         }
         return false
@@ -100,6 +92,16 @@ class Bodega(
     override fun vaciar() {
         items.clear()
     }
+
+    fun obtenerCapacidadMaxima(): Double = capacidadMaxima
+
+    fun obtenerPesoActual(): Double = pesoActual
+
+    fun obtenerCapacidadDisponible(): Double = capacidadDisponible
+
+    fun obtenerCantidadItems(): Int = cantidadItems
+
+    fun obtenerValorTotal(): Int = valorTotal
 
     override fun toString(): String {
         return "Bodega(pesoActual=${String.format("%.2f", pesoActual)}/${String.format("%.2f", capacidadMaxima)} kg, " +

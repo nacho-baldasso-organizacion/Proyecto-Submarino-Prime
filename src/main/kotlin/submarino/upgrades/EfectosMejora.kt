@@ -10,9 +10,10 @@ package submarino
 /**
  * Clase base común para todos los efectos cuantitativos de mejora.
  * Elimina la duplicación de validación y almacenamiento de magnitud (DRY).
+ * Encapsula la magnitud con visibilidad 'private set'.
  */
 abstract class EfectoBase(
-    override val magnitud: Double
+    magnitud: Double
 ) : EfectoMejora {
 
     init {
@@ -20,6 +21,9 @@ abstract class EfectoBase(
             "La magnitud del incremento debe ser estrictamente positiva: $magnitud"
         }
     }
+
+    final override var magnitud: Double = magnitud
+        private set
 }
 
 /**

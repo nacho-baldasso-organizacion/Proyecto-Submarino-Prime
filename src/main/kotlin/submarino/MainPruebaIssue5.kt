@@ -18,7 +18,7 @@ object MainPruebaIssue5 {
      * Coordina el flujo completo de simulación de recolección y minerales.
      */
     fun ejecutarDemostracion() {
-        imprimirEncabezado()
+        VisualizadorConsola.imprimirEncabezado("SUBMARINO PRIME - PRUEBA DE ISSUE #5: MINERALES Y RECOLECCIÓN")
 
         val anchoMapa = 12
         val altoMapa = 10
@@ -27,16 +27,11 @@ object MainPruebaIssue5 {
 
         val minerales = demostrarGeneracionProcedural(anchoMapa, altoMapa)
         val bodega = Bodega(capacidadMaxima = 7.0)
-        val servicio = ServicioRecoleccion(bodega, DetectorColisionesConcreto())
+        val servicio: ServicioRecoleccionContrato = ServicioRecoleccion(bodega, DetectorColisionesConcreto())
 
         demostrarNavegacionYRecoleccion(anchoMapa, altoMapa, minerales, bodega, servicio)
         demostrarReporteFinal(bodega)
-    }
-
-    private fun imprimirEncabezado() {
-        println("================================================================================")
-        println("         SUBMARINO PRIME - PRUEBA DE ISSUE #5: MINERALES Y RECOLECCIÓN          ")
-        println("================================================================================\n")
+        VisualizadorConsola.imprimirCierre("PRUEBA ISSUE #5 COMPLETADA")
     }
 
     private fun demostrarConfiguracionMapa(ancho: Int, alto: Int) {
@@ -92,7 +87,7 @@ object MainPruebaIssue5 {
         alto: Int,
         minerales: MutableList<Recolectable>,
         bodega: Bodega,
-        servicio: ServicioRecoleccion
+        servicio: ServicioRecoleccionContrato
     ) {
         println("4. INICIALIZACIÓN DE LA BODEGA Y SERVICIO DE RECOLECCIÓN:")
         println("   Capacidad Máxima de Bodega: ${bodega.capacidadMaxima} kg")
@@ -100,19 +95,19 @@ object MainPruebaIssue5 {
 
         println("5. SIMULACIÓN DE NAVEGACIÓN Y RECOLECCIÓN:")
         probarCentroMapa(ancho, alto, minerales, servicio)
-        probarParedConMineral(minerales, bodega, servicio)
+        probarParedConMineral(minerales, servicio)
         probarReintentoMismaCoordenada(minerales, servicio)
         probarDesbordamientoBodega(minerales, bodega, servicio)
     }
 
-    private fun probarCentroMapa(ancho: Int, alto: Int, minerales: List<Recolectable>, servicio: ServicioRecoleccion) {
+    private fun probarCentroMapa(ancho: Int, alto: Int, minerales: List<Recolectable>, servicio: ServicioRecoleccionContrato) {
         val posCentro = Posicion(posX = ancho / 2, posY = alto / 2)
         println("   A) Submarino navega a posición central (${posCentro.posX}, ${posCentro.posY}):")
         val res = servicio.procesarRecoleccion(posCentro, minerales)
         println("      -> ${res.obtenerMensaje()}")
     }
 
-    private fun probarParedConMineral(minerales: List<Recolectable>, bodega: Bodega, servicio: ServicioRecoleccion) {
+    private fun probarParedConMineral(minerales: List<Recolectable>, servicio: ServicioRecoleccionContrato) {
         val mineral = minerales.first()
         val posMineral = Posicion(posX = mineral.posX, posY = mineral.posY)
         println("\n   B) Submarino navega a pared en (${posMineral.posX}, ${posMineral.posY}):")
@@ -121,7 +116,7 @@ object MainPruebaIssue5 {
         println("      -> ${res.obtenerMensaje()}")
     }
 
-    private fun probarReintentoMismaCoordenada(minerales: List<Recolectable>, servicio: ServicioRecoleccion) {
+    private fun probarReintentoMismaCoordenada(minerales: List<Recolectable>, servicio: ServicioRecoleccionContrato) {
         val mineral = minerales.first()
         val posMineral = Posicion(posX = mineral.posX, posY = mineral.posY)
         println("\n   C) Submarino intenta recolectar nuevamente en (${posMineral.posX}, ${posMineral.posY}):")
@@ -129,7 +124,7 @@ object MainPruebaIssue5 {
         println("      -> ${res.obtenerMensaje()}")
     }
 
-    private fun probarDesbordamientoBodega(minerales: MutableList<Recolectable>, bodega: Bodega, servicio: ServicioRecoleccion) {
+    private fun probarDesbordamientoBodega(minerales: MutableList<Recolectable>, bodega: Bodega, servicio: ServicioRecoleccionContrato) {
         val artefactoPesado = Mineral(
             id = "MIN-ARTEF-TEST-99",
             tipo = TipoMineral.ARTEFACTO_HUNDIDO,
@@ -155,9 +150,5 @@ object MainPruebaIssue5 {
         }
         println("   Valor total para el mercado: $${bodega.valorTotal}")
         println("   Peso total ocupado: ${bodega.pesoActual} kg / ${bodega.capacidadMaxima} kg")
-
-        println("\n================================================================================")
-        println("                      SIMULACIÓN FINALIZADA CON ÉXITO                           ")
-        println("================================================================================")
     }
 }

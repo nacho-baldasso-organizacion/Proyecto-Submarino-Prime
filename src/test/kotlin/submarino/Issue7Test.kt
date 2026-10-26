@@ -10,26 +10,30 @@ import kotlin.test.assertTrue
 
 class Issue7Test {
 
+    private fun crearSubmarinoPrueba(
+        posX: Double = 0.0,
+        posY: Double = 0.0,
+        bodega: Almacenamiento? = null,
+        billetera: Billetera = Monedero(0)
+    ): Submarino = Submarino(
+        posX = posX,
+        posY = posY,
+        casco = ModuloCasco(500_000.0),
+        bodega = bodega,
+        billetera = billetera,
+        notificador = NotificadorSilencioso
+    )
+
     // =========================================================================
     // 1. PRUEBAS DE DETECCIÓN DE SUPERFICIE Y ZONA DE ACOPLE
     // =========================================================================
 
     @Test
     fun `test submarino detecta cuando ha llegado a la superficie`() {
-        val subSumergido = Submarino(
-            posX = 10.0,
-            posY = 50.0,
-            casco = ModuloCasco(500_000.0),
-            notificador = NotificadorSilencioso
-        )
+        val subSumergido = crearSubmarinoPrueba(posX = 10.0, posY = 50.0)
         assertFalse(subSumergido.estaEnSuperficie)
 
-        val subSuperficie = Submarino(
-            posX = 10.0,
-            posY = 0.0,
-            casco = ModuloCasco(500_000.0),
-            notificador = NotificadorSilencioso
-        )
+        val subSuperficie = crearSubmarinoPrueba(posX = 10.0, posY = 0.0)
         assertTrue(subSuperficie.estaEnSuperficie)
     }
 

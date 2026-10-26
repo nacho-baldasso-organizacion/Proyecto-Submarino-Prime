@@ -1,23 +1,106 @@
 package submarino
 
 /**
- * Clase principal que representa al submarino.
+ * Subsistema especializado en la gestión de energía y batería (SRP).
+ */
+class SistemaEnergia(
+    bateriaInicial: Double = 100.0,
+    consumoPorMetro: Double = 0.5
+) {
+    var bateria: Double = bateriaInicial
+        private set
+
+    private var tasaConsumo: Double = consumoPorMetro
+
+    val estaAgotada: Boolean
+        get() = bateria <= 0.0
+
+    fun consumirPorDistancia(distancia: Double): Double {
+        val consumo = distancia * tasaConsumo
+        bateria = maxOf(bateria - consumo, 0.0)
+        return bateria
+    }
+
+    fun recargar(cantidad: Double) {
+        require(cantidad > 0.0) { "La recarga debe ser positiva: $cantidad" }
+        bateria = minOf(bateria + cantidad, 100.0)
+    }
+}
+
+/**
+ * Subsistema especializado en el control de estado de amarre y acople (SRP).
+ */
+class ControladorAcople {
+    var estaAcoplado: Boolean = false
+        private set
+
+    fun acoplar(puedeAcoplar: Boolean): Boolean {
+        if (puedeAcoplar) {
+            estaAcoplado = true
+            return true
+        }
+        return false
+    }
+
+    fun desacoplar(): Boolean {
+        if (estaAcoplado) {
+            estaAcoplado = false
+            return true
+        }
+        return false
+    }
+
+    fun sincronizarConMovimiento(deltaX: Double, deltaY: Double) {
+        if (estaAcoplado && (deltaX != 0.0 || deltaY != 0.0)) {
+            desacoplar()
+        }
+    }
+}
+
+/**
+ * Subsistema especializado en el control de motores y velocidad de ascenso vertical (SRP).
+ */
+class SistemaPropulsion(
+    velocidadAscensoBase: Double = 5.0
+) {
+    var velocidadAscensoBase: Double = velocidadAscensoBase
+        private set
+
+    init {
+        require(velocidadAscensoBase >= 0.0) {
+            "La velocidad de ascenso base no puede ser negativa: $velocidadAscensoBase"
+        }
+    }
+
+    fun aumentarVelocidadAscenso(incremento: Double) {
+        require(incremento > 0.0) {
+            "El incremento de velocidad de ascenso debe ser positivo: $incremento"
+        }
+        velocidadAscensoBase += incremento
+    }
+}
+
+/**
+ * Clase orquestadora principal que representa al submarino.
+ * Descompuesta en subsistemas especializados ([SistemaEnergia], [ControladorAcople], [SistemaPropulsion])
+ * para cumplir estrictamente con SRP eliminando la God Class.
+ *
+ * Encapsula la totalidad de sus campos con visibilidad privada o 'private set'.
  * Hereda de [EntidadFisica] y compone un [Casco] mediante interfaz (DIP, OCP).
- * Implementa [Navegable] cumpliendo con la Segregación de Interfaces (ISP).
- * Gestiona batería, desplazamiento y delega el estado estructural al casco.
+ * Implementa [Navegable], [Pesable] y [Acoplable] respetando Segregación de Interfaces (ISP).
  */
 class Submarino(
     posX: Double = 0.0,
     posY: Double = 0.0,
     velocidad: Double = 0.0,
-    val casco: Casco,
-    val pesoBase: Double = PESO_BASE_DEFAULT,
-    val bodega: Almacenamiento? = Bodega(capacidadMaxima = BODEGA_CAPACIDAD_DEFAULT),
+    casco: Casco,
+    pesoBase: Double = PESO_BASE_DEFAULT,
+    bodega: Almacenamiento? = Bodega(capacidadMaxima = BODEGA_CAPACIDAD_DEFAULT),
     velocidadAscensoBase: Double = if (velocidad > 0.0) velocidad else VELOCIDAD_ASCENSO_DEFAULT,
-    private val calculadorPeso: CalculadorPeso = CalculadorPesoSubmarino(),
-    private val estrategiaAscenso: EstrategiaAscenso = EstrategiaAscensoLineal(),
-    val billetera: Billetera = Monedero(0),
-    private val notificador: Notificador = NotificadorConsola
+    calculadorPeso: CalculadorPeso = CalculadorPesoSubmarino(),
+    estrategiaAscenso: EstrategiaAscenso = EstrategiaAscensoLineal(),
+    billetera: Billetera = Monedero(0),
+    notificador: Notificador = NotificadorConsola
 ) : EntidadFisica(posX, posY, velocidad), Navegable, Pesable, Acoplable {
 
     companion object {
@@ -27,34 +110,53 @@ class Submarino(
         const val CONSUMO_BATERIA_POR_METRO: Double = 0.5
     }
 
-    var velocidadAscensoBase: Double = velocidadAscensoBase
+    var casco: Casco = casco
         private set
+
+    var pesoBase: Double = pesoBase
+        private set
+
+    var bodega: Almacenamiento? = bodega
+        private set
+
+    var billetera: Billetera = billetera
+        private set
+
+    private val notificador: Notificador = notificador
+    private val calculadorPeso: CalculadorPeso = calculadorPeso
+    private val estrategiaAscenso: EstrategiaAscenso = estrategiaAscenso
+
+    private val energia: SistemaEnergia = SistemaEnergia(100.0, CONSUMO_BATERIA_POR_METRO)
+    private val acople: ControladorAcople = ControladorAcople()
+    private val propulsion: SistemaPropulsion = SistemaPropulsion(velocidadAscensoBase)
 
     init {
         require(pesoBase >= 0.0) { "El peso base no puede ser negativo: $pesoBase" }
-        require(velocidadAscensoBase >= 0.0) { "La velocidad de ascenso base no puede ser negativa: $velocidadAscensoBase" }
     }
 
-    var bateria: Double = 100.0
-        private set
+    val velocidadAscensoBase: Double
+        get() = propulsion.velocidadAscensoBase
+
+    val bateria: Double
+        get() = energia.bateria
 
     val estaDestruido: Boolean
         get() = casco.estaDestruido
 
-    override var estaAcoplado: Boolean = false
-        private set
+    override val estaAcoplado: Boolean
+        get() = acople.estaAcoplado
 
     val estaEnSuperficie: Boolean
         get() = posY <= 0.0
 
     override fun acoplar() {
         if (!estaDestruido) {
-            estaAcoplado = true
+            acople.acoplar(true)
         }
     }
 
     override fun desacoplar() {
-        estaAcoplado = false
+        acople.desacoplar()
     }
 
     fun estaEnZonaAcople(zona: ZonaAcople): Boolean = zona.estaEnZona(posX, posY)
@@ -104,8 +206,7 @@ class Submarino(
     }
 
     fun aumentarVelocidadAscenso(incremento: Double) {
-        require(incremento > 0.0) { "El incremento de velocidad de ascenso debe ser positivo: $incremento" }
-        velocidadAscensoBase += incremento
+        propulsion.aumentarVelocidadAscenso(incremento)
     }
 
     fun aumentarResistenciaCasco(incrementoPa: Double) {
@@ -115,7 +216,7 @@ class Submarino(
 
     fun aumentarVelocidadPropulsion(incremento: Double) {
         require(incremento > 0.0) { "El incremento de velocidad de propulsión debe ser positivo: $incremento" }
-        velocidad += incremento
+        actualizarVelocidad(velocidad + incremento)
     }
 
     override fun mover(deltaX: Double, deltaY: Double): Boolean {
@@ -123,31 +224,24 @@ class Submarino(
             notificador.notificar("El submarino está destruido y no puede moverse.")
             return false
         }
-        if (bateria <= 0.0) {
+        if (energia.estaAgotada) {
             notificador.notificar("Batería agotada. El submarino no puede moverse.")
             return false
         }
 
         val distancia = Math.hypot(deltaX, deltaY)
-        actualizarBateria(distancia)
+        energia.consumirPorDistancia(distancia)
 
         actualizarPosX(posX + deltaX)
         actualizarPosY(posY + deltaY)
 
-        if (estaAcoplado && (deltaX != 0.0 || deltaY != 0.0)) {
-            desacoplar()
-        }
+        acople.sincronizarConMovimiento(deltaX, deltaY)
 
-        if (bateria <= 0.0) {
+        if (energia.estaAgotada) {
             notificador.notificar("¡Batería agotada tras el movimiento!")
         }
 
         return true
-    }
-
-    private fun actualizarBateria(distancia: Double) {
-        val consumo = distancia * CONSUMO_BATERIA_POR_METRO
-        bateria = maxOf(bateria - consumo, 0.0)
     }
 
     fun verificarIntegridad(presionActualPa: Double): Double = casco.recibirPresion(presionActualPa)
@@ -173,7 +267,17 @@ class Submarino(
 
     fun ascender(): Boolean = mover(deltaX = 0.0, deltaY = -velocidadAscenso)
 
+    fun obtenerCasco(): Casco = casco
+
+    fun obtenerBodega(): Almacenamiento? = bodega
+
+    fun obtenerBilletera(): Billetera = billetera
+
+    fun obtenerBateria(): Double = bateria
+
     override fun toString(): String {
-        return "Submarino(posX=$posX, posY=$posY, pesoTotal=${"%.2f".format(pesoTotal)}kg, velocidadAscenso=${"%.2f".format(velocidadAscenso)}m/s, saldo=$${billetera.saldo}, estaAcoplado=$estaAcoplado, bateria=${"%.2f".format(bateria)}%, estaDestruido=$estaDestruido, casco=$casco)"
+        return "Submarino(posX=$posX, posY=$posY, pesoTotal=${"%.2f".format(pesoTotal)}kg, " +
+                "velocidadAscenso=${"%.2f".format(velocidadAscenso)}m/s, saldo=$${billetera.saldo}, " +
+                "estaAcoplado=$estaAcoplado, bateria=${"%.2f".format(bateria)}%, estaDestruido=$estaDestruido, casco=$casco)"
     }
 }

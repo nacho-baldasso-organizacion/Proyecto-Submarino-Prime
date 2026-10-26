@@ -11,10 +11,10 @@ import kotlin.math.pow
 
 /**
  * Base abstracta para modelos de cálculo y progresión de costos por nivel.
- * Encapsula la validación de nivel y costo base para evitar código repetido (DRY).
+ * Encapsula la validación de nivel y costo base con visibilidad 'private set' para evitar código repetido (DRY).
  */
 abstract class EstrategiaCostoBase(
-    protected val costoBase: Int
+    costoBase: Int
 ) : EstrategiaCosto {
 
     init {
@@ -22,6 +22,9 @@ abstract class EstrategiaCostoBase(
             "El costo base debe ser estrictamente positivo: $costoBase"
         }
     }
+
+    var costoBase: Int = costoBase
+        private set
 
     protected fun validarNivel(nivelActual: Int) {
         require(nivelActual >= 1) {
@@ -44,6 +47,9 @@ class EstrategiaCostoLineal(
             "El incremento por nivel no puede ser negativo: $incrementoPorNivel"
         }
     }
+
+    val incremento: Int
+        get() = incrementoPorNivel
 
     override fun calcularCosto(nivelActual: Int): Int {
         validarNivel(nivelActual)
@@ -68,6 +74,9 @@ class EstrategiaCostoExponencial(
             "El factor multiplicador debe ser estrictamente mayor a 1.0: $factorMultiplicador"
         }
     }
+
+    val factor: Double
+        get() = factorMultiplicador
 
     override fun calcularCosto(nivelActual: Int): Int {
         validarNivel(nivelActual)

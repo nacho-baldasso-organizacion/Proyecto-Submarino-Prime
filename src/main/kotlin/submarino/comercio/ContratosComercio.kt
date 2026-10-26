@@ -3,7 +3,7 @@ package submarino
 /**
  * ============================================================================
  * CONTRATOS E INTERFACES DEL SISTEMA COMERCIAL Y ZONA DE ACOPLE (ISSUE #7)
- * PRINCIPIOS SOLID (ISP = 0 violaciones, D = 0 violaciones, O = 0 violaciones)
+ * PRINCIPIOS SOLID (ISP, DIP, OCP)
  *
  * Cada interfaz posee un propósito estrictamente delimitado con 1 o 2 métodos
  * declarados como máximo, cumpliendo con la Segregación de Interfaces (ISP).
@@ -13,7 +13,6 @@ package submarino
 /**
  * Segregación de Interfaces (ISP):
  * Contrato para cualquier recurso o bien de juego que posea valor monetarioizable.
- * Permite que cualquier elemento (minerales, tesoros, restos) sea procesado comercialmente.
  */
 interface Vendible {
     val valor: Int
@@ -61,7 +60,6 @@ interface EstadoAcople {
 /**
  * Segregación de Interfaces (ISP):
  * Contrato para entidades susceptibles de acoplarse y desacoplarse en una estación o puerto.
- * Declara exactamente 2 métodos operativos.
  */
 interface Acoplable : EstadoAcople {
     fun acoplar()
@@ -96,7 +94,6 @@ interface ObservadorComercio {
 /**
  * Segregación de Interfaces (ISP) y Principio Abierto/Cerrado (OCP):
  * Contrato de valoración individual de bienes vendibles.
- * Permite incorporar bonificaciones, multiplicadores de mercado o impuestos sin modificar clientes.
  */
 interface EstrategiaPrecios {
     fun calcularPrecio(item: Vendible): Int
@@ -139,4 +136,14 @@ interface ProcesadorComercio {
         almacenamiento: Almacenamiento,
         receptorFondos: ReceptorFondos
     ): ResultadoComercio
+}
+
+/**
+ * Inversión de Dependencias (DIP):
+ * Abstracción integral para el servicio coordinador de comercio en superficie.
+ */
+interface ServicioComercioContrato : ProcesadorComercio {
+    fun venderBodegaSubmarino(submarino: Submarino): ResultadoComercio
+    fun registrarObservador(observador: ObservadorComercio)
+    fun eliminarObservador(observador: ObservadorComercio)
 }

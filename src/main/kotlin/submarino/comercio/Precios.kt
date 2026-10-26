@@ -20,11 +20,12 @@ class EstrategiaPreciosBase : EstrategiaPrecios {
  * Estrategia de valoración con factor multiplicador de bonificación o fluctuación de mercado:
  * Aplica un coeficiente sobre el valor nominal de cada ítem (por ejemplo, 1.25 para 25% de bonus).
  * Cumple con OCP al expandir las reglas de tasación sin alterar la lógica de negocio.
+ * Encapsula su estado con 'private set'.
  *
  * @param factor Multiplicador a aplicar (debe ser >= 0.0).
  */
 class EstrategiaPreciosMultiplicador(
-    val factor: Double
+    factor: Double
 ) : EstrategiaPrecios {
 
     init {
@@ -32,6 +33,9 @@ class EstrategiaPreciosMultiplicador(
             "El factor multiplicador de precios no puede ser negativo: $factor"
         }
     }
+
+    var factor: Double = factor
+        private set
 
     override fun calcularPrecio(item: Vendible): Int = kotlin.math.round(item.valor * factor).toInt()
 }

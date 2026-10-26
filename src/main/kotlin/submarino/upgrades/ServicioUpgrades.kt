@@ -9,10 +9,11 @@ package submarino
 
 /**
  * Servicio coordinador del proceso de compra y aplicación de mejoras.
+ * Cumple con DIP implementando [ServicioUpgradesContrato].
  */
 class ServicioUpgrades(
     private val catalogo: ConsultableCatalogo
-) : ProcesadorCompras, GestorObservadoresTienda {
+) : ServicioUpgradesContrato {
 
     private val observadores: MutableList<ObservadorTienda> = mutableListOf()
 
@@ -51,23 +52,13 @@ class ServicioUpgrades(
         val costoRequerido = mejora.costo
         if (pagable.saldo < costoRequerido) {
             val motivo = "Fondos insuficientes para '${mejora.nombre}'. Requiere $$costoRequerido, disponible $$${pagable.saldo}"
-            notificarRechazo(idMejora, motivo)
-            return ResultadoCompra.FondosInsuficientes(
-                mejoraId = idMejora,
-                costoRequerido = costoRequerido,
-                saldoDisponible = pagable.saldo
-            )
+            return rechazarFondos(idMejora, costoRequerido, pagable.saldo, motivo)
         }
 
         val debitado = pagable.debitar(costoRequerido)
         if (!debitado) {
             val motivo = "No fue posible debitar $$costoRequerido del saldo disponible"
-            notificarRechazo(idMejora, motivo)
-            return ResultadoCompra.FondosInsuficientes(
-                mejoraId = idMejora,
-                costoRequerido = costoRequerido,
-                saldoDisponible = pagable.saldo
-            )
+            return rechazarFondos(idMejora, costoRequerido, pagable.saldo, motivo)
         }
 
         val nivelAnterior = mejora.nivel
@@ -83,6 +74,11 @@ class ServicioUpgrades(
             costoPagado = costoRequerido,
             saldoRestante = pagable.saldo
         )
+    }
+
+    private fun rechazarFondos(idMejora: String, costo: Int, saldo: Int, motivo: String): ResultadoCompra.FondosInsuficientes {
+        notificarRechazo(idMejora, motivo)
+        return ResultadoCompra.FondosInsuficientes(idMejora, costo, saldo)
     }
 
     private fun notificarExito(mejora: Mejora, saldoRestante: Int) {
