@@ -20,11 +20,11 @@ object MainPruebaIssue7 {
      * Coordina el flujo completo de simulación comercial y acople.
      */
     fun ejecutarDemostracion() {
-        imprimirEncabezado()
+        VisualizadorConsola.imprimirEncabezado("SUBMARINO PRIME - PRUEBA DE ISSUE #7: ZONA DE ACOPLE, VENTA Y MONEDAS")
 
         val zonaSuperficie = ZonaSuperficie(profundidadMaxima = 0.0)
         val estacion = EstacionAcople(zonaAcople = zonaSuperficie)
-        val servicioComercio = ServicioComercio(CalculadoraPreciosEstandar())
+        val servicioComercio: ServicioComercioContrato = ServicioComercio(CalculadoraPreciosEstandar())
         servicioComercio.registrarObservador(ObservadorComercioConsola())
 
         val submarino = configurarSubmarino()
@@ -32,14 +32,7 @@ object MainPruebaIssue7 {
         demostrarFalloPorNoAcople(submarino, servicioComercio)
         demostrarAcopleYVenta(submarino, estacion, servicioComercio)
         demostrarDesacople(submarino, estacion)
-
-        imprimirCierre()
-    }
-
-    private fun imprimirEncabezado() {
-        println("================================================================================")
-        println("     SUBMARINO PRIME - PRUEBA DE ISSUE #7: ZONA DE ACOPLE, VENTA Y MONEDAS     ")
-        println("================================================================================\n")
+        VisualizadorConsola.imprimirCierre("SIMULACIÓN COMERCIAL FINALIZADA CON ÉXITO")
     }
 
     private fun configurarSubmarino(): Submarino {
@@ -60,9 +53,7 @@ object MainPruebaIssue7 {
     }
 
     private fun demostrarCargaEnProfundidad(sub: Submarino) {
-        println("--------------------------------------------------------------------------------")
-        println(" 2. RECOLECCIÓN Y CARGA DE MINERALES EN BODEGA")
-        println("--------------------------------------------------------------------------------")
+        VisualizadorConsola.imprimirSeccion("2. RECOLECCIÓN Y CARGA DE MINERALES EN BODEGA")
         val mineral1 = Mineral("MIN-01", TipoMineral.TITANIO_CRISTALINO, 50, 100)
         val mineral2 = Mineral("MIN-02", TipoMineral.NODULO_DE_MANGANESO, 50, 100)
         val mineral3 = Mineral("MIN-03", TipoMineral.COBRE_MARINO, 50, 100)
@@ -76,23 +67,19 @@ object MainPruebaIssue7 {
             println("     [$idx] ${it.nombre} -> Peso: ${it.peso} kg | Valor: $${it.valor}")
         }
         println("   • Carga total bodega : ${sub.bodega?.pesoActual} kg")
-        println("   • Valor potencial    : $${(sub.bodega as? Bodega)?.valorTotal}\n")
+        println("   • Valor potencial    : $${sub.bodega?.valorTotal}\n")
     }
 
-    private fun demostrarFalloPorNoAcople(sub: Submarino, servicioComercio: ServicioComercio) {
-        println("--------------------------------------------------------------------------------")
-        println(" 3. INTENTO DE VENTA FALLIDO (NAVE NO ACOPLADA / SUMERGIDA)")
-        println("--------------------------------------------------------------------------------")
+    private fun demostrarFalloPorNoAcople(sub: Submarino, servicioComercio: ServicioComercioContrato) {
+        VisualizadorConsola.imprimirSeccion("3. INTENTO DE VENTA FALLIDO (NAVE NO ACOPLADA / SUMERGIDA)")
         val resultadoFallo = servicioComercio.venderBodegaSubmarino(sub)
         println("   -> Resultado: ${resultadoFallo.obtenerResumen()}")
         println("   • Saldo en billetera : $${sub.billetera.saldo}")
         println("   • Carga en bodega    : ${sub.bodega?.pesoActual} kg (sin cambios)\n")
     }
 
-    private fun demostrarAcopleYVenta(sub: Submarino, estacion: EstacionAcople, servicioComercio: ServicioComercio) {
-        println("--------------------------------------------------------------------------------")
-        println(" 4. ASCENSO A SUPERFICIE Y AMARRE EN ESTACIÓN")
-        println("--------------------------------------------------------------------------------")
+    private fun demostrarAcopleYVenta(sub: Submarino, estacion: EstacionAcople, servicioComercio: ServicioComercioContrato) {
+        VisualizadorConsola.imprimirSeccion("4. ASCENSO A SUPERFICIE Y AMARRE EN ESTACIÓN")
         sub.ascender(deltaY = 100.0)
         println("   • Nueva cota vertical: Y = ${sub.posY}m (Superficie alcanzada)")
         println("   • ¿Apto para acoplar en estación?: ${estacion.puedeAcoplar(sub.posX, sub.posY)}")
@@ -102,9 +89,7 @@ object MainPruebaIssue7 {
         println("   • Estado acople nave: ${sub.estaAcoplado}")
         println("   • Estación ocupada  : ${estacion.hayNaveAcoplada}\n")
 
-        println("--------------------------------------------------------------------------------")
-        println(" 5. TRANSACCIÓN COMERCIAL EN SUPERFICIE")
-        println("--------------------------------------------------------------------------------")
+        VisualizadorConsola.imprimirSeccion("5. TRANSACCIÓN COMERCIAL EN SUPERFICIE")
         val resultadoVenta = servicioComercio.venderBodegaSubmarino(sub)
         println("   -> ${resultadoVenta.obtenerResumen()}")
         println("   • Saldo final en billetera : $${sub.billetera.saldo}")
@@ -112,17 +97,9 @@ object MainPruebaIssue7 {
     }
 
     private fun demostrarDesacople(sub: Submarino, estacion: EstacionAcople) {
-        println("--------------------------------------------------------------------------------")
-        println(" 6. DESACOPLE Y REGRESO A NAVEGACIÓN")
-        println("--------------------------------------------------------------------------------")
+        VisualizadorConsola.imprimirSeccion("6. DESACOPLE Y REGRESO A NAVEGACIÓN")
         estacion.desacoplar()
         println("   • Estado acople tras desamarre: ${sub.estaAcoplado}")
         println("   • Estación libre              : ${!estacion.hayNaveAcoplada}\n")
-    }
-
-    private fun imprimirCierre() {
-        println("================================================================================")
-        println("           SIMULACIÓN COMERCIAL FINALIZADA CON ÉXITO                            ")
-        println("================================================================================")
     }
 }

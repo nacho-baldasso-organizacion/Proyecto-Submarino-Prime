@@ -20,14 +20,14 @@ object MainPruebaIssue8 {
      * Coordina el flujo completo de simulación de upgrades, economía y verificación de estadísticas.
      */
     fun ejecutarDemostracion() {
-        imprimirEncabezado()
+        VisualizadorConsola.imprimirEncabezado("SUBMARINO PRIME - PRUEBA DE ISSUE #8: SISTEMA DE UPGRADES / MEJORAS")
 
         val catalogo = FabricaMejoras.crearCatalogoEstandar()
-        val servicioUpgrades = ServicioUpgrades(catalogo)
+        val servicioUpgrades: ServicioUpgradesContrato = ServicioUpgrades(catalogo)
         servicioUpgrades.registrarObservador(ObservadorTiendaConsola())
 
         val tienda = TiendaMejoras(catalogo, servicioUpgrades)
-        val servicioComercio = ServicioComercio(CalculadoraPreciosEstandar())
+        val servicioComercio: ServicioComercioContrato = ServicioComercio(CalculadoraPreciosEstandar())
 
         val submarino = configurarSubmarino()
         demostrarCatalogo(catalogo)
@@ -35,14 +35,7 @@ object MainPruebaIssue8 {
         demostrarVentaBodega(servicioComercio, submarino)
         demostrarCompraExitosa(tienda, submarino)
         demostrarProgresionYCap(tienda, submarino)
-
-        imprimirCierre()
-    }
-
-    private fun imprimirEncabezado() {
-        println("================================================================================")
-        println("       SUBMARINO PRIME - PRUEBA DE ISSUE #8: SISTEMA DE UPGRADES / MEJORAS      ")
-        println("================================================================================\n")
+        VisualizadorConsola.imprimirCierre("DEMOSTRACIÓN DE UPGRADES FINALIZADA CON ÉXITO")
     }
 
     private fun configurarSubmarino(): Submarino {
@@ -66,9 +59,7 @@ object MainPruebaIssue8 {
     }
 
     private fun demostrarCatalogo(catalogo: CatalogoUpgrades) {
-        println("--------------------------------------------------------------------------------")
-        println(" 2. CATÁLOGO DISPONIBLE EN LA TIENDA DE MEJORAS")
-        println("--------------------------------------------------------------------------------")
+        VisualizadorConsola.imprimirSeccion("2. CATÁLOGO DISPONIBLE EN LA TIENDA DE MEJORAS")
         catalogo.obtenerTodas().forEachIndexed { idx, it ->
             println("   [$idx] ID: ${it.id} | ${it.nombre} | Nivel: ${it.nivel}/${it.nivelMaximo} | Costo: $$${it.costo}")
             println("        -> Efecto: ${it.descripcion}")
@@ -77,18 +68,14 @@ object MainPruebaIssue8 {
     }
 
     private fun demostrarRechazoFondos(tienda: TiendaMejoras, submarino: Submarino) {
-        println("--------------------------------------------------------------------------------")
-        println(" 3. INTENTO DE COMPRA SIN FONDOS (RECHAZO CONTROLADO)")
-        println("--------------------------------------------------------------------------------")
+        VisualizadorConsola.imprimirSeccion("3. INTENTO DE COMPRA SIN FONDOS (RECHAZO CONTROLADO)")
         val resultadoSinFondos = tienda.comprarParaSubmarino(FabricaMejoras.ID_BODEGA, submarino)
         println("   -> ${resultadoSinFondos.obtenerMensaje()}")
         println("   • Saldo en billetera: $${submarino.billetera.saldo} (sin cambios)\n")
     }
 
-    private fun demostrarVentaBodega(servicioComercio: ServicioComercio, submarino: Submarino) {
-        println("--------------------------------------------------------------------------------")
-        println(" 4. CARGA DE MINERALES, ACOPLE Y VENTA PARA OBTENER FONDOS")
-        println("--------------------------------------------------------------------------------")
+    private fun demostrarVentaBodega(servicioComercio: ServicioComercioContrato, submarino: Submarino) {
+        VisualizadorConsola.imprimirSeccion("4. CARGA DE MINERALES, ACOPLE Y VENTA PARA OBTENER FONDOS")
         submarino.bodega?.agregar(Mineral("M-1", TipoMineral.TITANIO_CRISTALINO, 0, 0))
         submarino.bodega?.agregar(Mineral("M-2", TipoMineral.TITANIO_CRISTALINO, 0, 0))
         submarino.acoplar()
@@ -99,10 +86,7 @@ object MainPruebaIssue8 {
     }
 
     private fun demostrarCompraExitosa(tienda: TiendaMejoras, submarino: Submarino) {
-        println("--------------------------------------------------------------------------------")
-        println(" 5. ADQUISICIÓN DE MEJORAS Y AUMENTO DINÁMICO DE ESTADÍSTICAS")
-        println("--------------------------------------------------------------------------------")
-
+        VisualizadorConsola.imprimirSeccion("5. ADQUISICIÓN DE MEJORAS Y AUMENTO DINÁMICO DE ESTADÍSTICAS")
         val resBodega = tienda.comprarParaSubmarino(FabricaMejoras.ID_BODEGA, submarino)
         println("   A) Compra Bodega: ${resBodega.obtenerMensaje()}")
         println("      -> Nueva capacidad de bodega: ${submarino.bodega?.capacidadMaxima} kg (antes 10.0 kg)")
@@ -122,9 +106,7 @@ object MainPruebaIssue8 {
     }
 
     private fun demostrarProgresionYCap(tienda: TiendaMejoras, submarino: Submarino) {
-        println("--------------------------------------------------------------------------------")
-        println(" 6. PROGRESIÓN HASTA NIVEL MÁXIMO (CAP)")
-        println("--------------------------------------------------------------------------------")
+        VisualizadorConsola.imprimirSeccion("6. PROGRESIÓN HASTA NIVEL MÁXIMO (CAP)")
         submarino.billetera.acreditar(5000)
 
         for (i in 2..5) {
@@ -136,11 +118,5 @@ object MainPruebaIssue8 {
         val resCap = tienda.comprarParaSubmarino(FabricaMejoras.ID_BODEGA, submarino)
         println("   -> ${resCap.obtenerMensaje()}")
         println("   • Capacidad final de bodega: ${submarino.bodega?.capacidadMaxima} kg\n")
-    }
-
-    private fun imprimirCierre() {
-        println("================================================================================")
-        println("              DEMOSTRACIÓN DE UPGRADES FINALIZADA CON ÉXITO                     ")
-        println("================================================================================")
     }
 }

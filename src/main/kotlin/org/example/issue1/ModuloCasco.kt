@@ -7,14 +7,14 @@ package submarino
 abstract class CascoBase(
     presionMaximaPa: Double,
     integridad: Double = 100.0,
-    protected val notificador: Notificador = NotificadorConsola
+    private val notificador: Notificador = NotificadorConsola
 ) : Casco {
 
     final override var presionMaximaPa: Double = presionMaximaPa
-        protected set
+        private set
 
     final override var integridad: Double = integridad
-        protected set
+        private set
 
     override val estaDestruido: Boolean
         get() = integridad <= 0.0
@@ -52,8 +52,8 @@ abstract class CascoBase(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        val otherCasco = other as? Casco ?: return false
-        return presionMaximaPa == otherCasco.presionMaximaPa && integridad == otherCasco.integridad
+        if (other !is Casco) return false
+        return presionMaximaPa == other.presionMaximaPa && integridad == other.integridad
     }
 
     override fun hashCode(): Int {
@@ -103,7 +103,7 @@ class CascoReforzado(
     }
 
     override fun notificarColapso() {
-        notificador.notificar("¡ALERTA CRÍTICA: El casco reforzado ha colapsado por sobrepresión extrema!")
+        super.notificarColapso()
     }
 
     override fun toString(): String {

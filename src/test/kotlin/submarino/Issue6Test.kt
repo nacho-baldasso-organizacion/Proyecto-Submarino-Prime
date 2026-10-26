@@ -9,16 +9,28 @@ import kotlin.test.assertIs
 
 class Issue6Test {
 
+    private fun crearSubmarinoPrueba(
+        bodega: Almacenamiento? = null,
+        pesoBase: Double = 1000.0,
+        velocidad: Double = 10.0,
+        estrategiaAscenso: EstrategiaAscenso = EstrategiaAscensoLineal(0.5),
+        posX: Double = 0.0,
+        posY: Double = 0.0
+    ): Submarino = Submarino(
+        posX = posX,
+        posY = posY,
+        velocidad = velocidad,
+        casco = ModuloCasco(500_000.0),
+        pesoBase = pesoBase,
+        bodega = bodega,
+        estrategiaAscenso = estrategiaAscenso,
+        notificador = NotificadorSilencioso
+    )
+
     @Test
     fun testCalculoDePesoTotalConBodegaVaciaEsIgualAlPesoBase() {
         val bodega = Bodega(capacidadMaxima = 20.0)
-        val submarino = Submarino(
-            casco = ModuloCasco(500_000.0),
-            pesoBase = 1000.0,
-            bodega = bodega,
-            velocidad = 10.0,
-            notificador = NotificadorSilencioso
-        )
+        val submarino = crearSubmarinoPrueba(bodega = bodega)
 
         assertEquals(0.0, bodega.pesoActual, 0.001)
         assertEquals(1000.0, submarino.pesoBase, 0.001)
@@ -30,13 +42,7 @@ class Issue6Test {
     @Test
     fun testCalculoDePesoTotalAMediaCargaSumaPesoBaseYCargaActual() {
         val bodega = Bodega(capacidadMaxima = 20.0)
-        val submarino = Submarino(
-            casco = ModuloCasco(500_000.0),
-            pesoBase = 1000.0,
-            bodega = bodega,
-            velocidad = 10.0,
-            notificador = NotificadorSilencioso
-        )
+        val submarino = crearSubmarinoPrueba(bodega = bodega)
 
         val mineral1 = Mineral("MIN-1", TipoMineral.TITANIO_CRISTALINO, 0, 1)
         val mineral2 = Mineral("MIN-2", TipoMineral.TITANIO_CRISTALINO, 0, 2)
@@ -52,12 +58,7 @@ class Issue6Test {
     @Test
     fun testCalculoDePesoTotalConBodegaLlenaAlcanzaPesoBaseMasCapacidadMaxima() {
         val bodega = Bodega(capacidadMaxima = 20.0)
-        val submarino = Submarino(
-            casco = ModuloCasco(500_000.0),
-            pesoBase = 1000.0,
-            bodega = bodega,
-            velocidad = 10.0,
-            notificador = NotificadorSilencioso
+        val submarino = crearSubmarinoPrueba(bodega = bodega)
         )
 
         for (i in 1..4) {
@@ -78,15 +79,7 @@ class Issue6Test {
         val bodega = Bodega(capacidadMaxima = capacidad)
         val velocidadBase = 10.0
         val estrategia = EstrategiaAscensoLineal(factorReduccionMaximo = 0.5)
-
-        val submarino = Submarino(
-            casco = ModuloCasco(500_000.0),
-            pesoBase = 1000.0,
-            bodega = bodega,
-            velocidad = velocidadBase,
-            estrategiaAscenso = estrategia,
-            notificador = NotificadorSilencioso
-        )
+        val submarino = crearSubmarinoPrueba(bodega = bodega, velocidad = velocidadBase, estrategiaAscenso = estrategia)
 
         val velVacia = submarino.velocidadAscenso
         assertEquals(1.0, submarino.factorAscenso, 0.001)
@@ -119,16 +112,7 @@ class Issue6Test {
     @Test
     fun testManiobraDeAscensoRalentizaElDesplazamientoEfectivoSegunMasa() {
         val bodega = Bodega(capacidadMaxima = 20.0)
-        val sub = Submarino(
-            posX = 0.0,
-            posY = 100.0,
-            velocidad = 10.0,
-            casco = ModuloCasco(500_000.0),
-            pesoBase = 1000.0,
-            bodega = bodega,
-            estrategiaAscenso = EstrategiaAscensoLineal(factorReduccionMaximo = 0.5),
-            notificador = NotificadorSilencioso
-        )
+        val sub = crearSubmarinoPrueba(bodega = bodega, posY = 100.0)
 
         assertTrue(sub.ascender(20.0))
         assertEquals(80.0, sub.posY, 0.001)
@@ -149,16 +133,7 @@ class Issue6Test {
     @Test
     fun testManiobraDeAscensoSemanticaSinArgumentosUsaVelocidadDinamica() {
         val bodega = Bodega(capacidadMaxima = 20.0)
-        val sub = Submarino(
-            posX = 0.0,
-            posY = 50.0,
-            velocidad = 10.0,
-            casco = ModuloCasco(500_000.0),
-            pesoBase = 1000.0,
-            bodega = bodega,
-            estrategiaAscenso = EstrategiaAscensoLineal(factorReduccionMaximo = 0.5),
-            notificador = NotificadorSilencioso
-        )
+        val sub = crearSubmarinoPrueba(bodega = bodega, posY = 50.0)
 
         assertTrue(sub.ascender())
         assertEquals(40.0, sub.posY, 0.001)
@@ -357,16 +332,7 @@ class Issue6Test {
         val detector = DetectorColisionesConcreto()
         val servicio = ServicioRecoleccion(bodega, detector)
 
-        val sub = Submarino(
-            posX = 0.0,
-            posY = 100.0,
-            velocidad = 10.0,
-            casco = ModuloCasco(500_000.0),
-            pesoBase = 1000.0,
-            bodega = bodega,
-            estrategiaAscenso = EstrategiaAscensoLineal(factorReduccionMaximo = 0.5),
-            notificador = NotificadorSilencioso
-        )
+        val sub = crearSubmarinoPrueba(bodega = bodega, posY = 100.0)
 
         assertEquals(10.0, sub.velocidadAscenso, 0.001)
 

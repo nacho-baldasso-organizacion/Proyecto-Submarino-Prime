@@ -9,32 +9,55 @@ package submarino
 
 /**
  * Delimita la zona de superficie natural del agua (profundidad Y <= profundidadMaxima).
+ * Encapsula sus campos con 'private set' y aporta métodos de dominio (no anémica).
  */
 class ZonaSuperficie(
-    val profundidadMaxima: Double = 0.0
+    profundidadMaxima: Double = 0.0
 ) : ZonaAcople {
+
+    var profundidadMaxima: Double = profundidadMaxima
+        private set
+
     override fun estaEnZona(x: Double, y: Double): Boolean = y <= profundidadMaxima
 
     fun descripcion(): String = "Zona Superficie (<= ${profundidadMaxima}m)"
+
+    fun margenProfundidad(y: Double): Double = profundidadMaxima - y
+
+    fun esCercanoASuperficie(y: Double, tolerancia: Double = 5.0): Boolean =
+        y <= profundidadMaxima + tolerancia
 }
 
 /**
  * Delimita una plataforma o muelle flotante acotado horizontalmente en el eje X y en la superficie (Y).
  */
 class ZonaAcoplePlataforma(
-    val xMin: Double,
-    val xMax: Double,
-    val profundidadMaxima: Double = 0.0
+    xMin: Double,
+    xMax: Double,
+    profundidadMaxima: Double = 0.0
 ) : ZonaAcople {
 
     init {
         require(xMin <= xMax) { "xMin ($xMin) no puede ser mayor que xMax ($xMax)" }
     }
 
+    var xMin: Double = xMin
+        private set
+
+    var xMax: Double = xMax
+        private set
+
+    var profundidadMaxima: Double = profundidadMaxima
+        private set
+
     override fun estaEnZona(x: Double, y: Double): Boolean =
         y <= profundidadMaxima && x in xMin..xMax
 
     fun anchoPlataforma(): Double = xMax - xMin
+
+    fun centroPlataforma(): Double = (xMin + xMax) / 2.0
+
+    fun distanciaAlCentro(x: Double): Double = kotlin.math.abs(x - centroPlataforma())
 
     fun descripcion(): String = "Plataforma X: [$xMin, $xMax] en superficie (<= ${profundidadMaxima}m)"
 }
@@ -46,11 +69,15 @@ class ZonaAcoplePlataforma(
  * - Single Responsibility Principle (SRP)
  * - Dependency Inversion Principle (DIP)
  * - Interface Segregation Principle (ISP)
+ * - Encapsulación estricta (campos privados o 'private set')
  * - Patrón Observer
  */
 class EstacionAcople(
-    val zonaAcople: ZonaAcople = ZonaSuperficie()
+    zonaAcople: ZonaAcople = ZonaSuperficie()
 ) : ControlAcople, ConsultaAcople {
+
+    var zonaAcople: ZonaAcople = zonaAcople
+        private set
 
     private val observadores: MutableList<ObservadorAcople> = mutableListOf()
 
@@ -99,4 +126,8 @@ class EstacionAcople(
     fun eliminarObservador(observador: ObservadorAcople) {
         observadores.remove(observador)
     }
+
+    fun estadoEstacion(): String = if (hayNaveAcoplada) "Ocupada por nave amarrada" else "Disponible"
+
+    fun cantidadObservadores(): Int = observadores.size
 }

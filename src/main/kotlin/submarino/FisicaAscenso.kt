@@ -8,18 +8,40 @@ package submarino
  */
 
 /**
- * Representa una instantánea inmutable del estado dinámico de peso y ascenso del submarino.
- * Cumple con POO idiomática en Kotlin e incorpora métodos de consulta de dominio.
+ * Representa una instantánea del estado dinámico de peso y ascenso del submarino.
+ * Cumple con POO idiomática en Kotlin, encapsulamiento estricto (campos con `private set`)
+ * e incorpora métodos de dominio con comportamiento propio (no anémica).
  */
-data class EstadoAscenso(
-    val pesoBase: Double,
-    val pesoCarga: Double,
-    val pesoTotal: Double,
-    val capacidadMaximaBodega: Double,
-    val factorVelocidad: Double,
-    val velocidadNominal: Double,
-    val velocidadAscensoEfectiva: Double
+class EstadoAscenso(
+    pesoBase: Double,
+    pesoCarga: Double,
+    pesoTotal: Double,
+    capacidadMaximaBodega: Double,
+    factorVelocidad: Double,
+    velocidadNominal: Double,
+    velocidadAscensoEfectiva: Double
 ) {
+    var pesoBase: Double = pesoBase
+        private set
+
+    var pesoCarga: Double = pesoCarga
+        private set
+
+    var pesoTotal: Double = pesoTotal
+        private set
+
+    var capacidadMaximaBodega: Double = capacidadMaximaBodega
+        private set
+
+    var factorVelocidad: Double = factorVelocidad
+        private set
+
+    var velocidadNominal: Double = velocidadNominal
+        private set
+
+    var velocidadAscensoEfectiva: Double = velocidadAscensoEfectiva
+        private set
+
     /**
      * Calcula el porcentaje de ocupación actual de la bodega (0.0% a 100.0%).
      */
@@ -37,6 +59,62 @@ data class EstadoAscenso(
      * Retorna el porcentaje de reducción aplicado a la velocidad nominal.
      */
     fun porcentajeReduccionVelocidad(): Double = ((1.0 - factorVelocidad) * 100.0).coerceAtLeast(0.0)
+
+    /**
+     * Retorna la capacidad remanente en kilogramos.
+     */
+    fun capacidadDisponible(): Double = (capacidadMaximaBodega - pesoCarga).coerceAtLeast(0.0)
+
+    /**
+     * Evalúa si la bodega se encuentra en niveles de saturación crítica.
+     */
+    fun esCargaCritica(umbralPorcentaje: Double = 90.0): Boolean =
+        porcentajeOcupacion() >= umbralPorcentaje
+
+    /**
+     * Estima el tiempo requerido en segundos para ascender una distancia vertical dada.
+     */
+    fun estimarTiempoAscenso(distanciaMetros: Double): Double {
+        if (velocidadAscensoEfectiva <= 0.0) return Double.POSITIVE_INFINITY
+        return distanciaMetros / velocidadAscensoEfectiva
+    }
+
+    operator fun component1(): Double = pesoBase
+    operator fun component2(): Double = pesoCarga
+    operator fun component3(): Double = pesoTotal
+    operator fun component4(): Double = capacidadMaximaBodega
+    operator fun component5(): Double = factorVelocidad
+    operator fun component6(): Double = velocidadNominal
+    operator fun component7(): Double = velocidadAscensoEfectiva
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is EstadoAscenso) return false
+        return pesoBase == other.pesoBase &&
+                pesoCarga == other.pesoCarga &&
+                pesoTotal == other.pesoTotal &&
+                capacidadMaximaBodega == other.capacidadMaximaBodega &&
+                factorVelocidad == other.factorVelocidad &&
+                velocidadNominal == other.velocidadNominal &&
+                velocidadAscensoEfectiva == other.velocidadAscensoEfectiva
+    }
+
+    override fun hashCode(): Int {
+        var res = pesoBase.hashCode()
+        res = 31 * res + pesoCarga.hashCode()
+        res = 31 * res + pesoTotal.hashCode()
+        res = 31 * res + capacidadMaximaBodega.hashCode()
+        res = 31 * res + factorVelocidad.hashCode()
+        res = 31 * res + velocidadNominal.hashCode()
+        res = 31 * res + velocidadAscensoEfectiva.hashCode()
+        return res
+    }
+
+    override fun toString(): String {
+        return "EstadoAscenso(pesoBase=$pesoBase, pesoCarga=$pesoCarga, pesoTotal=$pesoTotal, " +
+                "capacidadMaximaBodega=$capacidadMaximaBodega, factorVelocidad=$factorVelocidad, " +
+                "velocidadNominal=$velocidadNominal, velocidadAscensoEfectiva=$velocidadAscensoEfectiva)"
+    }
 }
 
 /**
@@ -85,20 +163,20 @@ interface EstrategiaAscenso {
         pesoTotal: Double,
         pesoBase: Double,
         capacidadCargaMaxima: Double
-    ): Double {
-        val factor = calcularFactorVelocidad(pesoTotal, pesoBase, capacidadCargaMaxima)
-        return maxOf(velocidadBase * factor, 0.0)
-    }
+    ): Double = CalculosFisica.aplicarFactorEscala(
+        velocidadBase,
+        calcularFactorVelocidad(pesoTotal, pesoBase, capacidadCargaMaxima)
+    )
 
     fun calcularDesplazamientoAscenso(
         deltaYNominal: Double,
         pesoTotal: Double,
         pesoBase: Double,
         capacidadCargaMaxima: Double
-    ): Double {
-        val factor = calcularFactorVelocidad(pesoTotal, pesoBase, capacidadCargaMaxima)
-        return maxOf(deltaYNominal * factor, 0.0)
-    }
+    ): Double = CalculosFisica.aplicarFactorEscala(
+        deltaYNominal,
+        calcularFactorVelocidad(pesoTotal, pesoBase, capacidadCargaMaxima)
+    )
 }
 
 /**
@@ -106,8 +184,10 @@ interface EstrategiaAscenso {
  * Aplica una reducción proporcional al porcentaje de capacidad ocupada en la bodega.
  */
 class EstrategiaAscensoLineal(
-    private val factorReduccionMaximo: Double = 0.5
+    factorReduccionMaximo: Double = 0.5
 ) : EstrategiaAscenso {
+
+    private var _factorReduccionMaximo: Double = factorReduccionMaximo
 
     init {
         require(factorReduccionMaximo in 0.0..1.0) {
@@ -116,17 +196,15 @@ class EstrategiaAscensoLineal(
     }
 
     val factorReduccion: Double
-        get() = factorReduccionMaximo
+        get() = _factorReduccionMaximo
 
     override fun calcularFactorVelocidad(
         pesoTotal: Double,
         pesoBase: Double,
         capacidadCargaMaxima: Double
     ): Double {
-        if (capacidadCargaMaxima <= 0.0) return 1.0
-        val pesoCarga = (pesoTotal - pesoBase).coerceAtLeast(0.0)
-        val porcentajeOcupacion = (pesoCarga / capacidadCargaMaxima).coerceIn(0.0, 1.0)
-        return (1.0 - (factorReduccionMaximo * porcentajeOcupacion)).coerceIn(0.0, 1.0)
+        val ratio = CalculosFisica.calcularRatioCarga(pesoTotal, pesoBase, capacidadCargaMaxima)
+        return (1.0 - (_factorReduccionMaximo * ratio)).coerceIn(0.0, 1.0)
     }
 }
 
@@ -153,8 +231,10 @@ class EstrategiaAscensoPorMasa : EstrategiaAscenso {
  */
 class EstrategiaFisicaFlotabilidad(
     private val calculadorPresion: CalculadorPresion = CalculadoraPresionFluido(),
-    private val factorEmpujeMinimo: Double = 0.2
+    factorEmpujeMinimo: Double = 0.2
 ) : EstrategiaAscenso {
+
+    private var _factorEmpujeMinimo: Double = factorEmpujeMinimo
 
     init {
         require(factorEmpujeMinimo in 0.0..1.0) {
@@ -163,18 +243,15 @@ class EstrategiaFisicaFlotabilidad(
     }
 
     val empujeMinimo: Double
-        get() = factorEmpujeMinimo
+        get() = _factorEmpujeMinimo
 
     override fun calcularFactorVelocidad(
         pesoTotal: Double,
         pesoBase: Double,
         capacidadCargaMaxima: Double
     ): Double {
-        if (capacidadCargaMaxima <= 0.0) return 1.0
-        val pesoCarga = (pesoTotal - pesoBase).coerceAtLeast(0.0)
-        val ratioCarga = (pesoCarga / capacidadCargaMaxima).coerceIn(0.0, 1.0)
-
-        val factor = 1.0 - (ratioCarga * (1.0 - factorEmpujeMinimo))
-        return factor.coerceIn(factorEmpujeMinimo, 1.0)
+        val ratioCarga = CalculosFisica.calcularRatioCarga(pesoTotal, pesoBase, capacidadCargaMaxima)
+        val factor = 1.0 - (ratioCarga * (1.0 - _factorEmpujeMinimo))
+        return factor.coerceIn(_factorEmpujeMinimo, 1.0)
     }
 }

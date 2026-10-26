@@ -37,17 +37,27 @@ interface CalculadorPresion {
  * Principio Abierto/Cerrado (OCP):
  * Implementación abierta y configurable para cualquier fluido y entorno gravitacional.
  * Permite instanciar física de agua dulce, salada o atmósferas extraterrestres sin modificar la clase.
+ * Encapsula sus propiedades con 'private set' e incorpora comportamiento propio.
  *
  * Fórmula: P = P0 + (ρ * g * h)
  */
 open class CalculadoraPresionFluido(
-    override val densidadFluido: Double = 1025.0,    // kg/m³
-    override val gravedad: Double = 9.81,            // m/s²
-    override val presionAtmosferica: Double = 101325.0 // Pa
+    densidadFluido: Double = 1025.0,      // kg/m³
+    gravedad: Double = 9.81,              // m/s²
+    presionAtmosferica: Double = 101325.0 // Pa
 ) : CalculadorPresion {
 
+    final override var densidadFluido: Double = densidadFluido
+        private set
+
+    final override var gravedad: Double = gravedad
+        private set
+
+    final override var presionAtmosferica: Double = presionAtmosferica
+        private set
+
     override fun calcularPresion(profundidad: Double): Double {
-        val h = maxOf(profundidad, 0.0) // no hay presiones inferiores a la de superficie
+        val h = maxOf(profundidad, 0.0)
         return presionAtmosferica + (densidadFluido * gravedad * h)
     }
 
@@ -55,6 +65,17 @@ open class CalculadoraPresionFluido(
         val presionHidrostaticaMaxima = presionMaximaPa - presionAtmosferica
         return maxOf(presionHidrostaticaMaxima / (densidadFluido * gravedad), 0.0)
     }
+
+    /**
+     * Retorna el incremento de presión por cada metro de descenso en el fluido (ρ * g).
+     */
+    fun calcularGradientePresion(): Double = densidadFluido * gravedad
+
+    /**
+     * Determina si la presión a una profundidad especificada no sobrepasa el límite del casco.
+     */
+    fun esProfundidadSegura(profundidad: Double, presionMaximaPa: Double): Boolean =
+        calcularPresion(profundidad) <= presionMaximaPa
 }
 
 /**

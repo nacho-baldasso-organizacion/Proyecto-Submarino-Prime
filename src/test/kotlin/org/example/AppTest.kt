@@ -245,7 +245,7 @@ class SubmarinoIntegrationTest {
         assertFalse(estacion.puedeAcoplar(submarino.posX, submarino.posY))
         assertFalse(submarino.estaEnZonaAcople(estacion.zonaAcople))
 
-        submarino.ascender(deltaY = 40.0)
+        submarino.mover(deltaX = 0.0, deltaY = -40.0)
         assertEquals(0.0, submarino.posY)
         assertTrue(submarino.estaEnSuperficie)
         assertTrue(submarino.estaEnZonaAcople(estacion.zonaAcople))

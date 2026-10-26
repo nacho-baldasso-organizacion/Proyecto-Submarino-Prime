@@ -35,6 +35,10 @@ interface Recolectable : Posicionable, Cargable, Vendible {
     override val peso: Double
     override val valor: Int
     var recolectado: Boolean
+
+    fun marcarRecolectado() {
+        recolectado = true
+    }
 }
 
 /**
@@ -47,6 +51,15 @@ interface Almacenamiento : Pesable {
     override val peso: Double
         get() = pesoActual
     val capacidadMaxima: Double
+
+    val capacidadDisponible: Double
+        get() = (capacidadMaxima - pesoActual).coerceAtLeast(0.0)
+
+    val cantidadItems: Int
+        get() = obtenerElementos().size
+
+    val valorTotal: Int
+        get() = obtenerElementos().sumOf { it.valor }
 
     /**
      * Intenta almacenar un ítem en el contenedor respetando la capacidad máxima de peso.
@@ -63,16 +76,17 @@ interface Almacenamiento : Pesable {
     /**
      * Limpia o vacía los elementos almacenados en el contenedor.
      */
-    fun vaciar() {
-        // Implementación por defecto para adaptabilidad de mocks y fakes en tests (LSP)
-    }
+    fun vaciar() {}
 
     /**
      * Amplía la capacidad máxima de almacenamiento en kilogramos.
      */
-    fun aumentarCapacidad(incremento: Double) {
-        // Implementación por defecto para adaptabilidad de mocks y fakes en tests (LSP)
-    }
+    fun aumentarCapacidad(incremento: Double) {}
+
+    /**
+     * Determina si el compartimento se encuentra a plena capacidad.
+     */
+    fun estaLlena(): Boolean = pesoActual >= capacidadMaxima
 }
 
 /**

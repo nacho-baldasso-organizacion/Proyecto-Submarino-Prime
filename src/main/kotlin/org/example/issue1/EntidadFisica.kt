@@ -5,7 +5,7 @@ package submarino
  * garantizando la invariante de que Y jamás sea negativa (superficie del agua).
  *
  * Implementa [Movible] para cumplir con el Principio de Sustitución de Liskov (LSP)
- * y encapsula la mutación de estado con visibilidad `protected set`.
+ * y encapsula la mutación de estado con visibilidad `private set`.
  */
 abstract class EntidadFisica(
     posX: Double = 0.0,
@@ -14,13 +14,13 @@ abstract class EntidadFisica(
 ) : Movible {
 
     var posX: Double = posX
-        protected set
+        private set
 
     var posY: Double = maxOf(posY, 0.0)
-        protected set
+        private set
 
     var velocidad: Double = velocidad
-        protected set
+        private set
 
     /**
      * Actualiza la posición Y asegurando que no sea menor a 0.
@@ -35,5 +35,12 @@ abstract class EntidadFisica(
      */
     protected fun actualizarPosX(nuevaPosX: Double) {
         posX = nuevaPosX
+    }
+
+    /**
+     * Actualiza la velocidad nominal del móvil.
+     */
+    protected fun actualizarVelocidad(nuevaVelocidad: Double) {
+        velocidad = maxOf(nuevaVelocidad, 0.0)
     }
 }

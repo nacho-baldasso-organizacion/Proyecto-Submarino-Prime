@@ -14,7 +14,10 @@ open class SimuladorSubmarino {
      * Ejecuta el flujo secuencial completo de simulación y validación de sistemas.
      */
     fun ejecutarSimulacionCompleta() {
-        imprimirEncabezado()
+        VisualizadorConsola.imprimirEncabezado(
+            "SIMULADOR DE SUBMARINO - PRUEBA DE INTEGRACIÓN POO LIMPIA\n" +
+            "                 (Issues #1, #2 y #3: Navegación, Física y Casco)"
+        )
         mostrarConstantesFisicas()
 
         val casco = ModuloCasco(presionMaximaPa = 500_000.0, integridad = 100.0)
@@ -26,20 +29,11 @@ open class SimuladorSubmarino {
         probarInmersionSegura(submarino, profundidadMaximaSegura)
         probarInmersionCriticaYDestruccion()
         probarPrincipiosSolid()
-        imprimirCierre()
-    }
-
-    private fun imprimirEncabezado() {
-        println("================================================================================")
-        println("            SIMULADOR DE SUBMARINO - PRUEBA DE INTEGRACIÓN POO LIMPIA            ")
-        println("                 (Issues #1, #2 y #3: Navegación, Física y Casco)               ")
-        println("================================================================================\n")
+        VisualizadorConsola.imprimirCierre("TODOS LOS SISTEMAS VALIDADOS CON ÉXITO")
     }
 
     private fun mostrarConstantesFisicas() {
-        println("--------------------------------------------------------------------------------")
-        println(" 1. FÍSICA HIDROSTÁTICA DEL ENTORNO (Issue #2)")
-        println("--------------------------------------------------------------------------------")
+        VisualizadorConsola.imprimirSeccion("1. FÍSICA HIDROSTÁTICA DEL ENTORNO (Issue #2)")
         println("  • Densidad del agua de mar (ρ) : ${CalculadoraHidrostatica.DENSIDAD_AGUA_MAR} kg/m³")
         println("  • Aceleración de gravedad (g)  : ${CalculadoraHidrostatica.GRAVEDAD} m/s²")
         println("  • Presión atmosférica base (P0): ${"%,.2f".format(CalculadoraHidrostatica.PRESION_ATMOSFERICA)} Pa")
@@ -47,9 +41,7 @@ open class SimuladorSubmarino {
     }
 
     private fun imprimirEstadoInicial(submarino: Submarino, profMaxSegura: Double) {
-        println("--------------------------------------------------------------------------------")
-        println(" 2. INICIALIZACIÓN DE LA NAVE Y MÓDULO CASCO (Issues #1 y #3)")
-        println("--------------------------------------------------------------------------------")
+        VisualizadorConsola.imprimirSeccion("2. INICIALIZACIÓN DE LA NAVE Y MÓDULO CASCO (Issues #1 y #3)")
         println("  • Presión máxima admisible del casco: ${"%,.2f".format(submarino.casco.presionMaximaPa)} Pa")
         println("  • Profundidad máxima segura teórica : ${"%.2f".format(profMaxSegura)} metros")
         println("  • Integridad inicial del casco      : ${"%.2f".format(submarino.casco.integridad)}%")
@@ -59,10 +51,7 @@ open class SimuladorSubmarino {
     }
 
     private fun probarNavegacionYPropulsion(submarino: Submarino) {
-        println("--------------------------------------------------------------------------------")
-        println(" A) PRUEBA DE NAVEGACIÓN, PROPULSIÓN Y LÍMITES FÍSICOS (Issue #1)")
-        println("--------------------------------------------------------------------------------")
-
+        VisualizadorConsola.imprimirSeccion("A) PRUEBA DE NAVEGACIÓN, PROPULSIÓN Y LÍMITES FÍSICOS (Issue #1)")
         println("-> Maniobra 1: Desplazamiento horizontal (+30.0 m en eje X)")
         submarino.mover(deltaX = 30.0, deltaY = 0.0)
         println("   Posición actual : (X: ${submarino.posX} m, Y: ${submarino.posY} m)")
@@ -75,10 +64,7 @@ open class SimuladorSubmarino {
     }
 
     private fun probarInmersionSegura(submarino: Submarino, profMaxSegura: Double) {
-        println("--------------------------------------------------------------------------------")
-        println(" B) INMERSIÓN SEGURA DENTRO DEL LÍMITE DE PRESIÓN DEL CASCO (Issues #1, #2 y #3)")
-        println("--------------------------------------------------------------------------------")
-
+        VisualizadorConsola.imprimirSeccion("B) INMERSIÓN SEGURA DENTRO DEL LÍMITE DE PRESIÓN DEL CASCO (Issues #1, #2 y #3)")
         println("-> Inmersión controlada a 20.0 m de profundidad (Límite seguro: ${"%.2f".format(profMaxSegura)} m)")
         submarino.mover(deltaX = 5.0, deltaY = 20.0)
         val presion20m = CalculadoraHidrostatica.calcularPresion(submarino.posY)
@@ -102,10 +88,7 @@ open class SimuladorSubmarino {
     }
 
     private fun probarInmersionCriticaYDestruccion() {
-        println("--------------------------------------------------------------------------------")
-        println(" C) INMERSIÓN CRÍTICA, PÉRDIDA DE INTEGRIDAD Y DESTRUCCIÓN (Issue #3)")
-        println("--------------------------------------------------------------------------------")
-
+        VisualizadorConsola.imprimirSeccion("C) INMERSIÓN CRÍTICA, PÉRDIDA DE INTEGRIDAD Y DESTRUCCIÓN (Issue #3)")
         val cascoCritico = ModuloCasco(presionMaximaPa = 250_000.0, integridad = 5.0)
         val subCritico = Submarino(posX = 0.0, posY = 0.0, velocidad = 10.0, casco = cascoCritico)
         val limiteCritico = CalculadoraHidrostatica.calcularProfundidadMaxima(cascoCritico.presionMaximaPa)
@@ -142,20 +125,16 @@ open class SimuladorSubmarino {
     }
 
     private fun probarPrincipiosSolid() {
-        println("--------------------------------------------------------------------------------")
-        println(" D) VALIDACIÓN DE PRINCIPIOS SOLID (OCP, DIP, ISP, SRP)")
-        println("--------------------------------------------------------------------------------")
-
+        VisualizadorConsola.imprimirSeccion("D) VALIDACIÓN DE PRINCIPIOS SOLID (OCP, DIP, ISP, SRP)")
         println("-> 1. OCP & DIP: Submarino equipado con CascoReforzado (blindaje 50%)")
         val cascoBlindado = CascoReforzado(presionMaximaPa = 250_000.0, integridad = 100.0, factorAbsorcion = 0.5)
-        val subAvanzado: Navegable = Submarino(posX = 0.0, posY = 0.0, casco = cascoBlindado)
+        val subAvanzado = Submarino(posX = 0.0, posY = 0.0, casco = cascoBlindado)
 
         subAvanzado.sumergir(30.0)
-        val subRef = subAvanzado as Submarino
-        val presionExterna = CalculadoraHidrostatica.calcularPresion(subRef.posY)
-        subRef.verificarIntegridad(presionExterna)
+        val presionExterna = CalculadoraHidrostatica.calcularPresion(subAvanzado.posY)
+        subAvanzado.verificarIntegridad(presionExterna)
 
-        println("   Profundidad actual  : ${subRef.posY} m")
+        println("   Profundidad actual  : ${subAvanzado.posY} m")
         println("   Presión recibida    : ${"%,.2f".format(presionExterna)} Pa")
         println("   Integridad blindada : ${"%.2f".format(cascoBlindado.integridad)}% (Daño reducido por absorción)")
 
@@ -163,12 +142,6 @@ open class SimuladorSubmarino {
         val fisicaAguaDulce = CalculadoraPresionFluido(densidadFluido = 1000.0)
         val presionDulce = fisicaAguaDulce.calcularPresion(30.0)
         println("   Presión a 30m en agua dulce: ${"%,.2f".format(presionDulce)} Pa (menor que en mar: ${"%,.2f".format(presionExterna)} Pa)\n")
-    }
-
-    private fun imprimirCierre() {
-        println("================================================================================")
-        println("        SIMULACIÓN FINALIZADA CON ÉXITO - TODOS LOS SISTEMAS VALIDADOS         ")
-        println("================================================================================\n")
     }
 }
 

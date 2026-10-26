@@ -18,7 +18,7 @@ object MainPruebaIssue6 {
      * Coordina el flujo completo de simulación física de ascenso.
      */
     fun ejecutarDemostracion() {
-        imprimirEncabezado()
+        VisualizadorConsola.imprimirEncabezado("SUBMARINO PRIME - PRUEBA DE ISSUE #6: PESO TOTAL Y FÍSICA DE ASCENSO")
 
         val pesoBase = 1000.0
         val capacidadBodega = 20.0
@@ -41,14 +41,7 @@ object MainPruebaIssue6 {
         demostrarMediaCarga(submarino, bodega)
         demostrarCargaCompleta(submarino, bodega)
         demostrarComparativaEstrategias(bodega, casco)
-
-        imprimirCierre()
-    }
-
-    private fun imprimirEncabezado() {
-        println("================================================================================")
-        println("       SUBMARINO PRIME - PRUEBA DE ISSUE #6: PESO TOTAL Y FÍSICA DE ASCENSO     ")
-        println("================================================================================\n")
+        VisualizadorConsola.imprimirCierre("PRUEBA ISSUE #6 FINALIZADA CON ÉXITO")
     }
 
     private fun demostrarEspecificaciones(submarino: Submarino, bodega: Bodega) {
@@ -60,9 +53,7 @@ object MainPruebaIssue6 {
     }
 
     private fun demostrarEstadoVacio(submarino: Submarino) {
-        println("--------------------------------------------------------------------------------")
-        println(" A) ESTADO CON BODEGA VACÍA (0% CARGA)")
-        println("--------------------------------------------------------------------------------")
+        VisualizadorConsola.imprimirSeccion("A) ESTADO CON BODEGA VACÍA (0% CARGA)")
         val estado = submarino.obtenerEstadoAscenso()
         println("   • Carga en bodega       : ${estado.pesoCarga} kg")
         println("   • Peso total de nave    : ${estado.pesoTotal} kg")
@@ -75,11 +66,9 @@ object MainPruebaIssue6 {
     }
 
     private fun demostrarMediaCarga(submarino: Submarino, bodega: Bodega) {
-        println("--------------------------------------------------------------------------------")
-        println(" B) ESTADO A MEDIA CARGA (50% CARGA - 10 kg)")
-        println("--------------------------------------------------------------------------------")
-        bodega.agregar(Mineral("M-MED-1", TipoMineral.TITANIO_CRISTALINO, 0, 0)) // 5.0 kg
-        bodega.agregar(Mineral("M-MED-2", TipoMineral.TITANIO_CRISTALINO, 0, 1)) // 5.0 kg
+        VisualizadorConsola.imprimirSeccion("B) ESTADO A MEDIA CARGA (50% CARGA - 10 kg)")
+        bodega.agregar(Mineral("M-MED-1", TipoMineral.TITANIO_CRISTALINO, 0, 0))
+        bodega.agregar(Mineral("M-MED-2", TipoMineral.TITANIO_CRISTALINO, 0, 1))
 
         val estado = submarino.obtenerEstadoAscenso()
         println("   • Carga en bodega       : ${estado.pesoCarga} kg / ${estado.capacidadMaximaBodega} kg")
@@ -93,11 +82,9 @@ object MainPruebaIssue6 {
     }
 
     private fun demostrarCargaCompleta(submarino: Submarino, bodega: Bodega) {
-        println("--------------------------------------------------------------------------------")
-        println(" C) ESTADO A CARGA COMPLETA (100% CARGA - 20 kg)")
-        println("--------------------------------------------------------------------------------")
-        bodega.agregar(Mineral("M-FULL-1", TipoMineral.TITANIO_CRISTALINO, 0, 2)) // 5.0 kg
-        bodega.agregar(Mineral("M-FULL-2", TipoMineral.TITANIO_CRISTALINO, 0, 3)) // 5.0 kg
+        VisualizadorConsola.imprimirSeccion("C) ESTADO A CARGA COMPLETA (100% CARGA - 20 kg)")
+        bodega.agregar(Mineral("M-FULL-1", TipoMineral.TITANIO_CRISTALINO, 0, 2))
+        bodega.agregar(Mineral("M-FULL-2", TipoMineral.TITANIO_CRISTALINO, 0, 3))
 
         val estado = submarino.obtenerEstadoAscenso()
         println("   • Carga en bodega       : ${estado.pesoCarga} kg / ${estado.capacidadMaximaBodega} kg [BODEGA LLENA]")
@@ -111,9 +98,7 @@ object MainPruebaIssue6 {
     }
 
     private fun demostrarComparativaEstrategias(bodega: Bodega, casco: ModuloCasco) {
-        println("--------------------------------------------------------------------------------")
-        println(" D) PRINCIPIO ABIERTO/CERRADO (OCP) - COMPARATIVA POLIMÓRFICA DE ESTRATEGIAS")
-        println("--------------------------------------------------------------------------------")
+        VisualizadorConsola.imprimirSeccion("D) PRINCIPIO ABIERTO/CERRADO (OCP) - COMPARATIVA POLIMÓRFICA DE ESTRATEGIAS")
         val subLineal = Submarino(pesoBase = 1000.0, bodega = bodega, velocidad = 10.0, casco = casco, estrategiaAscenso = EstrategiaAscensoLineal(0.5))
         val subMasa = Submarino(pesoBase = 1000.0, bodega = bodega, velocidad = 10.0, casco = casco, estrategiaAscenso = EstrategiaAscensoPorMasa())
         val subArquimedes = Submarino(pesoBase = 1000.0, bodega = bodega, velocidad = 10.0, casco = casco, estrategiaAscenso = EstrategiaFisicaFlotabilidad(factorEmpujeMinimo = 0.3))
@@ -121,11 +106,5 @@ object MainPruebaIssue6 {
         println("   1. Estrategia Lineal Estándar           -> Velocidad: ${"%.2f".format(subLineal.velocidadAscenso)} m/s")
         println("   2. Estrategia Inercial por Ratio Masa   -> Velocidad: ${"%.2f".format(subMasa.velocidadAscenso)} m/s")
         println("   3. Estrategia de Flotabilidad de Arquímedes -> Velocidad: ${"%.2f".format(subArquimedes.velocidadAscenso)} m/s\n")
-    }
-
-    private fun imprimirCierre() {
-        println("================================================================================")
-        println("                      PRUEBA FINALIZADA CON ÉXITO                               ")
-        println("================================================================================")
     }
 }

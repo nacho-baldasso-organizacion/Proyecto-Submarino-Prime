@@ -66,6 +66,12 @@ interface GestorObservadoresTienda {
     fun eliminarObservador(observador: ObservadorTienda)
 }
 
+/**
+ * Inversión de Dependencias (DIP):
+ * Abstracción para el servicio procesador y coordinador de compras de upgrades.
+ */
+interface ServicioUpgradesContrato : ProcesadorCompras, GestorObservadoresTienda
+
 interface TiendaMejorasContrato {
     fun comprar(idMejora: String, pagable: Pagable, submarino: Submarino): ResultadoCompra
     fun listarMejoras(): List<Mejora>

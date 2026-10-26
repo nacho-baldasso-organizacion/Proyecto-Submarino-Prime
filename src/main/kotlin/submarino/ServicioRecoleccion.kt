@@ -1,11 +1,26 @@
 package submarino
 
 /**
+ * Inversión de Dependencias (DIP):
+ * Abstracción del servicio coordinador de recolección de recursos en el mapa.
+ */
+interface ServicioRecoleccionContrato {
+    /**
+     * Procesa la interacción espacial y evalúa si corresponde recolectar algún elemento.
+     */
+    fun procesarRecoleccion(
+        posicion: Posicionable,
+        elementosEnMapa: List<Recolectable>
+    ): ResultadoRecoleccion
+}
+
+/**
  * Servicio coordinador de la lógica de recolección de minerales.
  *
  * Cumple estrictamente con:
- * - Dependency Inversion Principle (DIP): depende exclusivamente de las abstracciones
- *   [Almacenamiento] y [DetectorColisiones], inyectadas a través del constructor.
+ * - Dependency Inversion Principle (DIP): implementa [ServicioRecoleccionContrato]
+ *   y depende exclusivamente de las abstracciones [Almacenamiento] y [DetectorColisiones],
+ *   inyectadas a través del constructor.
  * - Single Responsibility Principle (SRP): coordina el flujo entre detección espacial y
  *   almacenamiento de inventario sin acoplarse a detalles de infraestructura.
  * - Encapsulación: campos privados protegidos contra mutación externa.
@@ -13,7 +28,7 @@ package submarino
 class ServicioRecoleccion(
     private val almacenamiento: Almacenamiento,
     private val detectorColisiones: DetectorColisiones
-) {
+) : ServicioRecoleccionContrato {
 
     /**
      * Administra el flujo de verificación de colisión y recolección automática al colisionar
@@ -23,7 +38,7 @@ class ServicioRecoleccion(
      * @param elementosEnMapa Colección de elementos recolectables existentes en el entorno.
      * @return [ResultadoRecoleccion] describiendo el resultado exacto de la operación.
      */
-    fun procesarRecoleccion(
+    override fun procesarRecoleccion(
         posicion: Posicionable,
         elementosEnMapa: List<Recolectable>
     ): ResultadoRecoleccion {
