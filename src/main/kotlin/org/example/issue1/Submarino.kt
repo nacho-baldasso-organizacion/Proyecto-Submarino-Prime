@@ -12,6 +12,9 @@ package submarino
  * - [GestorBodega]: ampliación de capacidad de carga.
  * - [GestorVelocidadNavegacion]: propulsión horizontal.
  * - [GestorMovimiento]: ejecución y validación del desplazamiento.
+ * - [NavegadorSubmarino]: maniobras de navegación.
+ * - [GestorMejorasSubmarino]: aplicación de mejoras.
+ * - [FormateadorEstadoSubmarino]: representación textual del estado.
  *
  * Encapsula la totalidad de sus campos con visibilidad privada o 'private set'.
  * Hereda de [EntidadFisica] y compone un [Casco] mediante interfaz (DIP, OCP).
@@ -74,6 +77,22 @@ class Submarino(
             actualizarPosY(y)
         }
     )
+    private val navegador: NavegadorSubmarino = NavegadorSubmarino(
+        movimiento = movimiento,
+        gestorAscenso = gestorAscenso,
+        posicionActual = { this.posX to this.posY },
+        velocidadAscensoActual = { this.velocidadAscenso },
+        pesoBaseActual = { this.pesoBase },
+        bodegaActual = { this.bodega }
+    )
+    private val gestorMejoras: GestorMejorasSubmarino = GestorMejorasSubmarino(
+        propulsion = propulsion,
+        sistemaCasco = sistemaCasco,
+        gestorBodega = gestorBodega,
+        gestorVelocidad = gestorVelocidad,
+        bodegaActual = { this.bodega }
+    )
+    private val formateadorEstado: FormateadorEstadoSubmarino = FormateadorEstadoSubmarino()
 
     init {
         require(pesoBase >= 0.0) { "El peso base no puede ser negativo: $pesoBase" }
@@ -92,7 +111,7 @@ class Submarino(
         get() = acople.estaAcoplado
 
     val estaEnSuperficie: Boolean
-        get() = posY <= 0.0
+        get() = navegador.estaEnSuperficie()
 
     override fun acoplar() {
         acople.acoplar(!estaDestruido)
@@ -102,7 +121,7 @@ class Submarino(
         acople.desacoplar()
     }
 
-    fun estaEnZonaAcople(zona: ZonaAcople): Boolean = zona.estaEnZona(posX, posY)
+    fun estaEnZonaAcople(zona: ZonaAcople): Boolean = navegador.estaEnZona(zona)
 
     val pesoTotal: Double
         get() = gestorAscenso.pesoTotal(pesoBase, bodega)
@@ -124,23 +143,23 @@ class Submarino(
         gestorAscenso.estadoAscenso(pesoBase, bodega, velocidadAscensoBase)
 
     fun aumentarCapacidadBodega(incremento: Double) {
-        gestorBodega.aumentarCapacidad(bodega, incremento)
+        gestorMejoras.aumentarCapacidadBodega(incremento)
     }
 
     fun aumentarVelocidadAscenso(incremento: Double) {
-        propulsion.aumentarVelocidadAscenso(incremento)
+        gestorMejoras.aumentarVelocidadAscenso(incremento)
     }
 
     fun aumentarResistenciaCasco(incrementoPa: Double) {
-        sistemaCasco.reforzar(incrementoPa)
+        gestorMejoras.aumentarResistenciaCasco(incrementoPa)
     }
 
     fun aumentarVelocidadPropulsion(incremento: Double) {
-        gestorVelocidad.aumentarVelocidad(incremento)
+        gestorMejoras.aumentarVelocidadPropulsion(incremento)
     }
 
     override fun mover(deltaX: Double, deltaY: Double): Boolean =
-        movimiento.mover(deltaX, deltaY)
+        navegador.mover(deltaX, deltaY)
 
     fun verificarIntegridad(presionActualPa: Double): Double =
         sistemaCasco.recibirPresion(presionActualPa)
@@ -148,17 +167,13 @@ class Submarino(
     fun verificarIntegridadConCalculador(calculador: CalculadorPresion): Double =
         sistemaCasco.recibirPresionDesde(calculador, posY)
 
-    override fun navegar(deltaX: Double): Boolean = mover(deltaX = deltaX, deltaY = 0.0)
+    override fun navegar(deltaX: Double): Boolean = navegador.navegar(deltaX)
 
-    override fun sumergir(deltaY: Double): Boolean = mover(deltaX = 0.0, deltaY = deltaY)
+    override fun sumergir(deltaY: Double): Boolean = navegador.sumergir(deltaY)
 
-    override fun ascender(deltaY: Double): Boolean {
-        val desplazamientoEfectivo =
-            gestorAscenso.desplazamientoAscenso(deltaY, pesoBase, bodega)
-        return mover(deltaX = 0.0, deltaY = -desplazamientoEfectivo)
-    }
+    override fun ascender(deltaY: Double): Boolean = navegador.ascender(deltaY)
 
-    fun ascender(): Boolean = mover(deltaX = 0.0, deltaY = -velocidadAscenso)
+    fun ascender(): Boolean = navegador.ascender()
 
     fun obtenerCasco(): Casco = casco
 
@@ -168,9 +183,17 @@ class Submarino(
 
     fun obtenerBateria(): Double = bateria
 
-    override fun toString(): String {
-        return "Submarino(posX=$posX, posY=$posY, pesoTotal=${"%.2f".format(pesoTotal)}kg, " +
-                "velocidadAscenso=${"%.2f".format(velocidadAscenso)}m/s, saldo=$${billetera.saldo}, " +
-                "estaAcoplado=$estaAcoplado, bateria=${"%.2f".format(bateria)}%, estaDestruido=$estaDestruido, casco=$casco)"
-    }
+    private fun estadoActual(): EstadoSubmarino = EstadoSubmarino(
+        posX = posX,
+        posY = posY,
+        pesoTotal = pesoTotal,
+        velocidadAscenso = velocidadAscenso,
+        saldo = billetera.saldo,
+        estaAcoplado = estaAcoplado,
+        bateria = bateria,
+        estaDestruido = estaDestruido,
+        casco = casco
+    )
+
+    override fun toString(): String = formateadorEstado.formatear(estadoActual())
 }
