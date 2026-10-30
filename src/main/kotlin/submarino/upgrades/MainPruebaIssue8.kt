@@ -22,11 +22,11 @@ object MainPruebaIssue8 {
     fun ejecutarDemostracion() {
         VisualizadorConsola.imprimirEncabezado("SUBMARINO PRIME - PRUEBA DE ISSUE #8: SISTEMA DE UPGRADES / MEJORAS")
 
-        val catalogo = FabricaMejoras.crearCatalogoEstandar()
+        val catalogo: ConsultableCatalogo = FabricaMejoras.crearCatalogoEstandar()
         val servicioUpgrades: ServicioUpgradesContrato = ServicioUpgrades(catalogo)
         servicioUpgrades.registrarObservador(ObservadorTiendaConsola())
 
-        val tienda = TiendaMejoras(catalogo, servicioUpgrades)
+        val tienda: TiendaMejorasContrato = TiendaMejoras(catalogo, servicioUpgrades)
         val servicioComercio: ServicioComercioContrato = ServicioComercio(CalculadoraPreciosEstandar())
 
         val submarino = configurarSubmarino()
@@ -58,7 +58,7 @@ object MainPruebaIssue8 {
         return sub
     }
 
-    private fun demostrarCatalogo(catalogo: CatalogoUpgrades) {
+    private fun demostrarCatalogo(catalogo: ConsultableCatalogo) {
         VisualizadorConsola.imprimirSeccion("2. CATÁLOGO DISPONIBLE EN LA TIENDA DE MEJORAS")
         catalogo.obtenerTodas().forEachIndexed { idx, it ->
             println("   [$idx] ID: ${it.id} | ${it.nombre} | Nivel: ${it.nivel}/${it.nivelMaximo} | Costo: $$${it.costo}")
@@ -67,9 +67,9 @@ object MainPruebaIssue8 {
         println()
     }
 
-    private fun demostrarRechazoFondos(tienda: TiendaMejoras, submarino: Submarino) {
+    private fun demostrarRechazoFondos(tienda: TiendaMejorasContrato, submarino: Submarino) {
         VisualizadorConsola.imprimirSeccion("3. INTENTO DE COMPRA SIN FONDOS (RECHAZO CONTROLADO)")
-        val resultadoSinFondos = tienda.comprarParaSubmarino(FabricaMejoras.ID_BODEGA, submarino)
+        val resultadoSinFondos = tienda.comprar(FabricaMejoras.ID_BODEGA, submarino.billetera, submarino)
         println("   -> ${resultadoSinFondos.obtenerMensaje()}")
         println("   • Saldo en billetera: $${submarino.billetera.saldo} (sin cambios)\n")
     }
@@ -85,37 +85,37 @@ object MainPruebaIssue8 {
         println("   • Saldo disponible tras venta: $${submarino.billetera.saldo}\n")
     }
 
-    private fun demostrarCompraExitosa(tienda: TiendaMejoras, submarino: Submarino) {
+    private fun demostrarCompraExitosa(tienda: TiendaMejorasContrato, submarino: Submarino) {
         VisualizadorConsola.imprimirSeccion("5. ADQUISICIÓN DE MEJORAS Y AUMENTO DINÁMICO DE ESTADÍSTICAS")
-        val resBodega = tienda.comprarParaSubmarino(FabricaMejoras.ID_BODEGA, submarino)
+        val resBodega = tienda.comprar(FabricaMejoras.ID_BODEGA, submarino.billetera, submarino)
         println("   A) Compra Bodega: ${resBodega.obtenerMensaje()}")
         println("      -> Nueva capacidad de bodega: ${submarino.bodega?.capacidadMaxima} kg (antes 10.0 kg)")
 
-        val resAscenso = tienda.comprarParaSubmarino(FabricaMejoras.ID_ASCENSO, submarino)
+        val resAscenso = tienda.comprar(FabricaMejoras.ID_ASCENSO, submarino.billetera, submarino)
         println("\n   B) Compra Ascenso: ${resAscenso.obtenerMensaje()}")
         println("      -> Nueva velocidad ascenso: ${submarino.velocidadAscensoBase} m/s (antes 4.0 m/s)")
 
-        val resCasco = tienda.comprarParaSubmarino(FabricaMejoras.ID_CASCO, submarino)
+        val resCasco = tienda.comprar(FabricaMejoras.ID_CASCO, submarino.billetera, submarino)
         println("\n   C) Compra Blindaje: ${resCasco.obtenerMensaje()}")
         println("      -> Nueva resistencia casco: ${submarino.casco.presionMaximaPa} Pa (antes 250,000 Pa)")
 
-        val resMotor = tienda.comprarParaSubmarino(FabricaMejoras.ID_PROPULSION, submarino)
+        val resMotor = tienda.comprar(FabricaMejoras.ID_PROPULSION, submarino.billetera, submarino)
         println("\n   D) Compra Propulsión: ${resMotor.obtenerMensaje()}")
         println("      -> Nueva velocidad motor: ${submarino.velocidad} m/s (antes 5.0 m/s)")
         println("   • Saldo restante: $${submarino.billetera.saldo}\n")
     }
 
-    private fun demostrarProgresionYCap(tienda: TiendaMejoras, submarino: Submarino) {
+    private fun demostrarProgresionYCap(tienda: TiendaMejorasContrato, submarino: Submarino) {
         VisualizadorConsola.imprimirSeccion("6. PROGRESIÓN HASTA NIVEL MÁXIMO (CAP)")
         submarino.billetera.acreditar(5000)
 
         for (i in 2..5) {
-            val resProg = tienda.comprarParaSubmarino(FabricaMejoras.ID_BODEGA, submarino)
+            val resProg = tienda.comprar(FabricaMejoras.ID_BODEGA, submarino.billetera, submarino)
             println("   -> Ascenso a nivel $i: ${resProg.obtenerMensaje()}")
         }
 
         println("\n-> Intento de compra sobre mejora en nivel máximo:")
-        val resCap = tienda.comprarParaSubmarino(FabricaMejoras.ID_BODEGA, submarino)
+        val resCap = tienda.comprar(FabricaMejoras.ID_BODEGA, submarino.billetera, submarino)
         println("   -> ${resCap.obtenerMensaje()}")
         println("   • Capacidad final de bodega: ${submarino.bodega?.capacidadMaxima} kg\n")
     }

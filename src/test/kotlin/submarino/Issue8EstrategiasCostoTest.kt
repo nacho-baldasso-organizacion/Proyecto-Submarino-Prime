@@ -67,7 +67,7 @@ class Issue8EstrategiasCostoTest {
         var efectoAplicado = false
         val nuevoEfecto = object : EfectoMejora {
             override val magnitud: Double = 100.0
-            override fun aplicar(submarino: Submarino) {
+            override fun aplicar(submarino: SubmarinoMejorable) {
                 efectoAplicado = true
             }
         }

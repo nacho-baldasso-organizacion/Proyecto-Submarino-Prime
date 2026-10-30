@@ -9,7 +9,7 @@ class Issue6Test {
     @Test
     fun testIntegracionCompletaRecoleccionYDecrementoReactivo() {
         val bodega = Bodega(capacidadMaxima = 10.0)
-        val servicio = ServicioRecoleccion(bodega, DetectorColisionesConcreto())
+        val servicio: ServicioRecoleccionContrato = ServicioRecoleccion(bodega, DetectorColisionesConcreto())
         val sub = SubmarinoPruebaFactory.crear(bodega = bodega, posY = 100.0)
 
         assertEquals(10.0, sub.velocidadAscenso, 0.001)
@@ -29,7 +29,7 @@ class Issue6Test {
     }
 
     private fun recolectar(
-        servicio: ServicioRecoleccion,
+        servicio: ServicioRecoleccionContrato,
         mineral: Mineral,
         posicion: Posicion
     ): ResultadoRecoleccion = servicio.procesarRecoleccion(posicion, listOf(mineral))

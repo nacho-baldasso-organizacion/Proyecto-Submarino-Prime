@@ -153,9 +153,10 @@ interface ProcesadorComercio {
 /**
  * Inversión de Dependencias (DIP):
  * Abstracción integral para el servicio coordinador de comercio en superficie.
+ * Opera polimórficamente sobre la abstracción [NaveComercial], sin acoplarse a la clase concreta del submarino.
  */
 interface ServicioComercioContrato : ProcesadorComercio {
-    fun venderBodegaSubmarino(submarino: Submarino): ResultadoComercio
+    fun venderBodegaSubmarino(submarino: NaveComercial): ResultadoComercio
     fun registrarObservador(observador: ObservadorComercio)
     fun eliminarObservador(observador: ObservadorComercio)
 }

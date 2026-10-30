@@ -30,8 +30,26 @@ interface LimiteNivel {
     val esNivelMaximo: Boolean
 }
 
+/**
+ * Inversión de Dependencias (DIP):
+ * Abstracción del receptor de estadísticas sobre el cual se aplican los efectos de una mejora.
+ * Permite que [Mejora], los efectos y los servicios de compras operen sobre el dominio
+ * sin conocer la clase concreta del submarino.
+ */
+interface SubmarinoMejorable {
+    val billetera: Billetera
+    fun aumentarCapacidadBodega(incremento: Double)
+    fun aumentarVelocidadAscenso(incremento: Double)
+    fun aumentarResistenciaCasco(incrementoPa: Double)
+    fun aumentarVelocidadPropulsion(incremento: Double)
+}
+
+/**
+ * Segregación de Interfaces (ISP) e Inversión de Dependencias (DIP):
+ * Contrato mínimo de aplicación de una mejora sobre un receptor abstracto [SubmarinoMejorable].
+ */
 interface AplicableSubmarino {
-    fun aplicar(submarino: Submarino)
+    fun aplicar(submarino: SubmarinoMejorable)
 }
 
 interface EfectoMejora : AplicableSubmarino {
@@ -53,7 +71,7 @@ interface GestionableCatalogo {
 }
 
 interface ProcesadorCompras {
-    fun comprarMejora(idMejora: String, pagable: Pagable, submarino: Submarino): ResultadoCompra
+    fun comprarMejora(idMejora: String, pagable: Pagable, submarino: SubmarinoMejorable): ResultadoCompra
 }
 
 interface ObservadorTienda {
@@ -73,7 +91,7 @@ interface GestorObservadoresTienda {
 interface ServicioUpgradesContrato : ProcesadorCompras, GestorObservadoresTienda
 
 interface TiendaMejorasContrato {
-    fun comprar(idMejora: String, pagable: Pagable, submarino: Submarino): ResultadoCompra
+    fun comprar(idMejora: String, pagable: Pagable, submarino: SubmarinoMejorable): ResultadoCompra
     fun listarMejoras(): List<Mejora>
 }
 

@@ -30,7 +30,7 @@ class ServicioUpgrades(
     override fun comprarMejora(
         idMejora: String,
         pagable: Pagable,
-        submarino: Submarino
+        submarino: SubmarinoMejorable
     ): ResultadoCompra {
         val mejora = catalogo.buscarPorId(idMejora)
         if (mejora == null) {
