@@ -13,42 +13,27 @@ package submarino
  * e incorpora métodos de dominio con comportamiento propio (no anémica).
  */
 class EstadoAscenso(
-    pesoBase: Double,
-    pesoCarga: Double,
-    pesoTotal: Double,
-    capacidadMaximaBodega: Double,
-    factorVelocidad: Double,
-    velocidadNominal: Double,
-    velocidadAscensoEfectiva: Double
+    val pesoBase: Double,
+    val pesoCarga: Double,
+    val pesoTotal: Double,
+    val capacidadMaximaBodega: Double,
+    val factorVelocidad: Double,
+    val velocidadNominal: Double,
+    val velocidadAscensoEfectiva: Double
 ) {
-    var pesoBase: Double = pesoBase
-        private set
-
-    var pesoCarga: Double = pesoCarga
-        private set
-
-    var pesoTotal: Double = pesoTotal
-        private set
-
-    var capacidadMaximaBodega: Double = capacidadMaximaBodega
-        private set
-
-    var factorVelocidad: Double = factorVelocidad
-        private set
-
-    var velocidadNominal: Double = velocidadNominal
-        private set
-
-    var velocidadAscensoEfectiva: Double = velocidadAscensoEfectiva
-        private set
+    /**
+     * Calcula la relación normalizada entre la carga transportada y la capacidad máxima
+     * de la bodega (0.0 a 1.0). Si no existe capacidad configurada, retorna 0.0.
+     */
+    fun ratioCarga(): Double {
+        if (capacidadMaximaBodega <= 0.0) return 0.0
+        return (pesoCarga / capacidadMaximaBodega).coerceIn(0.0, 1.0)
+    }
 
     /**
      * Calcula el porcentaje de ocupación actual de la bodega (0.0% a 100.0%).
      */
-    fun porcentajeOcupacion(): Double {
-        if (capacidadMaximaBodega <= 0.0) return 0.0
-        return ((pesoCarga / capacidadMaximaBodega) * 100.0).coerceIn(0.0, 100.0)
-    }
+    fun porcentajeOcupacion(): Double = ratioCarga() * 100.0
 
     /**
      * Indica si la bodega ha alcanzado su capacidad máxima permitida.
@@ -56,14 +41,34 @@ class EstadoAscenso(
     fun esCargaCompleta(): Boolean = pesoCarga >= capacidadMaximaBodega
 
     /**
+     * Indica si la bodega se encuentra completamente vacía.
+     */
+    fun esBodegaVacia(): Boolean = pesoCarga <= 0.0
+
+    /**
+     * Calcula la fracción de velocidad perdida respecto de la velocidad nominal (0.0 a 1.0).
+     */
+    fun factorReduccionVelocidad(): Double = (1.0 - factorVelocidad).coerceAtLeast(0.0)
+
+    /**
      * Retorna el porcentaje de reducción aplicado a la velocidad nominal.
      */
-    fun porcentajeReduccionVelocidad(): Double = ((1.0 - factorVelocidad) * 100.0).coerceAtLeast(0.0)
+    fun porcentajeReduccionVelocidad(): Double = factorReduccionVelocidad() * 100.0
 
     /**
      * Retorna la capacidad remanente en kilogramos.
      */
     fun capacidadDisponible(): Double = (capacidadMaximaBodega - pesoCarga).coerceAtLeast(0.0)
+
+    /**
+     * Calcula el exceso de peso transportado por encima de la capacidad máxima (nunca negativo).
+     */
+    fun excesoPeso(): Double = (pesoCarga - capacidadMaximaBodega).coerceAtLeast(0.0)
+
+    /**
+     * Determina si la carga transportada excede la capacidad máxima de la bodega.
+     */
+    fun estaSobrecargada(): Boolean = excesoPeso() > 0.0
 
     /**
      * Evalúa si la bodega se encuentra en niveles de saturación crítica.
@@ -187,7 +192,7 @@ class EstrategiaAscensoLineal(
     factorReduccionMaximo: Double = 0.5
 ) : EstrategiaAscenso {
 
-    private var _factorReduccionMaximo: Double = factorReduccionMaximo
+    private val _factorReduccionMaximo: Double = factorReduccionMaximo
 
     init {
         require(factorReduccionMaximo in 0.0..1.0) {
@@ -234,7 +239,7 @@ class EstrategiaFisicaFlotabilidad(
     factorEmpujeMinimo: Double = 0.2
 ) : EstrategiaAscenso {
 
-    private var _factorEmpujeMinimo: Double = factorEmpujeMinimo
+    private val _factorEmpujeMinimo: Double = factorEmpujeMinimo
 
     init {
         require(factorEmpujeMinimo in 0.0..1.0) {

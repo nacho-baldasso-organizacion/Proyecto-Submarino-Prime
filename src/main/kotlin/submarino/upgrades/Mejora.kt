@@ -73,10 +73,10 @@ open class Mejora(
     private var efectoMejora: EfectoMejora = efecto
     private var estrategiaCostoMejora: EstrategiaCosto = estrategiaCosto
 
-    val efecto: EfectoMejora
+    private val efecto: EfectoMejora
         get() = efectoMejora
 
-    val estrategiaCosto: EstrategiaCosto
+    private val estrategiaCosto: EstrategiaCosto
         get() = estrategiaCostoMejora
 
     override val nivel: Int

@@ -12,12 +12,12 @@ package submarino
  * - Artefacto Hundido: Cavernas Ocultas, Peso: 8.0 kg, Valor: $1200
  */
 enum class TipoMineral(
-    nombreMineral: String,
-    zona: String,
-    peso: Double,
-    valor: Int,
-    profundidadMin: Double,
-    profundidadMax: Double
+    val nombreMineral: String,
+    val zona: String,
+    val peso: Double,
+    val valor: Int,
+    val profundidadMin: Double,
+    val profundidadMax: Double
 ) {
     ARENA_DE_CUARZO(
         nombreMineral = "Arena de Cuarzo",
@@ -67,24 +67,6 @@ enum class TipoMineral(
         profundidadMin = 0.0,
         profundidadMax = Double.MAX_VALUE
     );
-
-    var nombreMineral: String = nombreMineral
-        private set
-
-    var zona: String = zona
-        private set
-
-    var peso: Double = peso
-        private set
-
-    var valor: Int = valor
-        private set
-
-    var profundidadMin: Double = profundidadMin
-        private set
-
-    var profundidadMax: Double = profundidadMax
-        private set
 
     /**
      * Determina si una profundidad dada corresponde a la franja natural de este mineral.

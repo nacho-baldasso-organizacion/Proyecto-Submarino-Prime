@@ -18,7 +18,17 @@ class ZonaSuperficie(
     var profundidadMaxima: Double = profundidadMaxima
         private set
 
-    override fun estaEnZona(x: Double, y: Double): Boolean = y <= profundidadMaxima
+    /**
+     * Indica si la coordenada vertical corresponde a la superficie del agua.
+     */
+    fun estaEnSuperficie(y: Double): Boolean = y <= profundidadMaxima
+
+    /**
+     * Indica si una entidad posicionable se encuentra dentro de esta zona.
+     */
+    fun contiene(posicion: Posicionable): Boolean = estaEnSuperficie(posicion.posY.toDouble())
+
+    override fun estaEnZona(x: Double, y: Double): Boolean = estaEnSuperficie(y)
 
     fun descripcion(): String = "Zona Superficie (<= ${profundidadMaxima}m)"
 
@@ -50,8 +60,24 @@ class ZonaAcoplePlataforma(
     var profundidadMaxima: Double = profundidadMaxima
         private set
 
+    /**
+     * Indica si la coordenada vertical corresponde a la superficie del agua.
+     */
+    fun estaEnSuperficie(y: Double): Boolean = y <= profundidadMaxima
+
+    /**
+     * Indica si la coordenada horizontal se encuentra dentro del ancho de la plataforma.
+     */
+    fun estaDentroDelAncho(x: Double): Boolean = x in xMin..xMax
+
+    /**
+     * Indica si una entidad posicionable se encuentra dentro de esta plataforma.
+     */
+    fun contiene(posicion: Posicionable): Boolean =
+        estaEnSuperficie(posicion.posY.toDouble()) && estaDentroDelAncho(posicion.posX.toDouble())
+
     override fun estaEnZona(x: Double, y: Double): Boolean =
-        y <= profundidadMaxima && x in xMin..xMax
+        estaEnSuperficie(y) && estaDentroDelAncho(x)
 
     fun anchoPlataforma(): Double = xMax - xMin
 
@@ -94,9 +120,29 @@ class EstacionAcople(
             return nave != null
         }
 
-    override fun puedeAcoplar(x: Double, y: Double): Boolean {
-        return !hayNaveAcoplada && zonaAcople.estaEnZona(x, y)
-    }
+    /**
+     * Indica si la estación no tiene ninguna nave amarrada.
+     */
+    fun estaDisponible(): Boolean = !hayNaveAcoplada
+
+    /**
+     * Indica si la estación ya tiene una nave amarrada.
+     */
+    fun estaOcupada(): Boolean = hayNaveAcoplada
+
+    /**
+     * Determina si las coordenadas dadas pertenecen a la zona de acople configurada.
+     */
+    fun estaEnZonaDeAcople(x: Double, y: Double): Boolean = zonaAcople.estaEnZona(x, y)
+
+    /**
+     * Determina si la posición de una entidad pertenece a la zona de acople configurada.
+     */
+    fun estaEnZonaDeAcople(posicion: Posicionable): Boolean =
+        estaEnZonaDeAcople(posicion.posX.toDouble(), posicion.posY.toDouble())
+
+    override fun puedeAcoplar(x: Double, y: Double): Boolean =
+        estaDisponible() && estaEnZonaDeAcople(x, y)
 
     override fun acoplar(nave: Acoplable, x: Double, y: Double): Boolean {
         if (!puedeAcoplar(x, y)) {
@@ -127,7 +173,7 @@ class EstacionAcople(
         observadores.remove(observador)
     }
 
-    fun estadoEstacion(): String = if (hayNaveAcoplada) "Ocupada por nave amarrada" else "Disponible"
+    fun estadoEstacion(): String = if (estaOcupada()) "Ocupada por nave amarrada" else "Disponible"
 
     fun cantidadObservadores(): Int = observadores.size
 }
