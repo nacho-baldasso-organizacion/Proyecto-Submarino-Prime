@@ -119,10 +119,10 @@ class ObservadorTiendaSilencioso : ObservadorTienda {
         rechazos.add(idMejora to motivo)
     }
 
-    val mejorasCompradas: List<Mejora>
+    private val mejorasCompradas: List<Mejora>
         get() = compras.toList()
 
-    val rechazosRegistrados: List<Pair<String, String>>
+    private val rechazosRegistrados: List<Pair<String, String>>
         get() = rechazos.toList()
 
     fun limpiar() {

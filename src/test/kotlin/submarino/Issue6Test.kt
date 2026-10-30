@@ -59,7 +59,6 @@ class Issue6Test {
     fun testCalculoDePesoTotalConBodegaLlenaAlcanzaPesoBaseMasCapacidadMaxima() {
         val bodega = Bodega(capacidadMaxima = 20.0)
         val submarino = crearSubmarinoPrueba(bodega = bodega)
-        )
 
         for (i in 1..4) {
             val min = Mineral("MIN-$i", TipoMineral.TITANIO_CRISTALINO, 0, i)

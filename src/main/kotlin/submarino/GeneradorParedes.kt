@@ -4,11 +4,29 @@ import java.util.UUID
 import kotlin.random.Random
 
 /**
+ * Abstracción para la creación de ítems recolectables (DIP).
+ * Permite que [GeneradorParedes] no dependa de una implementación concreta como [Mineral].
+ */
+interface FabricaRecolectables {
+    fun crear(id: String, tipo: TipoMineral, posX: Int, posY: Int): Recolectable
+}
+
+/**
+ * Implementación estándar de [FabricaRecolectables] que produce ejemplares de [Mineral].
+ */
+class FabricaRecolectablesMineral : FabricaRecolectables {
+    override fun crear(id: String, tipo: TipoMineral, posX: Int, posY: Int): Recolectable =
+        Mineral(id = id, tipo = tipo, posX = posX, posY = posY, recolectado = false)
+}
+
+/**
  * Generador de minerales ubicado exclusivamente en las paredes o bordes del mapa submarino.
- * Cumple con SRP (Single Responsibility Principle) y DIP (Dependency Inversion Principle).
+ * Cumple con SRP (Single Responsibility Principle) y DIP (Dependency Inversion Principle):
+ * depende de las abstracciones [Random] y [FabricaRecolectables], inyectadas por constructor.
  */
 class GeneradorParedes(
-    private val random: Random = Random.Default
+    private val random: Random = Random.Default,
+    private val fabricaRecolectables: FabricaRecolectables = FabricaRecolectablesMineral()
 ) : GeneradorMinerales {
 
     override fun generarEnParedes(
@@ -54,12 +72,6 @@ class GeneradorParedes(
      */
     fun crearMineralEnPared(tipo: TipoMineral, x: Int, y: Int, index: Int): Recolectable {
         val idUnico = "MIN-${tipo.name.take(4)}-${UUID.randomUUID().toString().take(6).uppercase()}-$index"
-        return Mineral(
-            id = idUnico,
-            tipo = tipo,
-            posX = x,
-            posY = y,
-            recolectado = false
-        )
+        return fabricaRecolectables.crear(idUnico, tipo, x, y)
     }
 }

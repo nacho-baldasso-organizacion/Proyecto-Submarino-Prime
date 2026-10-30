@@ -1,89 +1,17 @@
 package submarino
 
 /**
- * Subsistema especializado en la gestión de energía y batería (SRP).
- */
-class SistemaEnergia(
-    bateriaInicial: Double = 100.0,
-    consumoPorMetro: Double = 0.5
-) {
-    var bateria: Double = bateriaInicial
-        private set
-
-    private var tasaConsumo: Double = consumoPorMetro
-
-    val estaAgotada: Boolean
-        get() = bateria <= 0.0
-
-    fun consumirPorDistancia(distancia: Double): Double {
-        val consumo = distancia * tasaConsumo
-        bateria = maxOf(bateria - consumo, 0.0)
-        return bateria
-    }
-
-    fun recargar(cantidad: Double) {
-        require(cantidad > 0.0) { "La recarga debe ser positiva: $cantidad" }
-        bateria = minOf(bateria + cantidad, 100.0)
-    }
-}
-
-/**
- * Subsistema especializado en el control de estado de amarre y acople (SRP).
- */
-class ControladorAcople {
-    var estaAcoplado: Boolean = false
-        private set
-
-    fun acoplar(puedeAcoplar: Boolean): Boolean {
-        if (puedeAcoplar) {
-            estaAcoplado = true
-            return true
-        }
-        return false
-    }
-
-    fun desacoplar(): Boolean {
-        if (estaAcoplado) {
-            estaAcoplado = false
-            return true
-        }
-        return false
-    }
-
-    fun sincronizarConMovimiento(deltaX: Double, deltaY: Double) {
-        if (estaAcoplado && (deltaX != 0.0 || deltaY != 0.0)) {
-            desacoplar()
-        }
-    }
-}
-
-/**
- * Subsistema especializado en el control de motores y velocidad de ascenso vertical (SRP).
- */
-class SistemaPropulsion(
-    velocidadAscensoBase: Double = 5.0
-) {
-    var velocidadAscensoBase: Double = velocidadAscensoBase
-        private set
-
-    init {
-        require(velocidadAscensoBase >= 0.0) {
-            "La velocidad de ascenso base no puede ser negativa: $velocidadAscensoBase"
-        }
-    }
-
-    fun aumentarVelocidadAscenso(incremento: Double) {
-        require(incremento > 0.0) {
-            "El incremento de velocidad de ascenso debe ser positivo: $incremento"
-        }
-        velocidadAscensoBase += incremento
-    }
-}
-
-/**
  * Clase orquestadora principal que representa al submarino.
- * Descompuesta en subsistemas especializados ([SistemaEnergia], [ControladorAcople], [SistemaPropulsion])
- * para cumplir estrictamente con SRP eliminando la God Class.
+ *
+ * Delega cada responsabilidad secundaria en subsistemas especializados:
+ * - [SistemaEnergia]: batería y consumo.
+ * - [ControladorAcople]: estado de amarre.
+ * - [SistemaPropulsion]: velocidad de ascenso.
+ * - [SistemaCasco]: integridad y refuerzo del casco.
+ * - [GestorAscenso]: peso y dinámica de ascenso.
+ * - [GestorBodega]: ampliación de capacidad de carga.
+ * - [GestorVelocidadNavegacion]: propulsión horizontal.
+ * - [GestorMovimiento]: ejecución y validación del desplazamiento.
  *
  * Encapsula la totalidad de sus campos con visibilidad privada o 'private set'.
  * Hereda de [EntidadFisica] y compone un [Casco] mediante interfaz (DIP, OCP).
@@ -122,13 +50,30 @@ class Submarino(
     var billetera: Billetera = billetera
         private set
 
-    private val notificador: Notificador = notificador
-    private val calculadorPeso: CalculadorPeso = calculadorPeso
-    private val estrategiaAscenso: EstrategiaAscenso = estrategiaAscenso
+    // Dependency injection through abstractions - DIP
+    // All collaborator types are interfaces, concretions provided by caller
 
     private val energia: SistemaEnergia = SistemaEnergia(100.0, CONSUMO_BATERIA_POR_METRO)
     private val acople: ControladorAcople = ControladorAcople()
     private val propulsion: SistemaPropulsion = SistemaPropulsion(velocidadAscensoBase)
+    private val sistemaCasco: SistemaCasco = SistemaCasco(casco)
+    private val gestorAscenso: GestorAscenso = GestorAscenso(calculadorPeso, estrategiaAscenso)
+    private val gestorBodega: GestorBodega = GestorBodega()
+    private val gestorVelocidad: GestorVelocidadNavegacion = GestorVelocidadNavegacion(
+        velocidadActual = { this.velocidad },
+        actualizarVelocidad = { actualizarVelocidad(it) }
+    )
+    private val movimiento: GestorMovimiento = GestorMovimiento(
+        energia = energia,
+        acople = acople,
+        notificador = notificador,
+        estaDestruido = { sistemaCasco.estaDestruido },
+        posicionActual = { this.posX to this.posY },
+        actualizarPosicion = { x, y ->
+            actualizarPosX(x)
+            actualizarPosY(y)
+        }
+    )
 
     init {
         require(pesoBase >= 0.0) { "El peso base no puede ser negativo: $pesoBase" }
@@ -141,7 +86,7 @@ class Submarino(
         get() = energia.bateria
 
     val estaDestruido: Boolean
-        get() = casco.estaDestruido
+        get() = sistemaCasco.estaDestruido
 
     override val estaAcoplado: Boolean
         get() = acople.estaAcoplado
@@ -150,9 +95,7 @@ class Submarino(
         get() = posY <= 0.0
 
     override fun acoplar() {
-        if (!estaDestruido) {
-            acople.acoplar(true)
-        }
+        acople.acoplar(!estaDestruido)
     }
 
     override fun desacoplar() {
@@ -162,47 +105,26 @@ class Submarino(
     fun estaEnZonaAcople(zona: ZonaAcople): Boolean = zona.estaEnZona(posX, posY)
 
     val pesoTotal: Double
-        get() = calculadorPeso.calcularPesoTotal(pesoBase, bodega)
+        get() = gestorAscenso.pesoTotal(pesoBase, bodega)
 
     override val peso: Double
         get() = pesoTotal
 
     val velocidadAscenso: Double
-        get() = estrategiaAscenso.calcularVelocidadAscenso(
-            velocidadBase = velocidadAscensoBase,
-            pesoTotal = pesoTotal,
-            pesoBase = pesoBase,
-            capacidadCargaMaxima = bodega?.capacidadMaxima ?: 0.0
-        )
+        get() = gestorAscenso.velocidadAscenso(velocidadAscensoBase, pesoBase, bodega)
 
     val factorAscenso: Double
-        get() = estrategiaAscenso.calcularFactorVelocidad(
-            pesoTotal = pesoTotal,
-            pesoBase = pesoBase,
-            capacidadCargaMaxima = bodega?.capacidadMaxima ?: 0.0
-        )
+        get() = gestorAscenso.factorAscenso(pesoBase, bodega)
 
     fun calcularPesoTotal(): Double = pesoTotal
 
     fun calcularVelocidadAscenso(): Double = velocidadAscenso
 
-    fun obtenerEstadoAscenso(): EstadoAscenso {
-        val pesoCarga = bodega?.pesoActual ?: 0.0
-        val capMax = bodega?.capacidadMaxima ?: 0.0
-        return EstadoAscenso(
-            pesoBase = pesoBase,
-            pesoCarga = pesoCarga,
-            pesoTotal = pesoTotal,
-            capacidadMaximaBodega = capMax,
-            factorVelocidad = factorAscenso,
-            velocidadNominal = velocidadAscensoBase,
-            velocidadAscensoEfectiva = velocidadAscenso
-        )
-    }
+    fun obtenerEstadoAscenso(): EstadoAscenso =
+        gestorAscenso.estadoAscenso(pesoBase, bodega, velocidadAscensoBase)
 
     fun aumentarCapacidadBodega(incremento: Double) {
-        require(incremento > 0.0) { "El incremento de capacidad debe ser positivo: $incremento" }
-        bodega?.aumentarCapacidad(incremento)
+        gestorBodega.aumentarCapacidad(bodega, incremento)
     }
 
     fun aumentarVelocidadAscenso(incremento: Double) {
@@ -210,58 +132,29 @@ class Submarino(
     }
 
     fun aumentarResistenciaCasco(incrementoPa: Double) {
-        require(incrementoPa > 0.0) { "El incremento de resistencia debe ser positivo: $incrementoPa" }
-        casco.reforzar(incrementoPa)
+        sistemaCasco.reforzar(incrementoPa)
     }
 
     fun aumentarVelocidadPropulsion(incremento: Double) {
-        require(incremento > 0.0) { "El incremento de velocidad de propulsión debe ser positivo: $incremento" }
-        actualizarVelocidad(velocidad + incremento)
+        gestorVelocidad.aumentarVelocidad(incremento)
     }
 
-    override fun mover(deltaX: Double, deltaY: Double): Boolean {
-        if (estaDestruido) {
-            notificador.notificar("El submarino está destruido y no puede moverse.")
-            return false
-        }
-        if (energia.estaAgotada) {
-            notificador.notificar("Batería agotada. El submarino no puede moverse.")
-            return false
-        }
+    override fun mover(deltaX: Double, deltaY: Double): Boolean =
+        movimiento.mover(deltaX, deltaY)
 
-        val distancia = Math.hypot(deltaX, deltaY)
-        energia.consumirPorDistancia(distancia)
+    fun verificarIntegridad(presionActualPa: Double): Double =
+        sistemaCasco.recibirPresion(presionActualPa)
 
-        actualizarPosX(posX + deltaX)
-        actualizarPosY(posY + deltaY)
-
-        acople.sincronizarConMovimiento(deltaX, deltaY)
-
-        if (energia.estaAgotada) {
-            notificador.notificar("¡Batería agotada tras el movimiento!")
-        }
-
-        return true
-    }
-
-    fun verificarIntegridad(presionActualPa: Double): Double = casco.recibirPresion(presionActualPa)
-
-    fun verificarIntegridadConCalculador(calculador: CalculadorPresion): Double {
-        val presion = calculador.calcularPresion(posY)
-        return verificarIntegridad(presion)
-    }
+    fun verificarIntegridadConCalculador(calculador: CalculadorPresion): Double =
+        sistemaCasco.recibirPresionDesde(calculador, posY)
 
     override fun navegar(deltaX: Double): Boolean = mover(deltaX = deltaX, deltaY = 0.0)
 
     override fun sumergir(deltaY: Double): Boolean = mover(deltaX = 0.0, deltaY = deltaY)
 
     override fun ascender(deltaY: Double): Boolean {
-        val desplazamientoEfectivo = estrategiaAscenso.calcularDesplazamientoAscenso(
-            deltaYNominal = deltaY,
-            pesoTotal = pesoTotal,
-            pesoBase = pesoBase,
-            capacidadCargaMaxima = bodega?.capacidadMaxima ?: 0.0
-        )
+        val desplazamientoEfectivo =
+            gestorAscenso.desplazamientoAscenso(deltaY, pesoBase, bodega)
         return mover(deltaX = 0.0, deltaY = -desplazamientoEfectivo)
     }
 

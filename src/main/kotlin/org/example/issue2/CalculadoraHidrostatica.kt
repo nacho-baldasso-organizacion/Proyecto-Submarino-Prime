@@ -56,15 +56,30 @@ open class CalculadoraPresionFluido(
     final override var presionAtmosferica: Double = presionAtmosferica
         private set
 
-    override fun calcularPresion(profundidad: Double): Double {
-        val h = maxOf(profundidad, 0.0)
-        return presionAtmosferica + (densidadFluido * gravedad * h)
-    }
+    override fun calcularPresion(profundidad: Double): Double =
+        presionAtmosferica + calcularPresionHidrostatica(profundidad)
 
-    override fun calcularProfundidadMaxima(presionMaximaPa: Double): Double {
-        val presionHidrostaticaMaxima = presionMaximaPa - presionAtmosferica
-        return maxOf(presionHidrostaticaMaxima / (densidadFluido * gravedad), 0.0)
-    }
+    override fun calcularProfundidadMaxima(presionMaximaPa: Double): Double =
+        calcularProfundidadParaPresion(presionMaximaPa - presionAtmosferica)
+
+    /**
+     * Calcula únicamente la presión ejercida por la columna de fluido (ρ * g * h),
+     * sin incluir la presión atmosférica de referencia.
+     *
+     * @param profundidad Profundidad en metros (eje Y); los valores negativos se tratan como 0.0.
+     * @return Presión hidrostática en Pascales.
+     */
+    fun calcularPresionHidrostatica(profundidad: Double): Double =
+        calcularGradientePresion() * maxOf(profundidad, 0.0)
+
+    /**
+     * Calcula la profundidad necesaria para alcanzar una presión hidrostática dada.
+     *
+     * @param presionHidrostaticaPa Presión ejercida exclusivamente por la columna de fluido.
+     * @return Profundidad en metros (nunca negativa).
+     */
+    fun calcularProfundidadParaPresion(presionHidrostaticaPa: Double): Double =
+        maxOf(presionHidrostaticaPa / calcularGradientePresion(), 0.0)
 
     /**
      * Retorna el incremento de presión por cada metro de descenso en el fluido (ρ * g).

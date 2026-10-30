@@ -4,11 +4,8 @@ package submarino
  * Componente especializado responsable de las características físicas y comerciales del recurso (SRP).
  */
 class ClasificacionRecurso(
-    tipo: TipoMineral
+    val tipo: TipoMineral
 ) {
-    var tipo: TipoMineral = tipo
-        private set
-
     val nombre: String
         get() = tipo.nombreMineral
 
@@ -21,9 +18,28 @@ class ClasificacionRecurso(
     val zona: String
         get() = tipo.zona
 
-    fun esPesado(): Boolean = peso >= 3.0
+    /**
+     * Valor comercial obtenido por cada kilogramo de recurso.
+     */
+    fun valorPorKilogramo(): Double = tipo.ratioValorPeso()
 
-    fun esRentable(umbralRatio: Double = 20.0): Boolean = tipo.ratioValorPeso() >= umbralRatio
+    /**
+     * Determina si el recurso supera el umbral de valor económico indicado.
+     */
+    fun esValioso(umbral: Int = 100): Boolean = tipo.esValioso(umbral)
+
+    /**
+     * Indica si la profundidad dada corresponde a la franja natural de este recurso.
+     */
+    fun estaEnRangoProfundidad(profundidad: Double): Boolean = tipo.estaEnRango(profundidad)
+
+    fun esPesado(): Boolean = peso >= UMBRAL_PESO_PESADO
+
+    fun esRentable(umbralRatio: Double = 20.0): Boolean = valorPorKilogramo() >= umbralRatio
+
+    companion object {
+        const val UMBRAL_PESO_PESADO: Double = 3.0
+    }
 }
 
 /**
@@ -35,8 +51,13 @@ class EstadoRecoleccionMineral(
     var estaRecolectado: Boolean = inicialmenteRecolectado
         private set
 
+    /**
+     * Indica si el recurso aún puede ser recolectado.
+     */
+    fun estaDisponible(): Boolean = !estaRecolectado
+
     fun marcarRecolectado(): Boolean {
-        if (estaRecolectado) return false
+        if (!estaDisponible()) return false
         estaRecolectado = true
         return true
     }
@@ -55,14 +76,11 @@ class Mineral(
     recolectado: Boolean = false
 ) : Recolectable {
 
-    override var id: String = id
-        private set
+    override val id: String = id
 
-    override var posX: Int = posX
-        private set
+    override val posX: Int = posX
 
-    override var posY: Int = posY
-        private set
+    override val posY: Int = posY
 
     private val clasificacion: ClasificacionRecurso = ClasificacionRecurso(tipo)
     private val estadoRecoleccion: EstadoRecoleccionMineral = EstadoRecoleccionMineral(recolectado)
@@ -101,6 +119,43 @@ class Mineral(
      * Evalúa si el mineral corresponde a una clase pesada (>= 3.0 kg).
      */
     fun esPesado(): Boolean = clasificacion.esPesado()
+
+    /**
+     * Indica si el mineral aún no ha sido recolectado.
+     */
+    fun estaDisponibleParaRecoleccion(): Boolean = estadoRecoleccion.estaDisponible()
+
+    /**
+     * Indica si el mineral ocupa exactamente las coordenadas indicadas.
+     */
+    fun estaEnPosicion(posX: Int, posY: Int): Boolean = this.posX == posX && this.posY == posY
+
+    /**
+     * Indica si el mineral ocupa la misma posición que otra entidad posicionable.
+     */
+    fun estaEnPosicion(posicion: Posicionable): Boolean =
+        estaEnPosicion(posicion.posX, posicion.posY)
+
+    /**
+     * Valor comercial obtenido por cada kilogramo de este mineral.
+     */
+    fun ratioValorPeso(): Double = clasificacion.valorPorKilogramo()
+
+    /**
+     * Determina si el mineral es rentable según el umbral de valor por kilogramo indicado.
+     */
+    fun esRentable(umbralRatio: Double = 20.0): Boolean = clasificacion.esRentable(umbralRatio)
+
+    /**
+     * Determina si el mineral supera el umbral de valor económico indicado.
+     */
+    fun esValioso(umbral: Int = 100): Boolean = clasificacion.esValioso(umbral)
+
+    /**
+     * Indica si la profundidad dada corresponde a la franja natural de este mineral.
+     */
+    fun estaEnRangoProfundidad(profundidad: Double): Boolean =
+        clasificacion.estaEnRangoProfundidad(profundidad)
 
     fun obtenerPosicion(): Posicion = Posicion(posX, posY)
 

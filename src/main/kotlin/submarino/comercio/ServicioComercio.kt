@@ -131,7 +131,7 @@ class ObservadorComercioSilencioso : ObservadorComercio {
         historialTransacciones.add(transaccion)
     }
 
-    val transacciones: List<TransaccionComercial>
+    private val transacciones: List<TransaccionComercial>
         get() = historialTransacciones.toList()
 
     fun limpiar() {
@@ -150,8 +150,14 @@ class ObservadorComercioSilencioso : ObservadorComercio {
  * - Encapsulación estricta
  */
 class ServicioComercio(
-    private val calculadoraPrecios: CalculadoraPrecios = CalculadoraPreciosEstandar()
+    private val calculadoraPrecios: CalculadoraPrecios
 ) : ServicioComercioContrato {
+
+    /**
+     * Constructor de conveniencia que configura la calculadora estándar de precios.
+     * La lógica de negocio depende únicamente de la abstracción [CalculadoraPrecios].
+     */
+    constructor() : this(CalculadoraPreciosEstandar())
 
     private val observadores: MutableList<ObservadorComercio> = mutableListOf()
 
