@@ -13,7 +13,7 @@ class Issue7ObservadoresTest {
     @Test
     fun `test observador de acople recibe notificaciones de eventos (Observer)`() {
         val estacion = EstacionAcople()
-        val sub = Submarino(posX = 0.0, posY = 0.0, casco = ModuloCasco(500_000.0), notificador = NotificadorSilencioso)
+        val sub = FabricaDatosPrueba.crearSubmarino()
 
         var eventosAcople = 0
         var eventosDesacople = 0
@@ -37,7 +37,6 @@ class Issue7ObservadoresTest {
         assertEquals(1, eventosAcople)
         assertEquals(1, eventosDesacople)
 
-        // Al desregistrar no debe recibir más eventos
         estacion.eliminarObservador(observador)
         estacion.acoplar(sub, 0.0, 0.0)
         assertEquals(1, eventosAcople)
@@ -46,23 +45,15 @@ class Issue7ObservadoresTest {
     @Test
     fun `test observador de comercio es notificado con recibo transaccional completo`() {
         val bodega = Bodega(capacidadMaxima = 30.0)
-        val sub = Submarino(
-            posX = 0.0,
-            posY = 0.0,
-            casco = ModuloCasco(500_000.0),
-            bodega = bodega,
-            billetera = Monedero(0),
-            notificador = NotificadorSilencioso
-        )
+        val sub = crearSubmarino(bodega = bodega, saldoInicial = 0)
         sub.acoplar()
 
-        val min1 = Mineral("M1", TipoMineral.TITANIO_CRISTALINO, 0, 0) // $220
-        val min2 = Mineral("M2", TipoMineral.GEMA_DE_SALMUERA, 0, 0)     // $500
+        val min1 = Mineral("M1", TipoMineral.TITANIO_CRISTALINO, 0, 0)
+        val min2 = Mineral("M2", TipoMineral.GEMA_DE_SALMUERA, 0, 0)
         bodega.agregar(min1)
         bodega.agregar(min2)
 
         var reciboRecibido: TransaccionComercial? = null
-
         val observador = object : ObservadorComercio {
             override fun alRealizarVenta(transaccion: TransaccionComercial) {
                 reciboRecibido = transaccion
@@ -86,7 +77,7 @@ class Issue7ObservadoresTest {
     @Test
     fun `test desregistro de observador comercial`() {
         val bodega = Bodega(capacidadMaxima = 10.0)
-        val sub = Submarino(posX = 0.0, posY = 0.0, casco = ModuloCasco(500_000.0), bodega = bodega, notificador = NotificadorSilencioso)
+        val sub = crearSubmarino(bodega = bodega, saldoInicial = 0)
         sub.acoplar()
         bodega.agregar(Mineral("M1", TipoMineral.ARENA_DE_CUARZO, 0, 0))
 
@@ -102,10 +93,15 @@ class Issue7ObservadoresTest {
         servicio.venderBodegaSubmarino(sub)
         assertEquals(1, llamadas)
 
-        // Cargar otro y desregistrar
         bodega.agregar(Mineral("M2", TipoMineral.ARENA_DE_CUARZO, 0, 0))
         servicio.eliminarObservador(obs)
         servicio.venderBodegaSubmarino(sub)
-        assertEquals(1, llamadas) // No se incrementó
+        assertEquals(1, llamadas)
     }
+
+    private fun crearSubmarino(bodega: Bodega, saldoInicial: Int): Submarino =
+        FabricaDatosPrueba.crearSubmarino(
+            bodega = bodega,
+            billetera = Monedero(saldoInicial)
+        )
 }

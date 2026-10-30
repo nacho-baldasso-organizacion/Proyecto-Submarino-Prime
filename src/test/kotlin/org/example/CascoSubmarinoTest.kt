@@ -1,5 +1,6 @@
 package org.example
 
+import submarino.Casco
 import submarino.CascoReforzado
 import submarino.EntidadFisica
 import submarino.ModuloCasco
@@ -18,7 +19,7 @@ class CascoSubmarinoTest {
     @Test
     fun testComposicionYDelegacionCasco() {
         val casco = ModuloCasco(presionMaximaPa = 300_000.0, integridad = 100.0)
-        val submarino = Submarino(posX = 0.0, posY = 0.0, velocidad = 5.0, casco = casco)
+        val submarino = crearSubmarino(casco = casco, velocidad = 5.0)
 
         assertEquals(casco, submarino.casco)
         assertFalse(submarino.estaDestruido)
@@ -34,8 +35,7 @@ class CascoSubmarinoTest {
 
     @Test
     fun testMovimientoYConsumoBateria() {
-        val casco = ModuloCasco(presionMaximaPa = 500_000.0, integridad = 100.0)
-        val submarino = Submarino(posX = 0.0, posY = 0.0, velocidad = 10.0, casco = casco)
+        val submarino = crearSubmarino(casco = ModuloCasco(500_000.0, 100.0))
 
         val movido = submarino.mover(deltaX = 10.0, deltaY = 0.0)
         assertTrue(movido)
@@ -50,7 +50,7 @@ class CascoSubmarinoTest {
     @Test
     fun testInmersionCriticaYBloqueoDeMovimiento() {
         val casco = ModuloCasco(presionMaximaPa = 100_000.0, integridad = 0.5)
-        val submarino = Submarino(posX = 0.0, posY = 0.0, velocidad = 10.0, casco = casco)
+        val submarino = crearSubmarino(casco = casco)
 
         submarino.verificarIntegridad(500_000.0)
         assertTrue(submarino.estaDestruido)
@@ -65,28 +65,20 @@ class CascoSubmarinoTest {
 
     @Test
     fun testPrincipioAbiertoCerradoYPolimorfismoCasco() {
-        val cascoEstandar = ModuloCasco(presionMaximaPa = 200_000.0, integridad = 100.0, notificador = NotificadorSilencioso)
-        val cascoReforzado = CascoReforzado(presionMaximaPa = 200_000.0, integridad = 100.0, factorAbsorcion = 0.5, notificador = NotificadorSilencioso)
+        val cascoEstandar = ModuloCasco(200_000.0, 100.0, NotificadorSilencioso)
+        val cascoReforzado = CascoReforzado(200_000.0, 100.0, 0.5, NotificadorSilencioso)
 
-        val subEstandar = Submarino(casco = cascoEstandar, notificador = NotificadorSilencioso)
-        val subReforzado = Submarino(casco = cascoReforzado, notificador = NotificadorSilencioso)
+        val subEstandar = crearSubmarino(casco = cascoEstandar)
+        val subReforzado = crearSubmarino(casco = cascoReforzado)
 
         val presion = 400_000.0
-        val integEstandar = subEstandar.verificarIntegridad(presion)
-        val integReforzada = subReforzado.verificarIntegridad(presion)
-
-        assertEquals(99.0, integEstandar)
-        assertEquals(99.5, integReforzada)
+        assertEquals(99.0, subEstandar.verificarIntegridad(presion))
+        assertEquals(99.5, subReforzado.verificarIntegridad(presion))
     }
 
     @Test
     fun testPrincipioSustitucionLiskov() {
-        val entidad: EntidadFisica = Submarino(
-            posX = 5.0,
-            posY = 10.0,
-            casco = ModuloCasco(500_000.0),
-            notificador = NotificadorSilencioso
-        )
+        val entidad: EntidadFisica = crearSubmarino(posX = 5.0, posY = 10.0)
 
         val movible: Movible = entidad
         val exito = movible.mover(15.0, 5.0)
@@ -106,7 +98,7 @@ class CascoSubmarinoTest {
         }
 
         val casco = ModuloCasco(presionMaximaPa = 100_000.0, integridad = 0.5, notificador = mockNotificador)
-        val sub = Submarino(casco = casco, notificador = mockNotificador)
+        val sub = crearSubmarino(casco = casco, notificador = mockNotificador)
 
         sub.verificarIntegridad(500_000.0)
         sub.mover(10.0, 0.0)
@@ -118,13 +110,24 @@ class CascoSubmarinoTest {
 
     @Test
     fun testSegregacionDeInterfacesNavegable() {
-        val submarino: Navegable = Submarino(
-            casco = ModuloCasco(500_000.0),
-            notificador = NotificadorSilencioso
-        )
+        val submarino: Navegable = crearSubmarino()
 
         assertTrue(submarino.navegar(10.0))
         assertTrue(submarino.sumergir(20.0))
         assertTrue(submarino.ascender(5.0))
     }
+
+    private fun crearSubmarino(
+        casco: Casco = ModuloCasco(500_000.0),
+        posX: Double = 0.0,
+        posY: Double = 0.0,
+        velocidad: Double = 10.0,
+        notificador: Notificador = NotificadorSilencioso
+    ): Submarino = Submarino(
+        posX = posX,
+        posY = posY,
+        velocidad = velocidad,
+        casco = casco,
+        notificador = notificador
+    )
 }

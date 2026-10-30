@@ -13,15 +13,8 @@ class Issue8ProgresionNivelesTest {
     @Test
     fun `test progresion escalonada hasta nivel maximo`() {
         val bodega = Bodega(capacidadMaxima = 20.0)
-        val monedero = Monedero(saldoInicial = 5000)
-        val sub = Submarino(
-            casco = ModuloCasco(500_000.0),
-            bodega = bodega,
-            billetera = monedero,
-            notificador = NotificadorSilencioso
-        )
+        val sub = crearSubmarino(bodega = bodega, saldoInicial = 5000)
 
-        // Nivel 1 a 3 (máximo 3)
         val mejora = FabricaMejoras.crearMejoraBodega(
             nivelInicial = 1,
             nivelMaximo = 3,
@@ -29,9 +22,8 @@ class Issue8ProgresionNivelesTest {
             costoBase = 100,
             incrementoPorNivel = 50
         )
-        val servicio = ServicioUpgrades(CatalogoUpgrades(listOf(mejora)))
+        val servicio = crearServicio(mejora)
 
-        // 1. Compra a Nivel 2 (costo 100)
         assertFalse(mejora.esNivelMaximo)
         val res1 = servicio.comprarMejora(mejora.id, sub.billetera, sub)
         assertTrue(res1 is ResultadoCompra.Exito)
@@ -39,7 +31,6 @@ class Issue8ProgresionNivelesTest {
         assertEquals(30.0, bodega.capacidadMaxima)
         assertFalse(mejora.esNivelMaximo)
 
-        // 2. Compra a Nivel 3 (costo 150) -> llega al tope
         val res2 = servicio.comprarMejora(mejora.id, sub.billetera, sub)
         assertTrue(res2 is ResultadoCompra.Exito)
         assertEquals(3, mejora.nivel)
@@ -52,20 +43,15 @@ class Issue8ProgresionNivelesTest {
     fun `test intento de compra en nivel maximo es rechazado formalmente`() {
         val bodega = Bodega(capacidadMaxima = 20.0)
         val monedero = Monedero(saldoInicial = 1000)
-        val sub = Submarino(
-            casco = ModuloCasco(500_000.0),
-            bodega = bodega,
-            billetera = monedero,
-            notificador = NotificadorSilencioso
-        )
+        val sub = crearSubmarino(bodega = bodega, monedero = monedero)
 
         val mejora = FabricaMejoras.crearMejoraBodega(
             nivelInicial = 2,
-            nivelMaximo = 2, // Ya nace en nivel máximo
+            nivelMaximo = 2,
             incrementoCapacidadKg = 10.0,
             costoBase = 100
         )
-        val servicio = ServicioUpgrades(CatalogoUpgrades(listOf(mejora)))
+        val servicio = crearServicio(mejora)
 
         assertTrue(mejora.esNivelMaximo)
         val saldoPrevio = monedero.saldo
@@ -77,9 +63,17 @@ class Issue8ProgresionNivelesTest {
         assertEquals(2, resultado.nivelActual)
         assertEquals(2, resultado.nivelMaximo)
 
-        // Monedas intactas y estadísticas intactas
         assertEquals(saldoPrevio, monedero.saldo)
         assertEquals(20.0, bodega.capacidadMaxima)
         assertFalse(mejora.subirNivel())
     }
+
+    private fun crearSubmarino(bodega: Bodega, saldoInicial: Int = 0): Submarino =
+        FabricaDatosPrueba.crearSubmarino(bodega = bodega, billetera = Monedero(saldoInicial))
+
+    private fun crearSubmarino(bodega: Bodega, monedero: Billetera): Submarino =
+        FabricaDatosPrueba.crearSubmarino(bodega = bodega, billetera = monedero)
+
+    private fun crearServicio(vararg mejoras: Mejora): ServicioUpgrades =
+        ServicioUpgrades(CatalogoUpgrades(mejoras.toList()))
 }

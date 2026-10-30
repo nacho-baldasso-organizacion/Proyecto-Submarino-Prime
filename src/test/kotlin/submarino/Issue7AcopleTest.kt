@@ -16,13 +16,11 @@ class Issue7AcopleTest {
         posY: Double = 0.0,
         bodega: Almacenamiento? = null,
         billetera: Billetera = Monedero(0)
-    ): Submarino = Submarino(
+    ): Submarino = FabricaDatosPrueba.crearSubmarino(
         posX = posX,
         posY = posY,
-        casco = ModuloCasco(500_000.0),
         bodega = bodega,
-        billetera = billetera,
-        notificador = NotificadorSilencioso
+        billetera = billetera
     )
 
     @Test

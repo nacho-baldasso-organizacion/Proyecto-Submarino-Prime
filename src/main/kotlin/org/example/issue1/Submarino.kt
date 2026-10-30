@@ -32,7 +32,7 @@ class Submarino(
     estrategiaAscenso: EstrategiaAscenso = EstrategiaAscensoLineal(),
     billetera: Billetera = Monedero(0),
     notificador: Notificador = NotificadorConsola
-) : EntidadFisica(posX, posY, velocidad), Navegable, Pesable, Acoplable {
+) : EntidadFisica(posX, posY, velocidad), Navegable, Pesable, Acoplable, NaveComercial {
 
     companion object {
         const val PESO_BASE_DEFAULT: Double = 1000.0
@@ -47,10 +47,10 @@ class Submarino(
     var pesoBase: Double = pesoBase
         private set
 
-    var bodega: Almacenamiento? = bodega
+    override var bodega: Almacenamiento? = bodega
         private set
 
-    var billetera: Billetera = billetera
+    override var billetera: Billetera = billetera
         private set
 
     // Dependency injection through abstractions - DIP
