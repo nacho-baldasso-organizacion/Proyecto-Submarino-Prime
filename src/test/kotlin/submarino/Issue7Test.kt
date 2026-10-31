@@ -86,9 +86,14 @@ class Issue7Test {
     }
 
     private fun crearNaveAcopladaMock(): Acoplable = object : Acoplable {
-        override val estaAcoplado: Boolean = true
-        override fun acoplar() {}
-        override fun desacoplar() {}
+        override var estaAcoplado: Boolean = true
+        override fun acoplar() {
+            estaAcoplado = true
+        }
+
+        override fun desacoplar() {
+            estaAcoplado = false
+        }
     }
 
     private fun crearReceptorFondosMock(): ReceptorFondos = object : ReceptorFondos {
