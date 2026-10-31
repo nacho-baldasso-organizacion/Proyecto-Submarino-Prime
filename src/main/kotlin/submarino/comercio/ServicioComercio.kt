@@ -147,7 +147,7 @@ class ServicioComercio(
         return concretarVenta(almacenamiento, receptorFondos, items)
     }
 
-    override fun venderBodegaSubmarino(submarino: Submarino): ResultadoComercio =
+    override fun venderBodegaSubmarino(submarino: NaveComercial): ResultadoComercio =
         venderNaveComercial(submarino)
 
     /**

@@ -18,7 +18,8 @@ package submarino
  *
  * Encapsula la totalidad de sus campos con visibilidad privada o 'private set'.
  * Hereda de [EntidadFisica] y compone un [Casco] mediante interfaz (DIP, OCP).
- * Implementa [Navegable], [Pesable] y [Acoplable] respetando Segregación de Interfaces (ISP).
+ * Implementa [Navegable], [Pesable], [Acoplable], [NaveComercial] y [SubmarinoMejorable]
+ * respetando Segregación de Interfaces (ISP) e Inversión de Dependencias (DIP).
  */
 class Submarino(
     posX: Double = 0.0,
@@ -32,7 +33,7 @@ class Submarino(
     estrategiaAscenso: EstrategiaAscenso = EstrategiaAscensoLineal(),
     billetera: Billetera = Monedero(0),
     notificador: Notificador = NotificadorConsola
-) : EntidadFisica(posX, posY, velocidad), Navegable, Pesable, Acoplable, NaveComercial {
+) : EntidadFisica(posX, posY, velocidad), Navegable, Pesable, Acoplable, NaveComercial, SubmarinoMejorable {
 
     companion object {
         const val PESO_BASE_DEFAULT: Double = 1000.0
@@ -142,19 +143,19 @@ class Submarino(
     fun obtenerEstadoAscenso(): EstadoAscenso =
         gestorAscenso.estadoAscenso(pesoBase, bodega, velocidadAscensoBase)
 
-    fun aumentarCapacidadBodega(incremento: Double) {
+    override fun aumentarCapacidadBodega(incremento: Double) {
         gestorMejoras.aumentarCapacidadBodega(incremento)
     }
 
-    fun aumentarVelocidadAscenso(incremento: Double) {
+    override fun aumentarVelocidadAscenso(incremento: Double) {
         gestorMejoras.aumentarVelocidadAscenso(incremento)
     }
 
-    fun aumentarResistenciaCasco(incrementoPa: Double) {
+    override fun aumentarResistenciaCasco(incrementoPa: Double) {
         gestorMejoras.aumentarResistenciaCasco(incrementoPa)
     }
 
-    fun aumentarVelocidadPropulsion(incremento: Double) {
+    override fun aumentarVelocidadPropulsion(incremento: Double) {
         gestorMejoras.aumentarVelocidadPropulsion(incremento)
     }
 

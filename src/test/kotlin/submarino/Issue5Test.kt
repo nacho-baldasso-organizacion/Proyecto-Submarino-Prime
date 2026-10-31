@@ -101,7 +101,7 @@ class Issue5Test {
     @Test
     fun testServicioRecoleccionAdministraFlujoCompleto() {
         val bodega = Bodega(capacidadMaxima = 5.0)
-        val servicio = ServicioRecoleccion(bodega, DetectorColisionesConcreto())
+        val servicio: ServicioRecoleccionContrato = ServicioRecoleccion(bodega, DetectorColisionesConcreto())
 
         val mineral1 = Mineral("M1", TipoMineral.ARENA_DE_CUARZO, 0, 3)
         val mineralGrande = Mineral("M2", TipoMineral.TITANIO_CRISTALINO, 0, 4)

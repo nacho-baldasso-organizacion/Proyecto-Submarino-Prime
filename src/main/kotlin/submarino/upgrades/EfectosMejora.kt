@@ -33,7 +33,7 @@ class EfectoCapacidadBodega(
     magnitud: Double
 ) : EfectoBase(magnitud) {
 
-    override fun aplicar(submarino: Submarino) {
+    override fun aplicar(submarino: SubmarinoMejorable) {
         submarino.aumentarCapacidadBodega(magnitud)
     }
 
@@ -47,7 +47,7 @@ class EfectoVelocidadAscenso(
     magnitud: Double
 ) : EfectoBase(magnitud) {
 
-    override fun aplicar(submarino: Submarino) {
+    override fun aplicar(submarino: SubmarinoMejorable) {
         submarino.aumentarVelocidadAscenso(magnitud)
     }
 
@@ -61,7 +61,7 @@ class EfectoResistenciaCasco(
     magnitud: Double
 ) : EfectoBase(magnitud) {
 
-    override fun aplicar(submarino: Submarino) {
+    override fun aplicar(submarino: SubmarinoMejorable) {
         submarino.aumentarResistenciaCasco(magnitud)
     }
 
@@ -75,7 +75,7 @@ class EfectoVelocidadPropulsion(
     magnitud: Double
 ) : EfectoBase(magnitud) {
 
-    override fun aplicar(submarino: Submarino) {
+    override fun aplicar(submarino: SubmarinoMejorable) {
         submarino.aumentarVelocidadPropulsion(magnitud)
     }
 
