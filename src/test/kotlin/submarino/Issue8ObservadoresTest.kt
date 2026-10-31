@@ -13,13 +13,9 @@ class Issue8ObservadoresTest {
 
     @Test
     fun `test observador de tienda es notificado en compras exitosas y rechazos`() {
-        val sub = Submarino(
-            casco = ModuloCasco(500_000.0),
-            billetera = Monedero(150),
-            notificador = NotificadorSilencioso
-        )
+        val sub = FabricaDatosPrueba.crearSubmarino(billetera = Monedero(150))
         val mejora = FabricaMejoras.crearMejoraBodega(costoBase = 100, incrementoPorNivel = 100)
-        val servicio = ServicioUpgrades(CatalogoUpgrades(listOf(mejora)))
+        val servicio = crearServicio(mejora)
 
         var compraExitosaNotificada: Mejora? = null
         var saldoNotificado = -1
@@ -40,14 +36,12 @@ class Issue8ObservadoresTest {
 
         servicio.registrarObservador(observador)
 
-        // 1. Primera compra exitosa (150 saldo - 100 costo = 50 restante)
         val res1 = servicio.comprarMejora(mejora.id, sub.billetera, sub)
         assertTrue(res1 is ResultadoCompra.Exito)
         assertEquals(mejora, compraExitosaNotificada)
         assertEquals(50, saldoNotificado)
         assertNull(rechazoIdNotificado)
 
-        // 2. Segunda compra rechazada por fondos (requiere 200, tiene 50)
         val res2 = servicio.comprarMejora(mejora.id, sub.billetera, sub)
         assertTrue(res2 is ResultadoCompra.FondosInsuficientes)
         assertEquals(mejora.id, rechazoIdNotificado)
@@ -57,15 +51,16 @@ class Issue8ObservadoresTest {
 
     @Test
     fun `test desregistro de observador de tienda`() {
-        val sub = Submarino(casco = ModuloCasco(500_000.0), billetera = Monedero(500), notificador = NotificadorSilencioso)
+        val sub = FabricaDatosPrueba.crearSubmarino(billetera = Monedero(500))
         val mejora = FabricaMejoras.crearMejoraBodega(costoBase = 100)
-        val servicio = ServicioUpgrades(CatalogoUpgrades(listOf(mejora)))
+        val servicio = crearServicio(mejora)
 
         var llamadas = 0
         val obs = object : ObservadorTienda {
             override fun alComprarMejora(mejora: Mejora, saldoRestante: Int) {
                 llamadas++
             }
+
             override fun alRechazarCompra(idMejora: String, motivo: String) {
                 llamadas++
             }
@@ -75,9 +70,11 @@ class Issue8ObservadoresTest {
         servicio.comprarMejora(mejora.id, sub.billetera, sub)
         assertEquals(1, llamadas)
 
-        // Desregistrar observador
         servicio.eliminarObservador(obs)
         servicio.comprarMejora(mejora.id, sub.billetera, sub)
         assertEquals(1, llamadas, "El observador desregistrado no debe recibir nuevos eventos")
     }
+
+    private fun crearServicio(vararg mejoras: Mejora): ServicioUpgrades =
+        ServicioUpgrades(CatalogoUpgrades(mejoras.toList()))
 }

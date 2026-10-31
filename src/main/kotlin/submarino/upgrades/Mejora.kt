@@ -93,7 +93,7 @@ open class Mejora(
 
     override fun subirNivel(): Boolean = gestorNivel.subirNivel()
 
-    override fun aplicar(submarino: Submarino) {
+    override fun aplicar(submarino: SubmarinoMejorable) {
         efectoMejora.aplicar(submarino)
     }
 

@@ -13,24 +13,7 @@ class Issue8ArquitecturaTest {
 
     @Test
     fun `test todas las interfaces de upgrades cumplen con Interface Segregation (ISP) de maximo 2 metodos`() {
-        val interfacesUpgrades = listOf(
-            Identificable::class.java,
-            Descriptible::class.java,
-            Comprable::class.java,
-            Mejorable::class.java,
-            LimiteNivel::class.java,
-            AplicableSubmarino::class.java,
-            EfectoMejora::class.java,
-            EstrategiaCosto::class.java,
-            ConsultableCatalogo::class.java,
-            GestionableCatalogo::class.java,
-            ProcesadorCompras::class.java,
-            ObservadorTienda::class.java,
-            GestorObservadoresTienda::class.java,
-            TiendaMejorasContrato::class.java
-        )
-
-        for (iface in interfacesUpgrades) {
+        for (iface in interfacesUpgrades()) {
             val metodosDeclarados = iface.declaredMethods.size
             assertTrue(
                 metodosDeclarados <= 2,
@@ -41,27 +24,14 @@ class Issue8ArquitecturaTest {
 
     @Test
     fun `test inyeccion de dependencias DIP en ServicioUpgrades mediante mocks abstractos`() {
-        val mockCatalogo = object : ConsultableCatalogo {
-            val mejoraMock = FabricaMejoras.crearMejoraBodega(costoBase = 50)
-            override fun buscarPorId(id: String): Mejora? = if (id == mejoraMock.id) mejoraMock else null
-            override fun obtenerTodas(): List<Mejora> = listOf(mejoraMock)
-        }
+        val mejoraMock = FabricaMejoras.crearMejoraBodega(costoBase = 50)
+        val mockCatalogo = crearMockCatalogo(mejoraMock)
+        val mockPagable = crearMockPagable(saldoInicial = 100)
 
-        val mockPagable = object : Pagable {
-            override var saldo: Int = 100
-            override fun debitar(monto: Int): Boolean {
-                if (monto <= saldo) {
-                    saldo -= monto
-                    return true
-                }
-                return false
-            }
-        }
-
-        val sub = Submarino(casco = ModuloCasco(500_000.0), notificador = NotificadorSilencioso)
+        val sub = FabricaDatosPrueba.crearSubmarino()
         val servicio = ServicioUpgrades(catalogo = mockCatalogo)
 
-        val resultado = servicio.comprarMejora(mockCatalogo.mejoraMock.id, mockPagable, sub)
+        val resultado = servicio.comprarMejora(mejoraMock.id, mockPagable, sub)
         assertTrue(resultado is ResultadoCompra.Exito)
         assertEquals(50, mockPagable.saldo)
     }
@@ -69,7 +39,7 @@ class Issue8ArquitecturaTest {
     @Test
     fun `test fachada TiendaMejoras delega y lista correctamente`() {
         val tienda = FabricaMejoras.crearTiendaEstandar()
-        val sub = Submarino(casco = ModuloCasco(500_000.0), billetera = Monedero(500), notificador = NotificadorSilencioso)
+        val sub = FabricaDatosPrueba.crearSubmarino(billetera = Monedero(500))
 
         val lista = tienda.listarMejoras()
         assertEquals(4, lista.size)
@@ -99,5 +69,38 @@ class Issue8ArquitecturaTest {
         assertFalse(catalogo.contiene(m1.id))
         assertEquals(1, catalogo.cantidad)
         assertFalse(catalogo.eliminar(m1.id), "No puede eliminar lo que no existe")
+    }
+
+    private fun interfacesUpgrades(): List<Class<*>> = listOf(
+        Identificable::class.java,
+        Descriptible::class.java,
+        Comprable::class.java,
+        Mejorable::class.java,
+        LimiteNivel::class.java,
+        AplicableSubmarino::class.java,
+        EfectoMejora::class.java,
+        EstrategiaCosto::class.java,
+        ConsultableCatalogo::class.java,
+        GestionableCatalogo::class.java,
+        ProcesadorCompras::class.java,
+        ObservadorTienda::class.java,
+        GestorObservadoresTienda::class.java,
+        TiendaMejorasContrato::class.java
+    )
+
+    private fun crearMockCatalogo(mejoraMock: Mejora): ConsultableCatalogo = object : ConsultableCatalogo {
+        override fun buscarPorId(id: String): Mejora? = if (id == mejoraMock.id) mejoraMock else null
+        override fun obtenerTodas(): List<Mejora> = listOf(mejoraMock)
+    }
+
+    private fun crearMockPagable(saldoInicial: Int): Pagable = object : Pagable {
+        override var saldo: Int = saldoInicial
+        override fun debitar(monto: Int): Boolean {
+            if (monto <= saldo) {
+                saldo -= monto
+                return true
+            }
+            return false
+        }
     }
 }

@@ -9,25 +9,14 @@ package submarino
 
 /**
  * Recibo inmutable que representa una transacción comercial concretada exitosamente.
- * Encapsulado con 'private set' y enriquecido con lógica de negocio (no anémico).
+ * Al ser una data class, la igualdad y el hash se derivan del estado del recibo.
  */
-class TransaccionComercial(
-    itemsVendidos: List<Vendible>,
-    totalCreditos: Int,
-    cantidadItems: Int,
-    timestamp: Long = System.currentTimeMillis()
+data class TransaccionComercial(
+    val itemsVendidos: List<Vendible>,
+    val totalCreditos: Int,
+    val cantidadItems: Int,
+    val timestamp: Long = System.currentTimeMillis()
 ) {
-    var itemsVendidos: List<Vendible> = itemsVendidos
-        private set
-
-    var totalCreditos: Int = totalCreditos
-        private set
-
-    var cantidadItems: Int = cantidadItems
-        private set
-
-    var timestamp: Long = timestamp
-        private set
 
     /**
      * Calcula el promedio de créditos obtenidos por cada unidad vendida.
@@ -45,16 +34,6 @@ class TransaccionComercial(
      */
     fun resumen(): String =
         "Transacción: $cantidadItems ítems por $$totalCreditos créditos (Promedio: $${"%.2f".format(valorPromedioPorItem())}/ítem)."
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is TransaccionComercial) return false
-        return totalCreditos == other.totalCreditos &&
-                cantidadItems == other.cantidadItems &&
-                itemsVendidos.size == other.itemsVendidos.size
-    }
-
-    override fun hashCode(): Int = 31 * totalCreditos + cantidadItems
 }
 
 /**
@@ -69,27 +48,13 @@ sealed class ResultadoComercio {
     /**
      * La transacción se completó con éxito, transfiriendo los fondos y vaciando el inventario.
      */
-    class Exito(
-        transaccion: TransaccionComercial,
-        saldoActualizado: Int
+    data class Exito(
+        val transaccion: TransaccionComercial,
+        val saldoActualizado: Int
     ) : ResultadoComercio() {
-        var transaccion: TransaccionComercial = transaccion
-            private set
-
-        var saldoActualizado: Int = saldoActualizado
-            private set
-
         override val esExitoso: Boolean = true
         override fun obtenerResumen(): String =
             "Venta concretada: ${transaccion.cantidadItems} ítems comercializados por $${transaccion.totalCreditos}. Saldo actualizado: $$saldoActualizado."
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (other !is Exito) return false
-            return transaccion == other.transaccion && saldoActualizado == other.saldoActualizado
-        }
-
-        override fun hashCode(): Int = 31 * transaccion.hashCode() + saldoActualizado
     }
 
     /**
@@ -174,15 +139,42 @@ class ServicioComercio(
         almacenamiento: Almacenamiento,
         receptorFondos: ReceptorFondos
     ): ResultadoComercio {
-        if (!acoplable.estaAcoplado) {
-            return ResultadoComercio.NaveNoAcoplada
-        }
+        validarAcople(acoplable)?.let { return it }
 
         val items = almacenamiento.obtenerElementos()
-        if (items.isEmpty()) {
-            return ResultadoComercio.BodegaVacia
-        }
+        validarBodega(items)?.let { return it }
 
+        return concretarVenta(almacenamiento, receptorFondos, items)
+    }
+
+    override fun venderBodegaSubmarino(submarino: NaveComercial): ResultadoComercio =
+        venderNaveComercial(submarino)
+
+    /**
+     * Punto de entrada polimórfico para cualquier nave que exponga su bodega y billetera.
+     */
+    fun venderNaveComercial(nave: NaveComercial): ResultadoComercio {
+        validarAcople(nave)?.let { return it }
+
+        val bodega = nave.bodega ?: return ResultadoComercio.BodegaVacia
+        return venderBodega(
+            acoplable = nave,
+            almacenamiento = bodega,
+            receptorFondos = nave.billetera
+        )
+    }
+
+    private fun validarAcople(acoplable: Acoplable): ResultadoComercio? =
+        if (acoplable.estaAcoplado) null else ResultadoComercio.NaveNoAcoplada
+
+    private fun validarBodega(items: List<Vendible>): ResultadoComercio? =
+        if (items.isEmpty()) ResultadoComercio.BodegaVacia else null
+
+    private fun concretarVenta(
+        almacenamiento: Almacenamiento,
+        receptorFondos: ReceptorFondos,
+        items: List<Vendible>
+    ): ResultadoComercio.Exito {
         val totalCreditos = calculadoraPrecios.calcularTotal(items)
         receptorFondos.acreditar(totalCreditos)
         almacenamiento.vaciar()
@@ -192,8 +184,7 @@ class ServicioComercio(
             totalCreditos = totalCreditos,
             cantidadItems = items.size
         )
-
-        observadores.forEach { it.alRealizarVenta(transaccion) }
+        notificarObservadores(transaccion)
 
         return ResultadoComercio.Exito(
             transaccion = transaccion,
@@ -201,15 +192,7 @@ class ServicioComercio(
         )
     }
 
-    override fun venderBodegaSubmarino(submarino: Submarino): ResultadoComercio {
-        if (!submarino.estaAcoplado) {
-            return ResultadoComercio.NaveNoAcoplada
-        }
-        val bodega = submarino.bodega ?: return ResultadoComercio.BodegaVacia
-        return venderBodega(
-            acoplable = submarino,
-            almacenamiento = bodega,
-            receptorFondos = submarino.billetera
-        )
+    private fun notificarObservadores(transaccion: TransaccionComercial) {
+        observadores.forEach { it.alRealizarVenta(transaccion) }
     }
 }
