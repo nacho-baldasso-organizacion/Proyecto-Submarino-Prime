@@ -67,6 +67,18 @@ interface Acoplable : EstadoAcople {
 }
 
 /**
+ * Contrato de dominio que agrupa todo lo necesario para comerciar desde una nave:
+ * estado de acople, compartimento de carga y receptor de fondos.
+ *
+ * Permite que [ServicioComercio] opere polimórficamente sin conocer la clase concreta
+ * de la nave ni realizar comprobaciones de tipo o casteos manuales.
+ */
+interface NaveComercial : Acoplable {
+    val bodega: Almacenamiento?
+    val billetera: Billetera
+}
+
+/**
  * Segregación de Interfaces (ISP) y Principio Abierto/Cerrado (OCP):
  * Abstracción para delimitar áreas geográficas o batimétricas donde el acople es admitido.
  */
@@ -141,9 +153,10 @@ interface ProcesadorComercio {
 /**
  * Inversión de Dependencias (DIP):
  * Abstracción integral para el servicio coordinador de comercio en superficie.
+ * Opera polimórficamente sobre la abstracción [NaveComercial], sin acoplarse a la clase concreta del submarino.
  */
 interface ServicioComercioContrato : ProcesadorComercio {
-    fun venderBodegaSubmarino(submarino: Submarino): ResultadoComercio
+    fun venderBodegaSubmarino(submarino: NaveComercial): ResultadoComercio
     fun registrarObservador(observador: ObservadorComercio)
     fun eliminarObservador(observador: ObservadorComercio)
 }

@@ -12,50 +12,27 @@ class Issue5Test {
 
     @Test
     fun testCatalogoDeMineralesCumpleConTablaDeEspecificacion() {
-        assertEquals("Arena de Cuarzo", TipoMineral.ARENA_DE_CUARZO.nombreMineral)
-        assertEquals("Superficie (0-50m)", TipoMineral.ARENA_DE_CUARZO.zona)
-        assertEquals(1.0, TipoMineral.ARENA_DE_CUARZO.peso)
-        assertEquals(10, TipoMineral.ARENA_DE_CUARZO.valor)
-
-        assertEquals("Cobre Marino", TipoMineral.COBRE_MARINO.nombreMineral)
-        assertEquals("Zona Fótica (50-150m)", TipoMineral.COBRE_MARINO.zona)
-        assertEquals(2.5, TipoMineral.COBRE_MARINO.peso)
-        assertEquals(35, TipoMineral.COBRE_MARINO.valor)
-
-        assertEquals("Nódulo de Manganeso", TipoMineral.NODULO_DE_MANGANESO.nombreMineral)
-        assertEquals("Zona Mesopelágica (150-400m)", TipoMineral.NODULO_DE_MANGANESO.zona)
-        assertEquals(4.0, TipoMineral.NODULO_DE_MANGANESO.peso)
-        assertEquals(90, TipoMineral.NODULO_DE_MANGANESO.valor)
-
-        assertEquals("Titanio Cristalino", TipoMineral.TITANIO_CRISTALINO.nombreMineral)
-        assertEquals("Fosa Abisal (400-800m)", TipoMineral.TITANIO_CRISTALINO.zona)
-        assertEquals(5.0, TipoMineral.TITANIO_CRISTALINO.peso)
-        assertEquals(220, TipoMineral.TITANIO_CRISTALINO.valor)
-
-        assertEquals("Gema de Salmuera", TipoMineral.GEMA_DE_SALMUERA.nombreMineral)
-        assertEquals("Pozos de Alta Densidad (>800m)", TipoMineral.GEMA_DE_SALMUERA.zona)
-        assertEquals(1.5, TipoMineral.GEMA_DE_SALMUERA.peso)
-        assertEquals(500, TipoMineral.GEMA_DE_SALMUERA.valor)
-
-        assertEquals("Artefacto Hundido", TipoMineral.ARTEFACTO_HUNDIDO.nombreMineral)
-        assertEquals("Cavernas Ocultas", TipoMineral.ARTEFACTO_HUNDIDO.zona)
-        assertEquals(8.0, TipoMineral.ARTEFACTO_HUNDIDO.peso)
-        assertEquals(1200, TipoMineral.ARTEFACTO_HUNDIDO.valor)
+        verificarMineral(TipoMineral.ARENA_DE_CUARZO, "Arena de Cuarzo", "Superficie (0-50m)", 1.0, 10)
+        verificarMineral(TipoMineral.COBRE_MARINO, "Cobre Marino", "Zona Fótica (50-150m)", 2.5, 35)
+        verificarMineral(TipoMineral.NODULO_DE_MANGANESO, "Nódulo de Manganeso", "Zona Mesopelágica (150-400m)", 4.0, 90)
+        verificarMineral(TipoMineral.TITANIO_CRISTALINO, "Titanio Cristalino", "Fosa Abisal (400-800m)", 5.0, 220)
+        verificarMineral(TipoMineral.GEMA_DE_SALMUERA, "Gema de Salmuera", "Pozos de Alta Densidad (>800m)", 1.5, 500)
+        verificarMineral(TipoMineral.ARTEFACTO_HUNDIDO, "Artefacto Hundido", "Cavernas Ocultas", 8.0, 1200)
     }
 
     @Test
     fun testObtenerMineralPorProfundidadBatimetrica() {
-        assertEquals(TipoMineral.ARENA_DE_CUARZO, TipoMineral.obtenerPorProfundidad(0.0))
-        assertEquals(TipoMineral.ARENA_DE_CUARZO, TipoMineral.obtenerPorProfundidad(49.9))
-        assertEquals(TipoMineral.COBRE_MARINO, TipoMineral.obtenerPorProfundidad(50.0))
-        assertEquals(TipoMineral.COBRE_MARINO, TipoMineral.obtenerPorProfundidad(149.9))
-        assertEquals(TipoMineral.NODULO_DE_MANGANESO, TipoMineral.obtenerPorProfundidad(150.0))
-        assertEquals(TipoMineral.NODULO_DE_MANGANESO, TipoMineral.obtenerPorProfundidad(399.9))
-        assertEquals(TipoMineral.TITANIO_CRISTALINO, TipoMineral.obtenerPorProfundidad(400.0))
-        assertEquals(TipoMineral.TITANIO_CRISTALINO, TipoMineral.obtenerPorProfundidad(800.0))
-        assertEquals(TipoMineral.GEMA_DE_SALMUERA, TipoMineral.obtenerPorProfundidad(800.1))
-        assertEquals(TipoMineral.GEMA_DE_SALMUERA, TipoMineral.obtenerPorProfundidad(1500.0))
-        assertEquals(TipoMineral.ARTEFACTO_HUNDIDO, TipoMineral.obtenerPorProfundidad(200.0, esCavernaOculta = true))
+        verificarProfundidad(0.0, TipoMineral.ARENA_DE_CUARZO)
+        verificarProfundidad(49.9, TipoMineral.ARENA_DE_CUARZO)
+        verificarProfundidad(50.0, TipoMineral.COBRE_MARINO)
+        verificarProfundidad(149.9, TipoMineral.COBRE_MARINO)
+        verificarProfundidad(150.0, TipoMineral.NODULO_DE_MANGANESO)
+        verificarProfundidad(399.9, TipoMineral.NODULO_DE_MANGANESO)
+        verificarProfundidad(400.0, TipoMineral.TITANIO_CRISTALINO)
+        verificarProfundidad(800.0, TipoMineral.TITANIO_CRISTALINO)
+        verificarProfundidad(800.1, TipoMineral.GEMA_DE_SALMUERA)
+        verificarProfundidad(1500.0, TipoMineral.GEMA_DE_SALMUERA)
+        verificarProfundidad(200.0, TipoMineral.ARTEFACTO_HUNDIDO, esCavernaOculta = true)
     }
 
     @Test
@@ -69,9 +46,7 @@ class Issue5Test {
 
         assertEquals(cantidad, minerales.size)
         minerales.forEach { mineral ->
-            val estaEnPared = (mineral.posX == 0 || mineral.posX == ancho - 1 ||
-                    mineral.posY == 0 || mineral.posY == alto - 1)
-            assertTrue(estaEnPared, "El mineral en (${mineral.posX}, ${mineral.posY}) no está en la pared")
+            verificarMineralEnPared(mineral, ancho, alto)
             assertEquals("Cobre Marino", mineral.nombre)
             assertFalse(mineral.recolectado)
         }
@@ -126,8 +101,7 @@ class Issue5Test {
     @Test
     fun testServicioRecoleccionAdministraFlujoCompleto() {
         val bodega = Bodega(capacidadMaxima = 5.0)
-        val detector = DetectorColisionesConcreto()
-        val servicio = ServicioRecoleccion(bodega, detector)
+        val servicio: ServicioRecoleccionContrato = ServicioRecoleccion(bodega, DetectorColisionesConcreto())
 
         val mineral1 = Mineral("M1", TipoMineral.ARENA_DE_CUARZO, 0, 3)
         val mineralGrande = Mineral("M2", TipoMineral.TITANIO_CRISTALINO, 0, 4)
@@ -145,5 +119,35 @@ class Issue5Test {
         assertIs<ResultadoRecoleccion.BodegaLlena>(resBodegaLlena)
         assertEquals(1.0, resBodegaLlena.excesoPeso)
         assertFalse(mineralGrande.recolectado)
+    }
+
+    private fun verificarMineral(
+        tipo: TipoMineral,
+        nombre: String,
+        zona: String,
+        peso: Double,
+        valor: Int
+    ) {
+        assertEquals(nombre, tipo.nombreMineral)
+        assertEquals(zona, tipo.zona)
+        assertEquals(peso, tipo.peso)
+        assertEquals(valor, tipo.valor)
+    }
+
+    private fun verificarProfundidad(
+        profundidad: Double,
+        esperado: TipoMineral,
+        esCavernaOculta: Boolean = false
+    ) {
+        assertEquals(esperado, TipoMineral.obtenerPorProfundidad(profundidad, esCavernaOculta))
+    }
+
+    private fun verificarMineralEnPared(mineral: Recolectable, ancho: Int, alto: Int) {
+        val estaEnPared = mineral.posX == 0 || mineral.posX == ancho - 1 ||
+                mineral.posY == 0 || mineral.posY == alto - 1
+        assertTrue(
+            estaEnPared,
+            "El mineral en (${mineral.posX}, ${mineral.posY}) no está en la pared"
+        )
     }
 }

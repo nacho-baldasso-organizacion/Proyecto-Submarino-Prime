@@ -1,47 +1,59 @@
+package submarino
+
 /**
- * Componente de gestión que unifica el cálculo del estado del fondo marino
- * dado un valor de profundidad. Proporciona los desplazamientos de todas
- * las capas de parallax y el color activo.
- * 
- * UI-agnostic: retorna DTOs puros sin dependencias de frameworks gráficos.
+ * Estado inmutable del fondo marino para una profundidad determinada.
+ *
+ * @property offsetsY Desplazamientos verticales de cada capa de parallax, en el
+ * mismo orden en que fueron configuradas.
+ * @property colorActivo Color correspondiente a la profundidad actual.
  */
 data class FondoParallaxState(
-    /** Lista de desplazamientos offsetY para cada capa de parallax, en orden
-     *  de factor de velocidad (desde lento hasta rápido o según configuración). */
     val offsetsY: List<Double>,
-    /** Color activo correspondiente a la profundidad actual. */
     val colorActivo: ColorRgb
 )
 
+/**
+ * Componente que unifica el cálculo del estado del fondo marino.
+ *
+ * UI-agnostic: retorna únicamente DTOs puros, sin dependencias de frameworks
+ * gráficos.
+ */
 object FondoParallaxManager {
 
-    /** Factores de velocidad predefinidas para las capas de parallax.
-     *  Valores típicos: capas cercanas tienen factor bajo (más lentas),
-     *  capas lejanas tienen factor alto (más rápidas). */
-    private val factoresVelocidad = listOf(0.2, 0.5, 1.0)
+    /** Factores de velocidad de las capas por defecto (de lejana a cercana). */
+    private val capasPorDefecto = listOf(
+        CapaParallax(0.2),
+        CapaParallax(0.5),
+        CapaParallax(1.0)
+    )
 
     /**
      * Calcula el estado completo del fondo marino para una profundidad dada.
-     * 
-     * @param profundidad Profundidad actual en metros
-     * @return Estructura inmutable con offsetsY y colorActivo
+     *
+     * @param profundidad Profundidad actual en metros.
+     * @return Estructura inmutable con los offsets de las capas y el color activo.
      */
-    fun calcularEstado(profundidad: Double): FondoParallaxState {
-        val offsets = factoresVelocidad.map { CapaParallax(it).calcularOffsetY(profundidad) }
-        val color = CalculadorColorProfundidad.calcularColor(profundidad)
-        return FondoParallaxState(offsets, color)
-    }
+    fun calcularEstado(profundidad: Double): FondoParallaxState =
+        calcularEstadoConCapas(capasPorDefecto, profundidad)
 
     /**
-     * Calcula el estado con una configuración personalizada de factores de capa.
-     * 
-     * @param factores Lista personalizada de factores de velocidad
-     * @param profundidad Profundidad actual en metros
-     * @return Estructura inmutable con offsets y color
+     * Calcula el estado usando una configuración personalizada de factores.
+     *
+     * @param factores Factores de velocidad de cada capa.
+     * @param profundidad Profundidad actual en metros.
+     * @return Estructura inmutable con los offsets y el color activo.
      */
-    fun calcularEstadoConFactores(factores: List<Double>, profundidad: Double): FondoParallaxState {
-        val offsets = factores.map { CapaParallax(it).calcularOffsetY(profundidad) }
-        val color = CalculadorColorProfundidad.calcularColor(profundidad)
-        return FondoParallaxState(offsets, color)
-    }
+    fun calcularEstadoConFactores(
+        factores: List<Double>,
+        profundidad: Double
+    ): FondoParallaxState =
+        calcularEstadoConCapas(factores.map(::CapaParallax), profundidad)
+
+    private fun calcularEstadoConCapas(
+        capas: List<CapaParallax>,
+        profundidad: Double
+    ): FondoParallaxState = FondoParallaxState(
+        offsetsY = capas.map { it.calcularOffsetY(profundidad) },
+        colorActivo = CalculadorColorProfundidad.calcularColor(profundidad)
+    )
 }

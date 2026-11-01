@@ -1,26 +1,38 @@
+package submarino
+
 /**
  * Clase inmutable que representa una capa de parallax vertical.
- * Cada capa tiene un factor de velocidad que determina qué tan rápido
- * se desplaza en relación con la profundidad actual.
- * 
- * UI-agnostic: no depende de ningún framework gráfico, solo usa representaciones matemáticas.
+ *
+ * UI-agnostic: no depende de ningún framework gráfico, solo de matemática pura.
+ *
+ * @property factorVelocidad Factor de desplazamiento de la capa respecto de la
+ * profundidad. Un valor de [FACTOR_ESTATICO] deja la capa fija, [FACTOR_NATURAL]
+ * la mueve a la misma velocidad que el fondo y los valores intermedios producen
+ * el efecto de profundidad esperado.
  */
 data class CapaParallax(
-    /** Factor de velocidad de la capa (0.0 = paralela, 1.0 = velocidad natural, 
-      * >1.0 = más rápido que el fondo, <1.0 = más lento). */
     val factorVelocidad: Double
 ) {
 
     /**
-     * Calcula el desplazamiento offset en el eje Y basado en la profundidad actual.
-     * 
-     * La fórmula es: offset = profundidad * factorVelocidad
-     * 
-     * @param profundidad Valor de profundidad actual en metros (puede ser Double.POSITIVE_INFINITY)
-     * @return Desplazamiento en píxeles/units en el eje Y
+     * Calcula el desplazamiento vertical de la capa para una profundidad dada.
+     *
+     * Las profundidades no finitas o negativas no producen desplazamiento.
+     *
+     * @param profundidad Profundidad actual en metros.
+     * @return Offset en el eje Y, en las mismas unidades que la profundidad.
      */
     fun calcularOffsetY(profundidad: Double): Double {
-        if (profundidad.isNaN() || profundidad.isInfinite()) return 0.0
+        if (!profundidad.isFinite() || profundidad <= PROFUNDIDAD_MINIMA) {
+            return SIN_DESPLAZAMIENTO
+        }
         return profundidad * factorVelocidad
+    }
+
+    companion object {
+        const val FACTOR_ESTATICO = 0.0
+        const val FACTOR_NATURAL = 1.0
+        const val PROFUNDIDAD_MINIMA = 0.0
+        const val SIN_DESPLAZAMIENTO = 0.0
     }
 }

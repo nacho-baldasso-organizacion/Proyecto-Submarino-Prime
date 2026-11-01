@@ -50,6 +50,15 @@ class CapaParallaxTest {
         val offset = capa.calcularOffsetY(-10.0)
         assertEquals(0.0, offset)
     }
+
+    @Test
+    fun testProfundidadNoFinitaDevuelveCero() {
+        val capa = CapaParallax(0.5)
+
+        assertEquals(0.0, capa.calcularOffsetY(Double.NaN))
+        assertEquals(0.0, capa.calcularOffsetY(Double.POSITIVE_INFINITY))
+        assertEquals(0.0, capa.calcularOffsetY(Double.NEGATIVE_INFINITY))
+    }
 }
 
 class CalculadorColorProfundidadTest {
@@ -102,6 +111,70 @@ class CalculadorColorProfundidadTest {
     fun testProfundidadNegativaZonaAbisalPorDefecto() {
         val color = CalculadorColorProfundidad.calcularColor(-100.0)
         assertEquals(0, color.r)
+    }
+
+    @Test
+    fun testZonaSuperficie() {
+        assertEquals(
+            ColorProfundidad.SUPERFICIE,
+            CalculadorColorProfundidad.calcularZona(0.0)
+        )
+        assertEquals(
+            ColorProfundidad.SUPERFICIE,
+            CalculadorColorProfundidad.calcularZona(150.0)
+        )
+    }
+
+    @Test
+    fun testZonaFotica() {
+        assertEquals(
+            ColorProfundidad.FOTICA,
+            CalculadorColorProfundidad.calcularZona(200.1)
+        )
+        assertEquals(
+            ColorProfundidad.FOTICA,
+            CalculadorColorProfundidad.calcularZona(999.9)
+        )
+    }
+
+    @Test
+    fun testZonaAbisal() {
+        assertEquals(
+            ColorProfundidad.ABISAL,
+            CalculadorColorProfundidad.calcularZona(1000.0)
+        )
+        assertEquals(
+            ColorProfundidad.ABISAL,
+            CalculadorColorProfundidad.calcularZona(5000.0)
+        )
+    }
+
+    @Test
+    fun testLimiteSuperficiePerteneceASuperficie() {
+        assertEquals(
+            ColorProfundidad.SUPERFICIE,
+            CalculadorColorProfundidad.calcularZona(CalculadorColorProfundidad.LIMITE_SUPERFICIE)
+        )
+    }
+
+    @Test
+    fun testLimiteFoticaPerteneceAAbisal() {
+        assertEquals(
+            ColorProfundidad.ABISAL,
+            CalculadorColorProfundidad.calcularZona(CalculadorColorProfundidad.LIMITE_ZONA_FOTICA)
+        )
+    }
+
+    @Test
+    fun testProfundidadNoFinitaZonaAbisal() {
+        assertEquals(
+            ColorProfundidad.ABISAL,
+            CalculadorColorProfundidad.calcularZona(Double.NaN)
+        )
+        assertEquals(
+            ColorProfundidad.ABISAL,
+            CalculadorColorProfundidad.calcularZona(Double.POSITIVE_INFINITY)
+        )
     }
 }
 

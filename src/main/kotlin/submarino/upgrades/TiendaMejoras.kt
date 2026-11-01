@@ -19,14 +19,14 @@ class TiendaMejoras(
     override fun comprar(
         idMejora: String,
         pagable: Pagable,
-        submarino: Submarino
+        submarino: SubmarinoMejorable
     ): ResultadoCompra {
         return procesadorCompras.comprarMejora(idMejora, pagable, submarino)
     }
 
     override fun listarMejoras(): List<Mejora> = catalogo.obtenerTodas()
 
-    fun comprarParaSubmarino(idMejora: String, submarino: Submarino): ResultadoCompra {
+    fun comprarParaSubmarino(idMejora: String, submarino: SubmarinoMejorable): ResultadoCompra {
         return comprar(
             idMejora = idMejora,
             pagable = submarino.billetera,
