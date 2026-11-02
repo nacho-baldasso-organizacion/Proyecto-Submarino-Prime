@@ -23,8 +23,11 @@ private object HUDFormatting {
 }
 
 /**
- * Estado inmutable que representa la visualización de la cabeza-up display (HUD)
+ * Value Object inmutable que representa la visualización de la cabeza-up display (HUD)
  * del submarino, conteniendo todos los indicadores relevantes para la interfaz.
+ * Provee métodos de dominio para formateo y consulta de indicadores.
+ * SRP: esta clase tiene una única responsabilidad: representar el estado HUD
+ * con sus datos y comportamiento asociado.
  */
 data class EstadoHUD(
     val presionActual: Double,
@@ -33,7 +36,23 @@ data class EstadoHUD(
     val pesoBodega: Double,
     val pesoMaximoBodega: Double,
     val monedas: Int
-)
+) {
+
+    /**
+     * Determina si la presión está en rango seguro (por debajo del umbral máximo).
+     */
+    fun estaPresionSegura(): Boolean = presionMaxima > 0.0 && presionActual <= presionMaxima
+
+    /**
+     * Determina si la presión está críticamente alta (90% o más del máximo).
+     */
+    fun estaPresionCritica(): Boolean = presionActual >= presionMaxima * 0.9
+
+    /**
+     * Determina si la bodega está llena.
+     */
+    fun estaBodegaLlena(): Boolean = pesoMaximoBodega > 0.0 && pesoBodega >= pesoMaximoBodega
+}
 
 /**
  * View responsable de renderizar la información del HUD del submarino en formato de texto.
