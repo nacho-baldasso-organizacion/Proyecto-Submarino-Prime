@@ -35,7 +35,7 @@ class Issue8Test {
         assertEquals(7.0, submarino.velocidadAscensoBase, 0.001)
         assertEquals(350_000.0, submarino.casco.presionMaximaPa)
         assertEquals(12.5, submarino.velocidad, 0.001)
-        assertEquals(1470, submarino.billetera.saldo)
+        assertEquals(1130, submarino.billetera.saldo)
     }
 
     @Test

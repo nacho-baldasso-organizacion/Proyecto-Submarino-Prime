@@ -48,7 +48,7 @@ class Issue8ArquitecturaTest {
 
         val resultado = tienda.comprarParaSubmarino(FabricaMejoras.ID_BODEGA, sub)
         assertTrue(resultado is ResultadoCompra.Exito)
-        assertEquals(400, sub.billetera.saldo)
+        assertEquals(320, sub.billetera.saldo)
     }
 
     @Test

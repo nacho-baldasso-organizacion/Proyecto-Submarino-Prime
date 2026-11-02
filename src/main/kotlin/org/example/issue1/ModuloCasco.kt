@@ -26,6 +26,13 @@ abstract class CascoBase(
         presionMaximaPa += incrementoPresionPa
     }
 
+    override fun reparar(cantidad: Double) {
+        require(cantidad >= 0.0) {
+            "La cantidad de reparación no puede ser negativa: $cantidad"
+        }
+        integridad = minOf(integridad + cantidad, INTEGRIDAD_MAXIMA)
+    }
+
     override fun recibirPresion(presionActualPa: Double): Double {
         if (presionActualPa > presionMaximaPa) {
             val exceso = presionActualPa - presionMaximaPa
@@ -60,6 +67,10 @@ abstract class CascoBase(
         var result = presionMaximaPa.hashCode()
         result = 31 * result + integridad.hashCode()
         return result
+    }
+
+    companion object {
+        const val INTEGRIDAD_MAXIMA = 100.0
     }
 }
 

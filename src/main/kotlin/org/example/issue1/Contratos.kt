@@ -50,6 +50,13 @@ interface Casco {
      * @param incrementoPresionPa Cantidad de Pascales a adicionar al límite de resistencia.
      */
     fun reforzar(incrementoPresionPa: Double)
+
+    /**
+     * Restaura integridad estructural del casco hasta el máximo operativo.
+     *
+     * @param cantidad Puntos porcentuales de integridad a recuperar.
+     */
+    fun reparar(cantidad: Double) {}
 }
 
 /**

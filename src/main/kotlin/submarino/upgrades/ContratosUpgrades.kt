@@ -106,8 +106,8 @@ interface FabricaUpgrades {
         nivelInicial: Int = 1,
         nivelMaximo: Int = 5,
         incrementoCapacidadKg: Double = 15.0,
-        costoBase: Int = 100,
-        incrementoPorNivel: Int = 50
+        costoBase: Int = 180,
+        incrementoPorNivel: Int = 90
     ): MejoraCapacidadBodega
 
     fun crearCatalogoEstandar(): CatalogoUpgrades

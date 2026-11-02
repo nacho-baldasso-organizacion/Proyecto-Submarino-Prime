@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "2.0.0"
+    id("org.openjfx.javafxplugin") version "0.1.0"
     application
 }
 
@@ -10,12 +11,24 @@ repositories {
     mavenCentral()
 }
 
+javafx {
+    version = "21"
+    modules = listOf("javafx.controls", "javafx.fxml")
+}
+
 dependencies {
     implementation(kotlin("stdlib"))
     testImplementation(kotlin("test"))
 }
 
 application {
+    mainClass.set("submarino.SubmarinoApp")
+}
+
+tasks.register<JavaExec>("runConsola") {
+    group = "application"
+    description = "Ejecuta la simulación por consola del submarino"
+    classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("submarino.Main")
 }
 
@@ -62,3 +75,4 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
     }
 }
+
