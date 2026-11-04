@@ -7,6 +7,13 @@ package submarino
 interface Posicionable {
     val posX: Int
     val posY: Int
+
+    /**
+     * Determina si las coordenadas se encuentran dentro de una cuadrícula de
+     * [ancho] por [alto], considerando el origen (0, 0) y límites exclusivos.
+     */
+    fun estaDentroDe(ancho: Int, alto: Int): Boolean =
+        posX in 0 until ancho && posY in 0 until alto
 }
 
 /**
@@ -15,6 +22,11 @@ interface Posicionable {
  */
 interface Pesable {
     val peso: Double
+
+    /**
+     * Indica si esta entidad tiene una masa estrictamente mayor que [otro].
+     */
+    fun esMasPesadoQue(otro: Pesable): Boolean = peso > otro.peso
 }
 
 /**

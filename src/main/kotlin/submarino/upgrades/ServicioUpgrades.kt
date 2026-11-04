@@ -40,12 +40,12 @@ class ServicioUpgrades(
         }
 
         if (mejora.esNivelMaximo) {
-            val motivo = "La mejora '${mejora.nombre}' ya alcanzó el nivel máximo (${mejora.nivelMaximo})"
+            val motivo = "La mejora '${mejora.nombre}' ya alcanzó el nivel máximo (${mejora.nivelMaximo()})"
             notificarRechazo(idMejora, motivo)
             return ResultadoCompra.NivelMaximoAlcanzado(
                 mejoraId = idMejora,
                 nivelActual = mejora.nivel,
-                nivelMaximo = mejora.nivelMaximo
+                nivelMaximo = mejora.nivelMaximo()
             )
         }
 
@@ -95,7 +95,7 @@ class ServicioUpgrades(
  */
 class ObservadorTiendaConsola : ObservadorTienda {
     override fun alComprarMejora(mejora: Mejora, saldoRestante: Int) {
-        println("[TIENDA UPGRADES] ¡Mejora adquirida! '${mejora.nombre}' ahora en nivel ${mejora.nivel}/${mejora.nivelMaximo}. Saldo restante: $$saldoRestante.")
+        println("[TIENDA UPGRADES] ¡Mejora adquirida! '${mejora.nombre}' ahora en nivel ${mejora.nivel}/${mejora.nivelMaximo()}. Saldo restante: $$saldoRestante.")
     }
 
     override fun alRechazarCompra(idMejora: String, motivo: String) {

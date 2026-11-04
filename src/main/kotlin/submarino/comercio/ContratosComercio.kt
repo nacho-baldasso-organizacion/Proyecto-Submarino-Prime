@@ -16,6 +16,11 @@ package submarino
  */
 interface Vendible {
     val valor: Int
+
+    /**
+     * Indica si este bien posee un valor monetario estrictamente mayor que [otro].
+     */
+    fun esMasValiosoQue(otro: Vendible): Boolean = valor > otro.valor
 }
 
 /**
@@ -42,6 +47,11 @@ interface Pagable {
  */
 interface ConsultableSaldo {
     val saldo: Int
+
+    /**
+     * Indica si el saldo disponible cubre el [monto] solicitado.
+     */
+    fun saldoSuficiente(monto: Int): Boolean = saldo >= monto
 }
 
 /**
@@ -55,6 +65,11 @@ interface Billetera : ReceptorFondos, Pagable, ConsultableSaldo
  */
 interface EstadoAcople {
     val estaAcoplado: Boolean
+
+    /**
+     * Indica si la entidad se encuentra actualmente desacoplada.
+     */
+    fun estaDesacoplado(): Boolean = !estaAcoplado
 }
 
 /**
@@ -76,6 +91,21 @@ interface Acoplable : EstadoAcople {
 interface NaveComercial : Acoplable {
     val bodega: Almacenamiento?
     val billetera: Billetera
+
+    /**
+     * Indica si la nave dispone de una bodega asignada.
+     */
+    fun tieneBodega(): Boolean = bodega != null
+
+    /**
+     * Determina si la nave puede vender: debe estar acoplada y tener carga disponible.
+     */
+    fun puedeVender(): Boolean = estaAcoplado && (bodega?.cantidadItems ?: 0) > 0
+
+    /**
+     * Determina si la nave puede afrontar un costo con los fondos de su billetera.
+     */
+    fun puedeComprar(costo: Int): Boolean = billetera.saldoSuficiente(costo)
 }
 
 /**

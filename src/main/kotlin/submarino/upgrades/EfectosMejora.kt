@@ -24,6 +24,11 @@ abstract class EfectoBase(
 
     final override var magnitud: Double = magnitud
         private set
+
+    /**
+     * Compara la magnitud de este efecto con la de [otro].
+     */
+    override fun esMayorQue(otro: EfectoMejora): Boolean = magnitud > otro.magnitud
 }
 
 /**

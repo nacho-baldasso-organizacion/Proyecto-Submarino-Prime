@@ -20,6 +20,12 @@ private object HUDFormatting {
     val depthUnit: String = "m"
     val pressureUnit: String = "mmHg"
     val weightUnit: String = "kg"
+
+    /**
+     * Formatea [valor] con el [patron] indicado usando la configuración regional estadounidense.
+     */
+    fun formatear(valor: Double, patron: String): String =
+        java.lang.String.format(usLocale, patron, valor)
 }
 
 /**
@@ -52,6 +58,30 @@ data class EstadoHUD(
      * Determina si la bodega está llena.
      */
     fun estaBodegaLlena(): Boolean = pesoMaximoBodega > 0.0 && pesoBodega >= pesoMaximoBodega
+
+    /**
+     * Calcula el porcentaje de presión respecto al máximo.
+     * Devuelve 0.0 cuando no hay un máximo válido.
+     */
+    fun porcentajePresion(): Double =
+        if (presionMaxima <= 0.0) 0.0 else (presionActual / presionMaxima) * 100.0
+
+    /**
+     * Calcula cuántos bloques de la barra de presión deben mostrarse llenos.
+     */
+    fun barrasPresionLlenas(pasoPorcentaje: Double, maximoBarras: Int): Int {
+        if (pasoPorcentaje <= 0.0 || maximoBarras <= 0) {
+            return 0
+        }
+        return (porcentajePresion() / pasoPorcentaje).toInt().coerceIn(0, maximoBarras)
+    }
+
+    /**
+     * Calcula el porcentaje de ocupación de la bodega.
+     * Devuelve 0.0 cuando no hay capacidad válida.
+     */
+    fun porcentajeBodega(): Double =
+        if (pesoMaximoBodega <= 0.0) 0.0 else (pesoBodega / pesoMaximoBodega) * 100.0
 }
 
 /**
@@ -64,7 +94,7 @@ class HUDView {
     private val formatting = HUDFormatting
 
     private fun formatDouble(pattern: String, value: Double): String {
-        return java.lang.String.format(formatting.usLocale, pattern, value)
+        return formatting.formatear(value, pattern)
     }
 
     /**
@@ -74,11 +104,14 @@ class HUDView {
      */
     fun renderizarBarraPresion(estado: EstadoHUD): String {
         if (estado.presionMaxima <= formatting.pressureZeroThreshold) {
-            return "Presión: ${formatDouble("%.2f", estado.presionActual)} / ${formatDouble("%.2f", estado.presionMaxima)} ${formatting.pressureUnit} (0.00%)"
+            return "Presión: ${formatDouble("%.2f", estado.presionActual)} / ${formatDouble("%.2f", estado.presionMaxima)} ${formatting.pressureUnit} (${formatDouble("%.2f", estado.porcentajePresion())}%)"
         }
-        val porcentaje = (estado.presionActual / estado.presionMaxima) * 100.0
+        val porcentaje = estado.porcentajePresion()
         // Cada paso representa ${formatting.pressurePercentageStep}%: 50% -> 2 bloques, 100% -> 4 bloques
-        val barrasLlenas = (porcentaje / formatting.pressurePercentageStep).toInt().coerceIn(0, formatting.maxPressureBars)
+        val barrasLlenas = estado.barrasPresionLlenas(
+            formatting.pressurePercentageStep,
+            formatting.maxPressureBars
+        )
         val barraLlena = rellenarSimbolo("▇", barrasLlenas)
         val porcentajeFormateado = formatDouble("%.1f", porcentaje)
         return "Presión: ${formatDouble("%.2f", estado.presionActual)} / ${formatDouble("%.2f", estado.presionMaxima)} ${formatting.pressureUnit} [$barraLlena] $porcentajeFormateado%"
@@ -109,7 +142,7 @@ class HUDView {
      */
     fun renderizarPesoBodega(estado: EstadoHUD): String {
         if (estado.pesoMaximoBodega <= formatting.weightZeroThreshold) {
-            return "Peso bodega: ${formatDouble("%.1f", estado.pesoBodega)} / ${formatDouble("%.1f", estado.pesoMaximoBodega)} ${formatting.weightUnit} (0.0%)"
+            return "Peso bodega: ${formatDouble("%.1f", estado.pesoBodega)} / ${formatDouble("%.1f", estado.pesoMaximoBodega)} ${formatting.weightUnit} (${formatDouble("%.1f", estado.porcentajeBodega())}%)"
         }
         return "Peso bodega: ${formatDouble("%.1f", estado.pesoBodega)} / ${formatDouble("%.1f", estado.pesoMaximoBodega)} ${formatting.weightUnit}"
     }
