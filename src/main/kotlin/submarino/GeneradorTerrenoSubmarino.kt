@@ -66,11 +66,8 @@ class GeneradorTerrenoSubmarino {
         val ancho = random.nextDouble(460.0, 1320.0)
         val margen = ancho / 2.0 + 60.0
         val centroX = random.nextDouble(margen, anchoMapa - margen)
-        val baseY = when (indice % 3) {
-            0 -> random.nextDouble(altoMapa * 0.18, altoMapa * 0.45)
-            1 -> random.nextDouble(altoMapa * 0.45, altoMapa * 0.78)
-            else -> random.nextDouble(altoMapa * 0.78, altoMapa * 0.99)
-        }.coerceIn(420.0, altoMapa - 8.0)
+        val baseY = FRANJAS_BASE[indice % FRANJAS_BASE.size](random, altoMapa)
+            .coerceIn(420.0, altoMapa - 8.0)
         val altura = min(random.nextDouble(240.0, 640.0), baseY - 150.0)
         return FormacionRocosa(
             id = "FORMACION-$indice",
@@ -134,5 +131,11 @@ class GeneradorTerrenoSubmarino {
 
     companion object {
         private const val CANTIDAD_FORMACIONES = 54
+
+        private val FRANJAS_BASE: List<(Random, Double) -> Double> = listOf(
+            { random, alto -> random.nextDouble(alto * 0.18, alto * 0.45) },
+            { random, alto -> random.nextDouble(alto * 0.45, alto * 0.78) },
+            { random, alto -> random.nextDouble(alto * 0.78, alto * 0.99) }
+        )
     }
 }

@@ -56,8 +56,8 @@ sealed class ResultadoCompra {
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            if (other !is Exito) return false
-            return mejora.id == other.mejora.id && nuevoNivel == other.nuevoNivel && costoPagado == other.costoPagado
+            val otro = other as? Exito ?: return false
+            return mejora.id == otro.mejora.id && nuevoNivel == otro.nuevoNivel && costoPagado == otro.costoPagado
         }
 
         override fun hashCode(): Int = 31 * mejora.id.hashCode() + nuevoNivel
@@ -96,8 +96,8 @@ sealed class ResultadoCompra {
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            if (other !is FondosInsuficientes) return false
-            return mejoraId == other.mejoraId && costoRequerido == other.costoRequerido
+            val otro = other as? FondosInsuficientes ?: return false
+            return mejoraId == otro.mejoraId && costoRequerido == otro.costoRequerido
         }
 
         override fun hashCode(): Int = 31 * mejoraId.hashCode() + costoRequerido
@@ -134,8 +134,8 @@ sealed class ResultadoCompra {
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            if (other !is NivelMaximoAlcanzado) return false
-            return mejoraId == other.mejoraId && nivelActual == other.nivelActual
+            val otro = other as? NivelMaximoAlcanzado ?: return false
+            return mejoraId == otro.mejoraId && nivelActual == otro.nivelActual
         }
 
         override fun hashCode(): Int = 31 * mejoraId.hashCode() + nivelActual
@@ -162,8 +162,8 @@ sealed class ResultadoCompra {
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            if (other !is MejoraNoEncontrada) return false
-            return mejoraId == other.mejoraId
+            val otro = other as? MejoraNoEncontrada ?: return false
+            return mejoraId == otro.mejoraId
         }
 
         override fun hashCode(): Int = mejoraId.hashCode()

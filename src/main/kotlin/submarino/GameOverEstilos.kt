@@ -83,13 +83,16 @@ internal object GameOverEstilos {
             "-fx-padding: 11 32 11 32;" +
             "-fx-cursor: hand;"
 
+    private val estilosBoton: Map<Pair<Boolean, Boolean>, String> = mapOf(
+        (true to true) to BOTON_PRINCIPAL_HOVER,
+        (true to false) to BOTON_PRINCIPAL,
+        (false to true) to BOTON_SECUNDARIO_HOVER,
+        (false to false) to BOTON_SECUNDARIO
+    )
+
     /**
      * Resuelve el estilo de un botón según su jerarquía y estado de hover.
      */
-    fun estiloBoton(principal: Boolean, hover: Boolean): String = when {
-        principal && hover -> BOTON_PRINCIPAL_HOVER
-        principal -> BOTON_PRINCIPAL
-        hover -> BOTON_SECUNDARIO_HOVER
-        else -> BOTON_SECUNDARIO
-    }
+    fun estiloBoton(principal: Boolean, hover: Boolean): String =
+        estilosBoton.getValue(principal to hover)
 }

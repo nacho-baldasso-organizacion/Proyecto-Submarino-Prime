@@ -142,11 +142,14 @@ class ModeloNavegacion(
         estadoOxigeno = clasificarOxigeno(sistemaOxigeno.oxigeno)
     )
 
-    private fun clasificarOxigeno(nivel: Double): EstadoOxigeno = when {
-        nivel <= OXIGENO_MINIMO -> EstadoOxigeno.AGOTADO
-        nivel < UMBRAL_CRITICO -> EstadoOxigeno.CRITICO
-        nivel < UMBRAL_PRECAUCION -> EstadoOxigeno.PRECAUCION
-        else -> EstadoOxigeno.ESTABLE
+    private fun clasificarOxigeno(nivel: Double): EstadoOxigeno = if (nivel <= OXIGENO_MINIMO) {
+        EstadoOxigeno.AGOTADO
+    } else if (nivel < UMBRAL_CRITICO) {
+        EstadoOxigeno.CRITICO
+    } else if (nivel < UMBRAL_PRECAUCION) {
+        EstadoOxigeno.PRECAUCION
+    } else {
+        EstadoOxigeno.ESTABLE
     }
 
     companion object {

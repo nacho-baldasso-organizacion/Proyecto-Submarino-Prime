@@ -57,19 +57,25 @@ class ControladorMovimientoTeclado {
     /**
      * Direccion horizontal: -1.0 izquierda, 0.0 quieto, 1.0 derecha.
      */
-    fun direccionX(): Double = when {
-        estaActiva(KeyCode.LEFT, KeyCode.A) && !estaActiva(KeyCode.RIGHT, KeyCode.D) -> -1.0
-        estaActiva(KeyCode.RIGHT, KeyCode.D) && !estaActiva(KeyCode.LEFT, KeyCode.A) -> 1.0
-        else -> 0.0
-    }
+    fun direccionX(): Double = direccion(
+        negativo = estaActiva(KeyCode.LEFT, KeyCode.A),
+        positivo = estaActiva(KeyCode.RIGHT, KeyCode.D)
+    )
 
     /**
      * Direccion vertical: -1.0 arriba, 0.0 quieto, 1.0 abajo.
      */
-    fun direccionY(): Double = when {
-        estaActiva(KeyCode.UP, KeyCode.W) && !estaActiva(KeyCode.DOWN, KeyCode.S) -> -1.0
-        estaActiva(KeyCode.DOWN, KeyCode.S) && !estaActiva(KeyCode.UP, KeyCode.W) -> 1.0
-        else -> 0.0
+    fun direccionY(): Double = direccion(
+        negativo = estaActiva(KeyCode.UP, KeyCode.W),
+        positivo = estaActiva(KeyCode.DOWN, KeyCode.S)
+    )
+
+    private fun direccion(negativo: Boolean, positivo: Boolean): Double = if (negativo == positivo) {
+        0.0
+    } else if (negativo) {
+        -1.0
+    } else {
+        1.0
     }
 
     private fun estaActiva(vararg teclas: KeyCode): Boolean =
@@ -104,21 +110,24 @@ class ControladorAccionesTeclado {
     private var minarSolicitado: Boolean = false
     private var acoplarSolicitado: Boolean = false
 
+    private val accionesPorTecla: Map<KeyCode, () -> Unit> = mapOf(
+        KeyCode.SPACE to {
+            if (teclasAccionPresionadas.add(KeyCode.SPACE)) {
+                minarSolicitado = true
+            }
+        },
+        KeyCode.E to {
+            if (teclasAccionPresionadas.add(KeyCode.E)) {
+                acoplarSolicitado = true
+            }
+        }
+    )
+
     private val alPresionar = EventHandler<KeyEvent> { evento ->
-        when (evento.code) {
-            KeyCode.SPACE -> {
-                if (teclasAccionPresionadas.add(KeyCode.SPACE)) {
-                    minarSolicitado = true
-                }
-                evento.consume()
-            }
-            KeyCode.E -> {
-                if (teclasAccionPresionadas.add(KeyCode.E)) {
-                    acoplarSolicitado = true
-                }
-                evento.consume()
-            }
-            else -> Unit
+        val accion = accionesPorTecla[evento.code]
+        if (accion != null) {
+            accion()
+            evento.consume()
         }
     }
 

@@ -37,6 +37,11 @@ class BarraUmbralHUD(
 
     private val barra: BarraHUD = BarraHUD(ancho, estiloEstable, progresoInicial)
 
+    private val umbrales: List<Pair<Double, String>> = listOf(
+        UMBRAL_CRITICO to estiloCritico,
+        UMBRAL_PRECAUCION to estiloPrecaucion
+    )
+
     val nodo: ProgressBar
         get() = barra.nodo
 
@@ -44,11 +49,8 @@ class BarraUmbralHUD(
         barra.actualizar(porcentaje / 100.0, estiloPara(porcentaje))
     }
 
-    private fun estiloPara(valor: Double): String = when {
-        valor <= UMBRAL_CRITICO -> estiloCritico
-        valor <= UMBRAL_PRECAUCION -> estiloPrecaucion
-        else -> estiloEstable
-    }
+    private fun estiloPara(valor: Double): String =
+        umbrales.firstOrNull { valor <= it.first }?.second ?: estiloEstable
 
     companion object {
         private const val UMBRAL_CRITICO = 20.0
@@ -69,17 +71,17 @@ class BarraEstadoOxigenoHUD(
 
     private val barra: BarraHUD = BarraHUD(ancho, estiloEstable, 1.0)
 
+    private val estilos: Map<EstadoOxigeno, String> = mapOf(
+        EstadoOxigeno.ESTABLE to estiloEstable,
+        EstadoOxigeno.PRECAUCION to estiloPrecaucion,
+        EstadoOxigeno.CRITICO to estiloCritico,
+        EstadoOxigeno.AGOTADO to estiloAgotado
+    )
+
     val nodo: ProgressBar
         get() = barra.nodo
 
     fun actualizar(progreso: Double, estado: EstadoOxigeno) {
-        barra.actualizar(progreso, estiloPara(estado))
-    }
-
-    private fun estiloPara(estado: EstadoOxigeno): String = when (estado) {
-        EstadoOxigeno.ESTABLE -> estiloEstable
-        EstadoOxigeno.PRECAUCION -> estiloPrecaucion
-        EstadoOxigeno.CRITICO -> estiloCritico
-        EstadoOxigeno.AGOTADO -> estiloAgotado
+        barra.actualizar(progreso, estilos.getValue(estado))
     }
 }

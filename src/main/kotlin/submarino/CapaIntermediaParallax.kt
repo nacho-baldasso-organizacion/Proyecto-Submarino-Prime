@@ -25,11 +25,7 @@ class CapaIntermediaParallax(
             val x = i * anchoMundo / COLINAS
             val ancho = anchoMundo / COLINAS * 1.4
             val alto = altoMundo * (0.18 + (i % 3) * 0.06)
-            val color = when (i % 3) {
-                0 -> Color.web("#062B3A")
-                1 -> Color.web("#083545")
-                else -> Color.web("#0A4152")
-            }
+            val color = COLORES_COLINA[i % COLORES_COLINA.size]
             capa.children.add(crearColina(x, ancho, alto, color))
         }
 
@@ -106,5 +102,11 @@ class CapaIntermediaParallax(
         private const val COLINAS = 8
         private const val ALGAS = 18
         private const val BURBUJAS_INTERMEDIAS = 22
+
+        private val COLORES_COLINA: List<Color> = listOf(
+            Color.web("#062B3A"),
+            Color.web("#083545"),
+            Color.web("#0A4152")
+        )
     }
 }

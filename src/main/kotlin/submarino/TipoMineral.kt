@@ -88,12 +88,16 @@ enum class TipoMineral(
     companion object {
         fun obtenerPorProfundidad(profundidad: Double, esCavernaOculta: Boolean = false): TipoMineral {
             if (esCavernaOculta) return ARTEFACTO_HUNDIDO
-            return when {
-                profundidad < 50.0 -> ARENA_DE_CUARZO
-                profundidad < 150.0 -> COBRE_MARINO
-                profundidad < 400.0 -> NODULO_DE_MANGANESO
-                profundidad <= 800.0 -> TITANIO_CRISTALINO
-                else -> GEMA_DE_SALMUERA
+            return if (profundidad < 50.0) {
+                ARENA_DE_CUARZO
+            } else if (profundidad < 150.0) {
+                COBRE_MARINO
+            } else if (profundidad < 400.0) {
+                NODULO_DE_MANGANESO
+            } else if (profundidad <= 800.0) {
+                TITANIO_CRISTALINO
+            } else {
+                GEMA_DE_SALMUERA
             }
         }
     }

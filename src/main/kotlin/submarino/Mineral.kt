@@ -167,8 +167,8 @@ class Mineral(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is Mineral) return false
-        return id == other.id
+        val otro = other as? Mineral ?: return false
+        return id == otro.id
     }
 
     override fun hashCode(): Int = id.hashCode()

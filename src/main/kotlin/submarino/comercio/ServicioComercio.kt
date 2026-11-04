@@ -38,7 +38,7 @@ data class TransaccionComercial(
 
 /**
  * Jerarquía sellada exhaustiva que modela los posibles desenlaces de un intento de transacción.
- * Provee métodos polimórficos para evitar comprobaciones de tipo `is`/`when` en clientes (OCP).
+ * Provee métodos polimórficos para que los clientes no necesiten comprobaciones de tipo (OCP).
  */
 sealed class ResultadoComercio {
 

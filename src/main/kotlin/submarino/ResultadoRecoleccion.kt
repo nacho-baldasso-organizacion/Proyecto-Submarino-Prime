@@ -2,7 +2,7 @@ package submarino
 
 /**
  * Jerarquía sellada que modela exhaustivamente los posibles resultados de un intento de recolección.
- * Provee polimorfismo de estado para evitar verificaciones externas mediante switch/is (OCP).
+ * Provee polimorfismo de estado para evitar verificaciones externas de tipo (OCP).
  * Incorpora métodos de dominio con comportamiento propio (elimina clases anémicas).
  */
 sealed class ResultadoRecoleccion {
@@ -16,6 +16,12 @@ sealed class ResultadoRecoleccion {
      * Retorna un mensaje descriptivo legible del resultado.
      */
     abstract fun obtenerMensaje(): String
+
+    /**
+     * Retorna el mensaje orientado al jugador. Por defecto coincide con [obtenerMensaje],
+     * pero cada resultado puede adaptarlo sin que el cliente consulte su tipo (OCP).
+     */
+    open fun obtenerMensajeJugador(): String = obtenerMensaje()
 
     /**
      * Retorna el elemento involucrado en la interacción si existe.
@@ -58,8 +64,8 @@ sealed class ResultadoRecoleccion {
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            if (other !is Exito) return false
-            return item.id == other.item.id && pesoAcumulado == other.pesoAcumulado
+            val otro = other as? Exito ?: return false
+            return item.id == otro.item.id && pesoAcumulado == otro.pesoAcumulado
         }
 
         override fun hashCode(): Int = 31 * item.hashCode() + pesoAcumulado.hashCode()
@@ -98,8 +104,8 @@ sealed class ResultadoRecoleccion {
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            if (other !is BodegaLlena) return false
-            return item.id == other.item.id && excesoPeso == other.excesoPeso && capacidadMaxima == other.capacidadMaxima
+            val otro = other as? BodegaLlena ?: return false
+            return item.id == otro.item.id && excesoPeso == otro.excesoPeso && capacidadMaxima == otro.capacidadMaxima
         }
 
         override fun hashCode(): Int {
@@ -117,6 +123,9 @@ sealed class ResultadoRecoleccion {
         override val esExito: Boolean = false
         override fun obtenerMensaje(): String =
             "Sin colisión en las coordenadas actuales."
+
+        override fun obtenerMensajeJugador(): String =
+            "No hay minerales cerca. Acércate a un nodo y pulsa ESPACIO."
     }
 
     /**
@@ -140,8 +149,8 @@ sealed class ResultadoRecoleccion {
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
-            if (other !is YaRecolectado) return false
-            return item.id == other.item.id
+            val otro = other as? YaRecolectado ?: return false
+            return item.id == otro.item.id
         }
 
         override fun hashCode(): Int = item.hashCode()

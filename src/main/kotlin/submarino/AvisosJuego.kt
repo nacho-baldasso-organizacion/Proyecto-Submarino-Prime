@@ -5,6 +5,14 @@ import javafx.scene.control.Label
 import javafx.scene.layout.VBox
 
 /**
+ * Regla configurable de aviso: se aplica cuando el estado cumple la condición.
+ */
+private class ReglaAviso(
+    val condicion: (EstadoJuego) -> Boolean,
+    val texto: String
+)
+
+/**
  * Panel inferior de avisos contextuales y mensajes de la partida.
  *
  * Responsabilidad única (SRP): decidir y pintar el aviso mostrado al jugador.
@@ -32,16 +40,20 @@ class AvisosJuego {
         children.addAll(notificacion, mensaje)
     }
 
+    private val reglas: List<ReglaAviso> = listOf(
+        ReglaAviso({ it.presionActual > it.presionMaxima }, "¡PRESIÓN CRÍTICA! Asciende o el casco colapsará"),
+        ReglaAviso({ it.oxigeno <= it.capacidadOxigeno * UMBRAL_OXIGENO_BAJO }, "¡OXÍGENO BAJO! Regresa a la estación para recargar"),
+        ReglaAviso({ it.acoplado }, "Acoplado · pulsa DESACOPLAR en la tienda para continuar"),
+        ReglaAviso({ it.enZonaAcople }, "Presiona E para acoplar")
+    )
+
     fun actualizar(estado: EstadoJuego) {
         val presionCritica = estado.presionActual > estado.presionMaxima
         val oxigenoBajo = estado.oxigeno <= estado.capacidadOxigeno * UMBRAL_OXIGENO_BAJO
-        val aviso = when {
-            estado.destruido -> ""
-            presionCritica -> "¡PRESIÓN CRÍTICA! Asciende o el casco colapsará"
-            oxigenoBajo -> "¡OXÍGENO BAJO! Regresa a la estación para recargar"
-            estado.acoplado -> "Acoplado · pulsa DESACOPLAR en la tienda para continuar"
-            estado.enZonaAcople -> "Presiona E para acoplar"
-            else -> ""
+        val aviso = if (estado.destruido) {
+            ""
+        } else {
+            reglas.firstOrNull { it.condicion(estado) }?.texto ?: ""
         }
         notificacion.text = aviso
         notificacion.style = if (presionCritica || oxigenoBajo) {

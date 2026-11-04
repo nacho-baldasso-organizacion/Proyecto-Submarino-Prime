@@ -44,16 +44,16 @@ class IndicadorEstadoOxigenoHUD(
 
     private val tarjeta: TarjetaHUD = TarjetaHUD("ESTADO", estiloTitulo, estiloValor)
 
+    private val colores: Map<EstadoOxigeno, String> = mapOf(
+        EstadoOxigeno.ESTABLE to "-fx-text-fill: #6EE7B7;",
+        EstadoOxigeno.PRECAUCION to "-fx-text-fill: #FBBF24;",
+        EstadoOxigeno.CRITICO to "-fx-text-fill: #FB7185;",
+        EstadoOxigeno.AGOTADO to "-fx-text-fill: #EF4444;"
+    )
+
     fun nodo(): VBox = tarjeta.nodo()
 
     fun actualizar(estado: EstadoOxigeno) {
-        tarjeta.actualizar(estado.etiqueta, color(estado))
-    }
-
-    private fun color(estado: EstadoOxigeno): String = when (estado) {
-        EstadoOxigeno.ESTABLE -> "-fx-text-fill: #6EE7B7;"
-        EstadoOxigeno.PRECAUCION -> "-fx-text-fill: #FBBF24;"
-        EstadoOxigeno.CRITICO -> "-fx-text-fill: #FB7185;"
-        EstadoOxigeno.AGOTADO -> "-fx-text-fill: #EF4444;"
+        tarjeta.actualizar(estado.etiqueta, colores.getValue(estado))
     }
 }
