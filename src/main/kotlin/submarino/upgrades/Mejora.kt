@@ -25,11 +25,12 @@ class ControladorNivelMejora(
     override var nivel: Int = nivelInicial
         private set
 
-    override var nivelMaximo: Int = nivelMaximo
-        private set
+    private var _nivelMaximo: Int = nivelMaximo
+
+    override fun nivelMaximo(): Int = _nivelMaximo
 
     override val esNivelMaximo: Boolean
-        get() = nivel >= nivelMaximo
+        get() = nivel >= _nivelMaximo
 
     override fun subirNivel(): Boolean {
         if (esNivelMaximo) {
@@ -66,8 +67,9 @@ open class Mejora(
     final override var nombre: String = nombre
         private set
 
-    final override var descripcion: String = descripcion
-        private set
+    private val descripcionTexto: String = descripcion
+
+    override fun descripcion(): String = descripcionTexto
 
     private val gestorNivel: ControladorNivelMejora = ControladorNivelMejora(nivelInicial, nivelMaximo)
     private var efectoMejora: EfectoMejora = efecto
@@ -82,8 +84,7 @@ open class Mejora(
     override val nivel: Int
         get() = gestorNivel.nivel
 
-    override val nivelMaximo: Int
-        get() = gestorNivel.nivelMaximo
+    override fun nivelMaximo(): Int = gestorNivel.nivelMaximo()
 
     override val esNivelMaximo: Boolean
         get() = gestorNivel.esNivelMaximo
@@ -99,7 +100,7 @@ open class Mejora(
 
     fun obtenerNivel(): Int = nivel
 
-    fun obtenerNivelMaximo(): Int = nivelMaximo
+    fun obtenerNivelMaximo(): Int = nivelMaximo()
 
     fun obtenerCosto(): Int = costo
 
@@ -109,7 +110,7 @@ open class Mejora(
 
     override fun toString(): String {
         val estadoCosto = if (esNivelMaximo) "MAX" else "$$costo"
-        return "Mejora(id='$id', nombre='$nombre', nivel=$nivel/$nivelMaximo, costo=$estadoCosto, efecto=$efectoMejora)"
+        return "Mejora(id='$id', nombre='$nombre', nivel=$nivel/${nivelMaximo()}, costo=$estadoCosto, efecto=$efectoMejora)"
     }
 
     override fun equals(other: Any?): Boolean {

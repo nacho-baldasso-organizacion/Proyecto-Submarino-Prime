@@ -9,15 +9,25 @@ package submarino
 
 interface Identificable {
     val id: String
+
+    /**
+     * Indica si esta entidad comparte el identificador de [otro].
+     */
+    fun mismoIdQue(otro: Identificable): Boolean = id == otro.id
 }
 
 interface Descriptible {
     val nombre: String
-    val descripcion: String
+    fun descripcion(): String
 }
 
 interface Comprable {
     val costo: Int
+
+    /**
+     * Indica si el [saldo] disponible alcanza para cubrir el costo actual.
+     */
+    fun puedePagarseCon(saldo: Int): Boolean = saldo >= costo
 }
 
 interface Mejorable {
@@ -26,7 +36,7 @@ interface Mejorable {
 }
 
 interface LimiteNivel {
-    val nivelMaximo: Int
+    fun nivelMaximo(): Int
     val esNivelMaximo: Boolean
 }
 
@@ -54,6 +64,11 @@ interface AplicableSubmarino {
 
 interface EfectoMejora : AplicableSubmarino {
     val magnitud: Double
+
+    /**
+     * Indica si este efecto tiene una magnitud estrictamente mayor que [otro].
+     */
+    fun esMayorQue(otro: EfectoMejora): Boolean = magnitud > otro.magnitud
 }
 
 interface EstrategiaCosto {

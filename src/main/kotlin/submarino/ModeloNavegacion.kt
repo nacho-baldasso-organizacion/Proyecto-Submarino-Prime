@@ -9,7 +9,22 @@ enum class EstadoOxigeno(val etiqueta: String) {
     ESTABLE("ESTABLE"),
     PRECAUCION("PRECAUCIÓN"),
     CRITICO("CRÍTICO"),
-    AGOTADO("AGOTADO")
+    AGOTADO("AGOTADO");
+
+    /**
+     * Indica si el nivel exige atención inmediata (crítico o agotado).
+     */
+    fun esCritico(): Boolean = this == CRITICO || this == AGOTADO
+
+    /**
+     * Indica si el nivel es estable y no requiere recarga.
+     */
+    fun esEstable(): Boolean = this == ESTABLE
+
+    /**
+     * Indica si conviene regresar a la estación para recargar oxígeno.
+     */
+    fun requiereRecarga(): Boolean = !esEstable()
 }
 
 /**
@@ -22,7 +37,38 @@ data class EstadoNavegacion(
     val profundidad: Double,
     val oxigeno: Double,
     val estadoOxigeno: EstadoOxigeno
-)
+) {
+
+    /**
+     * Proporción de oxígeno disponible en el rango [0.0, 1.0].
+     */
+    fun oxigenoNormalizado(maximo: Double = ModeloNavegacion.OXIGENO_MAXIMO): Double {
+        if (maximo <= 0.0) {
+            return 0.0
+        }
+        return (oxigeno / maximo).coerceIn(0.0, 1.0)
+    }
+
+    /**
+     * Indica si el oxígeno se agotó por completo.
+     */
+    fun estaSinOxigeno(): Boolean = estadoOxigeno == EstadoOxigeno.AGOTADO
+
+    /**
+     * Indica si el nivel de oxígeno requiere atención inmediata.
+     */
+    fun estaEnRangoCritico(): Boolean = estadoOxigeno.esCritico()
+
+    /**
+     * Distancia horizontal entre la nave y otra coordenada del mapa.
+     */
+    fun distanciaHorizontalA(otraCoordenada: Double): Double = abs(coordenadaX - otraCoordenada)
+
+    /**
+     * Profundidad expresada en kilómetros.
+     */
+    fun profundidadEnKilometros(): Double = profundidad / 1000.0
+}
 
 /**
  * Modelo de navegación del submarino, independiente de JavaFX.
@@ -43,7 +89,14 @@ class ModeloNavegacion(
 
     private var posicionX: Double = anchoEscena / 2.0
     private var posicionY: Double = altoEscena / 2.0
-    private var oxigeno: Double = OXIGENO_INICIAL
+    private val sistemaOxigeno: SistemaOxigeno = SistemaOxigeno(
+        oxigenoInicial = OXIGENO_INICIAL,
+        maximoInicial = OXIGENO_MAXIMO,
+        consumoBasePorSegundo = consumoOxigenoPorSegundo,
+        consumoMovimientoPorSegundo = consumoOxigenoPorMovimiento,
+        maximoAbsoluto = OXIGENO_MAXIMO,
+        minimo = OXIGENO_MINIMO
+    )
 
     init {
         require(anchoEscena > 0.0) { "El ancho de la escena debe ser positivo: $anchoEscena" }
@@ -74,12 +127,7 @@ class ModeloNavegacion(
             .coerceIn(margenVertical, altoEscena - margenVertical)
 
         val intensidadMovimiento = abs(dx) + abs(dy)
-        val consumo = (
-            consumoOxigenoPorSegundo +
-                consumoOxigenoPorMovimiento * intensidadMovimiento
-        ) * deltaSegundos
-        oxigeno = (oxigeno - consumo).coerceIn(OXIGENO_MINIMO, OXIGENO_MAXIMO)
-
+        sistemaOxigeno.consumir(deltaSegundos, intensidadMovimiento)
     }
 
     /**
@@ -90,8 +138,8 @@ class ModeloNavegacion(
         posicionY = posicionY,
         coordenadaX = posicionX * metrosPorPixel,
         profundidad = posicionY * metrosPorPixel,
-        oxigeno = oxigeno,
-        estadoOxigeno = clasificarOxigeno(oxigeno)
+        oxigeno = sistemaOxigeno.oxigeno,
+        estadoOxigeno = clasificarOxigeno(sistemaOxigeno.oxigeno)
     )
 
     private fun clasificarOxigeno(nivel: Double): EstadoOxigeno = when {

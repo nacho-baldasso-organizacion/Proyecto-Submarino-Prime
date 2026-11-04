@@ -1,5 +1,7 @@
 package submarino
 
+import kotlin.math.roundToInt
+
 /**
  * Representación inmutable de un color RGB con componentes enteros.
  *
@@ -10,7 +12,22 @@ data class ColorRgb(
     val r: Int,
     val g: Int,
     val b: Int
-)
+) {
+
+    /**
+     * Interpola linealmente cada componente hacia [otro] según [factor].
+     * Un factor de 0.0 conserva este color y 1.0 devuelve [otro]; valores
+     * fuera de ese rango se acotan.
+     */
+    fun interpolar(otro: ColorRgb, factor: Double): ColorRgb {
+        val f = factor.coerceIn(0.0, 1.0)
+        return ColorRgb(
+            r = (r + (otro.r - r) * f).roundToInt(),
+            g = (g + (otro.g - g) * f).roundToInt(),
+            b = (b + (otro.b - b) * f).roundToInt()
+        )
+    }
+}
 
 /**
  * Zonas de profundidad con su color asociado.
@@ -21,7 +38,19 @@ data class ColorRgb(
 enum class ColorProfundidad(val color: ColorRgb) {
     SUPERFICIE(ColorRgb(r = 255, g = 200, b = 150)),
     FOTICA(ColorRgb(r = 100, g = 150, b = 255)),
-    ABISAL(ColorRgb(r = 0, g = 0, b = 80))
+    ABISAL(ColorRgb(r = 0, g = 0, b = 80));
+
+    /**
+     * Indica si esta zona es la que corresponde a la [profundidad] indicada.
+     */
+    fun correspondeA(profundidad: Double): Boolean =
+        CalculadorColorProfundidad.calcularZona(profundidad) == this
+
+    /**
+     * Interpola el color de esta zona hacia el color de [otra] zona.
+     */
+    fun interpolarHacia(otra: ColorProfundidad, factor: Double): ColorRgb =
+        color.interpolar(otra.color, factor)
 }
 
 /**

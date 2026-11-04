@@ -61,8 +61,8 @@ object MainPruebaIssue8 {
     private fun demostrarCatalogo(catalogo: ConsultableCatalogo) {
         VisualizadorConsola.imprimirSeccion("2. CATÁLOGO DISPONIBLE EN LA TIENDA DE MEJORAS")
         catalogo.obtenerTodas().forEachIndexed { idx, it ->
-            println("   [$idx] ID: ${it.id} | ${it.nombre} | Nivel: ${it.nivel}/${it.nivelMaximo} | Costo: $$${it.costo}")
-            println("        -> Efecto: ${it.descripcion}")
+            println("   [$idx] ID: ${it.id} | ${it.nombre} | Nivel: ${it.nivel}/${it.nivelMaximo()} | Costo: $$${it.costo}")
+            println("        -> Efecto: ${it.descripcion()}")
         }
         println()
     }

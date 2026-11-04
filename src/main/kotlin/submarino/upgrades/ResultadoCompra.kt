@@ -49,7 +49,7 @@ sealed class ResultadoCompra {
 
         fun incrementoNivel(): Int = nuevoNivel - nivelAnterior
 
-        fun esNivelMaximo(): Boolean = nuevoNivel >= mejora.nivelMaximo
+        fun esNivelMaximo(): Boolean = nuevoNivel >= mejora.nivelMaximo()
 
         override fun toString(): String =
             "Exito(mejora=$mejora, nivelAnterior=$nivelAnterior, nuevoNivel=$nuevoNivel, costoPagado=$costoPagado, saldoRestante=$saldoRestante)"
