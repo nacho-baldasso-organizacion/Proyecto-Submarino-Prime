@@ -113,10 +113,6 @@ class CascoReforzado(
         return danioBase * mitigacion
     }
 
-    override fun notificarColapso() {
-        super.notificarColapso()
-    }
-
     override fun toString(): String {
         return "CascoReforzado(presionMaximaPa=$presionMaximaPa, integridad=${"%.2f".format(integridad)}%, blindaje=${(factorAbsorcion * 100).toInt()}%)"
     }
