@@ -35,8 +35,8 @@ class Posicion(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is Posicion) return false
-        return posX == other.posX && posY == other.posY
+        val otra = other as? Posicion ?: return false
+        return posX == otra.posX && posY == otra.posY
     }
 
     override fun hashCode(): Int = 31 * posX + posY

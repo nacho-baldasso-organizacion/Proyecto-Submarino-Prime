@@ -94,14 +94,14 @@ class EstadoAscenso(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is EstadoAscenso) return false
-        return pesoBase == other.pesoBase &&
-                pesoCarga == other.pesoCarga &&
-                pesoTotal == other.pesoTotal &&
-                capacidadMaximaBodega == other.capacidadMaximaBodega &&
-                factorVelocidad == other.factorVelocidad &&
-                velocidadNominal == other.velocidadNominal &&
-                velocidadAscensoEfectiva == other.velocidadAscensoEfectiva
+        val otro = other as? EstadoAscenso ?: return false
+        return pesoBase == otro.pesoBase &&
+                pesoCarga == otro.pesoCarga &&
+                pesoTotal == otro.pesoTotal &&
+                capacidadMaximaBodega == otro.capacidadMaximaBodega &&
+                factorVelocidad == otro.factorVelocidad &&
+                velocidadNominal == otro.velocidadNominal &&
+                velocidadAscensoEfectiva == otro.velocidadAscensoEfectiva
     }
 
     override fun hashCode(): Int {

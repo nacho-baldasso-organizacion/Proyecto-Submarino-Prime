@@ -14,6 +14,12 @@ internal class ChispaExplosionSubmarino private constructor(
     val duracion: Duration
 ) {
     companion object {
+        private val COLORES_CHISPA: List<Color> = listOf(
+            Color.web("#FFE08A"),
+            Color.web("#FF9F1C"),
+            Color.web("#FF5A2A")
+        )
+
         fun crear(random: Random): ChispaExplosionSubmarino {
             val angulo = random.nextDouble(0.0, PI * 2.0)
             val distancia = 55.0 + random.nextDouble() * 250.0
@@ -22,11 +28,7 @@ internal class ChispaExplosionSubmarino private constructor(
                 0.0,
                 1.8 + random.nextDouble() * 4.2
             ).apply {
-                fill = when (random.nextInt(3)) {
-                    0 -> Color.web("#FFE08A")
-                    1 -> Color.web("#FF9F1C")
-                    else -> Color.web("#FF5A2A")
-                }
+                fill = COLORES_CHISPA[random.nextInt(COLORES_CHISPA.size)]
                 effect = DropShadow(12.0, Color.web("#FF9F1C", 0.85))
             }
             val duracion = Duration.seconds(0.65 + random.nextDouble() * 0.85)

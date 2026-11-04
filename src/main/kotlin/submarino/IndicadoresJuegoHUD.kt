@@ -24,6 +24,11 @@ class IndicadorPresionHUD(
     )
     private val tarjeta: TarjetaHUD = TarjetaHUD("PRESIÓN", estiloTitulo, estiloValor, barra.nodo)
 
+    private val colores: List<Pair<Double, String>> = listOf(
+        100.0 to "-fx-text-fill: #FF5A36;",
+        UMBRAL_PRECAUCION to "-fx-text-fill: #FBBF24;"
+    )
+
     fun nodo(): VBox = tarjeta.nodo()
 
     fun actualizar(presionActual: Double, presionMaxima: Double) {
@@ -36,11 +41,8 @@ class IndicadorPresionHUD(
         barra.actualizar(porcentaje)
     }
 
-    private fun color(porcentaje: Double): String = when {
-        porcentaje >= 100.0 -> "-fx-text-fill: #FF5A36;"
-        porcentaje >= UMBRAL_PRECAUCION -> "-fx-text-fill: #FBBF24;"
-        else -> "-fx-text-fill: #E6F7FA;"
-    }
+    private fun color(porcentaje: Double): String =
+        colores.firstOrNull { porcentaje >= it.first }?.second ?: "-fx-text-fill: #E6F7FA;"
 
     companion object {
         private const val MEGAPASCAL = 1_000_000.0

@@ -66,11 +66,9 @@ class PincelRocaExterior(
             val x = numeroEntre(formacion.xMin + 8.0, formacion.xMax - 8.0)
             val superficie = formacion.superficieEn(x) ?: return@repeat
             val altura = numeroEntre(8.0, 34.0)
-            val color = when (random.nextInt(3)) {
-                0 -> Color.web("#2E8C80", numeroEntre(0.25, 0.48))
-                1 -> Color.web("#B56A6A", numeroEntre(0.20, 0.42))
-                else -> Color.web("#6B8F4A", numeroEntre(0.22, 0.45))
-            }
+            val (tono, alfaMinimo, alfaMaximo) =
+                COLORES_ARRECIFE[random.nextInt(COLORES_ARRECIFE.size)]
+            val color = Color.web(tono, numeroEntre(alfaMinimo, alfaMaximo))
             gc.stroke = color
             gc.lineWidth = max(1.0, numeroEntre(1.0, 2.2) * escala)
             gc.beginPath()
@@ -119,5 +117,13 @@ class PincelRocaExterior(
         val minimo = min(desde, hasta)
         val maximo = max(desde, hasta)
         return if (minimo == maximo) minimo else random.nextDouble(minimo, maximo)
+    }
+
+    companion object {
+        private val COLORES_ARRECIFE: List<Triple<String, Double, Double>> = listOf(
+            Triple("#2E8C80", 0.25, 0.48),
+            Triple("#B56A6A", 0.20, 0.42),
+            Triple("#6B8F4A", 0.22, 0.45)
+        )
     }
 }

@@ -8,25 +8,47 @@ import kotlin.math.hypot
  * La vista decide el color y la forma; el dominio solo conoce la equivalencia
  * con el catálogo de [TipoMineral] del backend.
  */
+private const val PROFUNDIDAD_LIMITE_HIERRO = 1350.0
+private const val PROFUNDIDAD_LIMITE_ORO = 2250.0
+
 enum class TipoNodoMineral(
     val etiqueta: String,
-    val tipoMineral: TipoMineral
+    val tipoMineral: TipoMineral,
+    private val profundidadMinima: Double,
+    private val profundidadMaxima: Double,
+    private val incluyeMaximo: Boolean
 ) {
-    COBRE("Cobre", TipoMineral.COBRE_MARINO),
-    HIERRO("Hierro", TipoMineral.NODULO_DE_MANGANESO),
-    ORO("Oro", TipoMineral.GEMA_DE_SALMUERA);
+    COBRE(
+        "Cobre",
+        TipoMineral.COBRE_MARINO,
+        Double.NEGATIVE_INFINITY,
+        PROFUNDIDAD_LIMITE_HIERRO,
+        false
+    ),
+    HIERRO(
+        "Hierro",
+        TipoMineral.NODULO_DE_MANGANESO,
+        PROFUNDIDAD_LIMITE_HIERRO,
+        PROFUNDIDAD_LIMITE_ORO,
+        false
+    ),
+    ORO(
+        "Oro",
+        TipoMineral.GEMA_DE_SALMUERA,
+        PROFUNDIDAD_LIMITE_ORO,
+        Double.POSITIVE_INFINITY,
+        true
+    );
 
     fun correspondeA(mineral: Mineral): Boolean = mineral.tipo == tipoMineral
 
-    fun correspondeAProfundidad(profundidad: Double): Boolean = when (this) {
-        COBRE -> profundidad < LIMITE_HIERRO
-        HIERRO -> profundidad >= LIMITE_HIERRO && profundidad < LIMITE_ORO
-        ORO -> profundidad >= LIMITE_ORO
-    }
+    fun correspondeAProfundidad(profundidad: Double): Boolean =
+        profundidad >= profundidadMinima &&
+            (if (incluyeMaximo) profundidad <= profundidadMaxima else profundidad < profundidadMaxima)
 
     companion object {
-        const val LIMITE_HIERRO = 1350.0
-        const val LIMITE_ORO = 2250.0
+        const val LIMITE_HIERRO = PROFUNDIDAD_LIMITE_HIERRO
+        const val LIMITE_ORO = PROFUNDIDAD_LIMITE_ORO
     }
 }
 

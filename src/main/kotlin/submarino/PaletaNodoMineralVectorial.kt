@@ -9,25 +9,27 @@ internal data class PaletaNodoMineralVectorial(
     val brillo: Color
 ) {
     companion object {
-        fun para(tipo: TipoNodoMineral): PaletaNodoMineralVectorial = when (tipo) {
-            TipoNodoMineral.COBRE -> PaletaNodoMineralVectorial(
+        private val PALETAS: Map<TipoNodoMineral, PaletaNodoMineralVectorial> = mapOf(
+            TipoNodoMineral.COBRE to PaletaNodoMineralVectorial(
                 base = Color.web("#B5652A"),
                 claro = Color.web("#F0A35E"),
                 oscuro = Color.web("#6E3512"),
                 brillo = Color.web("#FF9A4D")
-            )
-            TipoNodoMineral.HIERRO -> PaletaNodoMineralVectorial(
+            ),
+            TipoNodoMineral.HIERRO to PaletaNodoMineralVectorial(
                 base = Color.web("#7E8A94"),
                 claro = Color.web("#D5DEE5"),
                 oscuro = Color.web("#414A52"),
                 brillo = Color.web("#C7D6E0")
-            )
-            TipoNodoMineral.ORO -> PaletaNodoMineralVectorial(
+            ),
+            TipoNodoMineral.ORO to PaletaNodoMineralVectorial(
                 base = Color.web("#D9A61A"),
                 claro = Color.web("#FFF2A8"),
                 oscuro = Color.web("#8A6208"),
                 brillo = Color.web("#FFD34D")
             )
-        }
+        )
+
+        fun para(tipo: TipoNodoMineral): PaletaNodoMineralVectorial = PALETAS.getValue(tipo)
     }
 }

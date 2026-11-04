@@ -59,8 +59,8 @@ abstract class CascoBase(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is Casco) return false
-        return presionMaximaPa == other.presionMaximaPa && integridad == other.integridad
+        val otro = other as? Casco ?: return false
+        return presionMaximaPa == otro.presionMaximaPa && integridad == otro.integridad
     }
 
     override fun hashCode(): Int {

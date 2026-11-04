@@ -29,22 +29,54 @@ data class ColorRgb(
     }
 }
 
+private const val PROFUNDIDAD_MINIMA_M = 0.0
+private const val PROFUNDIDAD_LIMITE_SUPERFICIE_M = 200.0
+private const val PROFUNDIDAD_LIMITE_FOTICA_M = 1000.0
+
 /**
- * Zonas de profundidad con su color asociado.
+ * Zonas de profundidad con su color y rango asociados.
  *
- * Los límites de cada zona viven en [CalculadorColorProfundidad] para evitar
- * números mágicos y mantener una única fuente de verdad.
+ * Cada zona conoce su propio intervalo, de modo que agregar una zona nueva no
+ * obliga a modificar el calculador (OCP).
  */
-enum class ColorProfundidad(val color: ColorRgb) {
-    SUPERFICIE(ColorRgb(r = 255, g = 200, b = 150)),
-    FOTICA(ColorRgb(r = 100, g = 150, b = 255)),
-    ABISAL(ColorRgb(r = 0, g = 0, b = 80));
+enum class ColorProfundidad(
+    val color: ColorRgb,
+    private val profundidadMinima: Double,
+    private val profundidadMaxima: Double,
+    private val incluyeMaximo: Boolean
+) {
+    SUPERFICIE(
+        ColorRgb(r = 255, g = 200, b = 150),
+        PROFUNDIDAD_MINIMA_M,
+        PROFUNDIDAD_LIMITE_SUPERFICIE_M,
+        true
+    ),
+    FOTICA(
+        ColorRgb(r = 100, g = 150, b = 255),
+        PROFUNDIDAD_LIMITE_SUPERFICIE_M,
+        PROFUNDIDAD_LIMITE_FOTICA_M,
+        false
+    ),
+    ABISAL(
+        ColorRgb(r = 0, g = 0, b = 80),
+        PROFUNDIDAD_LIMITE_FOTICA_M,
+        Double.POSITIVE_INFINITY,
+        true
+    );
 
     /**
      * Indica si esta zona es la que corresponde a la [profundidad] indicada.
      */
     fun correspondeA(profundidad: Double): Boolean =
         CalculadorColorProfundidad.calcularZona(profundidad) == this
+
+    /**
+     * Comprueba si la profundidad cae dentro de los límites propios de esta zona.
+     */
+    internal fun rangoContiene(profundidad: Double): Boolean =
+        profundidad.isFinite() &&
+            profundidad >= profundidadMinima &&
+            (if (incluyeMaximo) profundidad <= profundidadMaxima else profundidad < profundidadMaxima)
 
     /**
      * Interpola el color de esta zona hacia el color de [otra] zona.
@@ -67,9 +99,9 @@ enum class ColorProfundidad(val color: ColorRgb) {
  */
 object CalculadorColorProfundidad {
 
-    const val PROFUNDIDAD_MINIMA = 0.0
-    const val LIMITE_SUPERFICIE = 200.0
-    const val LIMITE_ZONA_FOTICA = 1000.0
+    const val PROFUNDIDAD_MINIMA = PROFUNDIDAD_MINIMA_M
+    const val LIMITE_SUPERFICIE = PROFUNDIDAD_LIMITE_SUPERFICIE_M
+    const val LIMITE_ZONA_FOTICA = PROFUNDIDAD_LIMITE_FOTICA_M
 
     /**
      * Determina la zona de profundidad correspondiente.
@@ -77,12 +109,13 @@ object CalculadorColorProfundidad {
      * @param profundidad Profundidad en metros.
      * @return Zona activa para la profundidad indicada.
      */
-    fun calcularZona(profundidad: Double): ColorProfundidad = when {
-        !profundidad.isFinite() -> ColorProfundidad.ABISAL
-        profundidad < PROFUNDIDAD_MINIMA -> ColorProfundidad.ABISAL
-        profundidad <= LIMITE_SUPERFICIE -> ColorProfundidad.SUPERFICIE
-        profundidad < LIMITE_ZONA_FOTICA -> ColorProfundidad.FOTICA
-        else -> ColorProfundidad.ABISAL
+    fun calcularZona(profundidad: Double): ColorProfundidad {
+        if (!profundidad.isFinite() || profundidad < PROFUNDIDAD_MINIMA) {
+            return ColorProfundidad.ABISAL
+        }
+        return ColorProfundidad.entries
+            .firstOrNull { it.rangoContiene(profundidad) }
+            ?: ColorProfundidad.ABISAL
     }
 
     /**

@@ -115,8 +115,8 @@ open class Mejora(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is Mejora) return false
-        return id == other.id
+        val otra = other as? Mejora ?: return false
+        return id == otra.id
     }
 
     override fun hashCode(): Int = id.hashCode()

@@ -102,12 +102,7 @@ class SesionJuego(
 
         val posicion = Posicion(partida.posicionX.roundToInt(), partida.posicionY.roundToInt())
         val resultado = servicioRecoleccion.procesarRecoleccion(posicion, minerales)
-        val texto = if (resultado is ResultadoRecoleccion.SinColision) {
-            "No hay minerales cerca. Acércate a un nodo y pulsa ESPACIO."
-        } else {
-            resultado.obtenerMensaje()
-        }
-        partida.actualizarMensaje(texto)
+        partida.actualizarMensaje(resultado.obtenerMensajeJugador())
         return resultado
     }
 
