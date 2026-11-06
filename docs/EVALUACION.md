@@ -3,20 +3,20 @@
 
 > Documento **generado automáticamente** por la cátedra de Programación II (RepoSense + análisis de calidad POO/SOLID). **No editar a mano**: se regenera en cada evaluación.
 > Rama evaluada: `main`. Análisis **heurístico** (regex + métricas): es una criba para orientar la revisión, **no una nota**.
-> Generado: 2026-11-02.
+> Generado: 2026-11-06.
 
 ## 1. Veredicto
 
 | Aspecto | Resultado |
 |---|---|
-| Índice de calidad POO/SOLID | **2/100** |
-| Código (LOC) | 11,251 |
-| Archivos de código | 113 |
-| Clases (bien usadas) | 235 (75 OK) |
+| Índice de calidad POO/SOLID | **75/100** |
+| Código (LOC) | 14,113 |
+| Archivos de código | 192 |
+| Clases (bien usadas) | 332 (126 OK) |
 | Código dentro de clases (%POO) | 99% |
 | Funciones fuera de clases | 0 |
 | Duplicación lógica | 3.0% |
-| Señales S/O/L/I/D | 43/25/1/0/52 |
+| Señales S/O/L/I/D | 38/0/0/0/47 |
 
 > Este informe **describe** lo que el análisis midió con los criterios ya establecidos de la materia. No es una nota.
 
@@ -27,7 +27,7 @@ Criterios de `CRITERIOS-CALIDAD.md`. **Aprobar** se juega con el perfil `estanda
 | Semáforo | Resultado |
 |---|---|
 | Aprobar (`estandar`) | **no cumple** — 3/4 |
-| Destacar (`exigente`) | **no cumple** — 3/5 |
+| Destacar (`exigente`) | **no cumple** — 4/5 |
 
 **Criterios para aprobar**
 
@@ -36,7 +36,7 @@ Criterios de `CRITERIOS-CALIDAD.md`. **Aprobar** se juega con el perfil `estanda
 | Código dentro de clases (%POO) | ≥ 85% | 99% | sí |
 | Duplicación lógica | ≤ 10% | 3.0% | sí |
 | Funciones fuera de clases | ≤ 1 | 0 | sí |
-| Señales POO/SOLID críticas | ninguna | Baja cohesión (LCOM), Acoplamiento alto (CBO), Switch sobre tipos (OCP), Override vacío / 'no implementado' (LSP) | no |
+| Señales POO/SOLID críticas | ninguna | Acoplamiento alto (CBO) | no |
 
 **Criterios para destacar**
 
@@ -45,8 +45,8 @@ Criterios de `CRITERIOS-CALIDAD.md`. **Aprobar** se juega con el perfil `estanda
 | Código dentro de clases (%POO) | ≥ 95% | 99% | sí |
 | Duplicación lógica | ≤ 5% | 3.0% | sí |
 | Funciones fuera de clases | ≤ 1 | 0 | sí |
-| Señales POO/SOLID críticas | ninguna | Clase demasiado grande (SRP), Baja cohesión (LCOM), Acoplamiento alto (CBO), Switch sobre tipos (OCP), Override vacío / 'no implementado' (LSP) | no |
-| Índice de calidad POO/SOLID | ≥ 60 | 2/100 | no |
+| Señales POO/SOLID críticas | ninguna | Baja cohesión (LCOM), Acoplamiento alto (CBO) | no |
+| Índice de calidad POO/SOLID | ≥ 60 | 75/100 | sí |
 
 ### Cómo se calcula el %POO (y por qué no sube solo)
 
@@ -60,7 +60,7 @@ Sube cuando el código que hoy está **fuera** de clases pasa a ser método de u
 
 | Autor | Commits | Código (LOC) | Tests (LOC) | Docs (LOC) | Días activos | % del código |
 |---|---:|---:|---:|---:|---:|---:|
-| ibaldasso-elpepe | 23 | 10,111 | 2,974 | 1 | 13 | 100% |
+| ibaldasso-elpepe | 27 | 13,492 | 2,974 | 1 | 16 | 100% |
 
 > _El LOC de autoría lo calcula RepoSense sobre el historial y puede diferir del LOC de código del análisis de calidad (que mira solo el estado de `main`)._
 
@@ -70,12 +70,11 @@ Reúne lo que el análisis marcó y lo que todavía falta para cada semáforo. C
 
 | Falla | Tu resultado | Requisito | Archivos |
 |---|---|---|---|
-| Señales POO/SOLID críticas | Baja cohesión (LCOM), Acoplamiento alto (CBO), Switch sobre tipos (OCP), Override vacío / 'no implementado' (LSP) | Aprobar: ninguna<br>Destacar: ninguna | `src/main/kotlin/org/example/issue1/GestorMejorasSubmarino.kt`, `src/main/kotlin/org/example/issue1/ModuloCasco.kt`, `src/main/kotlin/org/example/issue1/Submarino.kt`, `src/main/kotlin/org/example/issue2/PruebaConjunta.kt`, `src/main/kotlin/submarino/ControladorTeclado.kt`, `src/main/kotlin/submarino/DemostradorNavegacionRecoleccion.kt` (+58 más) |
-| Índice de calidad POO/SOLID | 2/100 | Destacar: ≥ 60 | — |
-| Métodos/funciones largos o con muchos parámetros | **27** método(s)/función(es) largos o con muchos parámetros | Sin señales | `src/main/kotlin/submarino/EstacionVectorial.kt`, `src/main/kotlin/submarino/ExplosionSubmarino.kt`, `src/main/kotlin/submarino/HUDJuego.kt`, `src/main/kotlin/submarino/HUDView.kt`, `src/main/kotlin/submarino/MenuPrincipal.kt`, `src/main/kotlin/submarino/NodoMineralVectorial.kt` (+10 más) |
-| Dependencia de concretos y falta de abstracciones (DIP) | **52** dependencia(s) de concretos sin abstracciones | Sin señales | `src/main/kotlin/org/example/issue1/Submarino.kt`, `src/main/kotlin/submarino/DemostradorNavegacionRecoleccion.kt`, `src/main/kotlin/submarino/EstacionVectorial.kt`, `src/main/kotlin/submarino/ExplosionSubmarino.kt`, `src/main/kotlin/submarino/FondoAbisal.kt`, `src/main/kotlin/submarino/GameOverModal.kt` (+45 más) |
-| Clase sin métodos (solo datos) | **24** clase(s) sin métodos (solo datos) | Sin señales | `src/main/kotlin/org/example/issue2/CalculadoraHidrostatica.kt`, `src/main/kotlin/submarino/ColorProfundidad.kt`, `src/main/kotlin/submarino/FisicaAscenso.kt`, `src/main/kotlin/submarino/FondoParallaxManager.kt`, `src/main/kotlin/submarino/HUDView.kt`, `src/main/kotlin/submarino/ParticulasMarinas.kt` (+14 más) |
-| Campos públicos (encapsulación) | **54** clase(s) con campos públicos | Sin señales | `src/main/kotlin/org/example/issue1/EstadoSubmarino.kt`, `src/main/kotlin/org/example/issue1/Submarino.kt`, `src/main/kotlin/submarino/Bodega.kt`, `src/main/kotlin/submarino/CapaParallax.kt`, `src/main/kotlin/submarino/FisicaAscenso.kt`, `src/main/kotlin/submarino/FondoAbisal.kt` (+34 más) |
+| Señales POO/SOLID críticas | Acoplamiento alto (CBO) | Aprobar: ninguna<br>Destacar: ninguna | `src/main/kotlin/org/example/issue1/FabricaSubsistemasSubmarino.kt`, `src/main/kotlin/org/example/issue1/GestorMejorasSubmarino.kt`, `src/main/kotlin/org/example/issue1/Submarino.kt`, `src/main/kotlin/submarino/ControladorTeclado.kt`, `src/main/kotlin/submarino/EstadoPartida.kt`, `src/main/kotlin/submarino/FabricaDominio.kt` (+15 más) |
+| Métodos/funciones largos o con muchos parámetros | **25** método(s)/función(es) largos o con muchos parámetros | Sin señales | `src/main/kotlin/org/example/issue2/ReporteSimulacionSubmarino.kt`, `src/main/kotlin/submarino/AvatarSubmarino.kt`, `src/main/kotlin/submarino/CapaFondoParallax.kt`, `src/main/kotlin/submarino/ColorProfundidad.kt`, `src/main/kotlin/submarino/ConstructorAccionesTienda.kt`, `src/main/kotlin/submarino/ConstructorExplosionSubmarino.kt` (+18 más) |
+| Dependencia de concretos y falta de abstracciones (DIP) | **47** dependencia(s) de concretos sin abstracciones | Sin señales | `src/main/kotlin/org/example/issue1/FabricaSubsistemasSubmarino.kt`, `src/main/kotlin/submarino/FabricaDominio.kt`, `src/main/kotlin/submarino/FabricaHUD.kt`, `src/main/kotlin/submarino/FabricaServicios.kt`, `src/main/kotlin/submarino/FabricaVisual.kt`, `src/main/kotlin/submarino/FondoParallaxManager.kt` (+40 más) |
+| Clase sin métodos (solo datos) | **29** clase(s) sin métodos (solo datos) | Sin señales | `src/main/kotlin/org/example/issue2/CalculadoraHidrostatica.kt`, `src/main/kotlin/submarino/ColorProfundidad.kt`, `src/main/kotlin/submarino/ConfiguracionSesion.kt`, `src/main/kotlin/submarino/EstilosTienda.kt`, `src/main/kotlin/submarino/FabricaParticulasMarinas.kt`, `src/main/kotlin/submarino/FisicaAscenso.kt` (+19 más) |
+| Campos públicos (encapsulación) | **58** clase(s) con campos públicos | Sin señales | `src/main/kotlin/org/example/issue1/EstadoSubmarino.kt`, `src/main/kotlin/org/example/issue1/Submarino.kt`, `src/main/kotlin/submarino/AvisosJuego.kt`, `src/main/kotlin/submarino/Bodega.kt`, `src/main/kotlin/submarino/CapaParallax.kt`, `src/main/kotlin/submarino/CatalogoMejorasSesion.kt` (+41 más) |
 
 ## 4. Aspectos evaluados
 
@@ -85,7 +84,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Un resumen numérico (0-100) que combina la riqueza de clases bien usadas con la penalización por señales POO/SOLID y duplicación, y luego aplica topes duros.
 - **Por qué importa:** Ordena y prioriza la revisión: un índice bajo indica varias señales que conviene mirar juntas.
-- **Tu resultado:** índice **2/100**
+- **Tu resultado:** índice **75/100**
 
 ### 2. Duplicación lógica (DRY) (duplicacion) — sin señales
 
@@ -97,7 +96,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Proporción de las **líneas de lógica** que viven dentro de una clase. Quedan fuera `package`/`import`/`using`/anotaciones y comentarios/Javadoc/docstrings: no son código que pueda estar dentro de una clase y, si contaran, el porcentaje quedaría topado por el boilerplate de cada archivo.
 - **Por qué importa:** El diseño orientado a objetos es el eje de la materia: el comportamiento debería vivir como método de una clase.
-- **Tu resultado:** **99.1%** del código dentro de clases
+- **Tu resultado:** **99.0%** del código dentro de clases
 - **Cómo leerlo:** Es una **proporción**, no un acumulado: agregar código dentro de una clase no la sube por sí solo (numerador y denominador crecen juntos). Sube cuando el código que está **fuera** de clases (funciones sueltas, `main`, constantes de módulo, scripts) pasa a ser método de una clase o deja de existir. La medición se hace sobre `main`: el trabajo que todavía vive en otra rama no se refleja hasta que se integra.
 
 ### 4. Funciones fuera de clases (sueltas) — sin señales
@@ -106,21 +105,17 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 - **Por qué importa:** Son la forma más directa de código procedural en un proyecto que debería ser orientado a objetos.
 - **Tu resultado:** **0** función(es) fuera de clases
 
-### 5. Clase demasiado grande (SRP) (god) — con señales
+### 5. Clase demasiado grande (SRP) (god) — sin señales
 
 - **Qué mide:** Clases con demasiadas líneas o métodos de LÓGICA. No cuentan los getters/setters triviales ni la cantidad de campos por sí sola.
 - **Por qué importa:** Una clase que hace de todo cambia por muchos motivos y cuesta entenderla y probarla.
-- **Tu resultado:** **7** clase(s) demasiado grande(s)
-- **Para investigar la causa:**
-    - ¿La clase creció por acumulación de responsabilidades?
-    - ¿Qué partes de la clase se usan siempre juntas y cuáles no?
-    - ¿Se podría describir su responsabilidad en una sola frase?
+- **Tu resultado:** **0** clase(s) demasiado grande(s)
 
 ### 6. Baja cohesión (LCOM) (cohesion) — con señales
 
 - **Qué mide:** Métodos y campos de una clase que casi no se relacionan entre sí.
 - **Por qué importa:** Una unidad que cambia por motivos distintos y comparte poca información suele esconder más de una responsabilidad.
-- **Tu resultado:** **14** clase(s) con baja cohesión
+- **Tu resultado:** **9** clase(s) con baja cohesión
 - **Para investigar la causa:**
     - ¿Qué métodos de la clase no comparten estado con el resto?
     - ¿Cambian por motivos distintos según la tarea?
@@ -136,7 +131,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Tamaño de los métodos/funciones y cantidad de parámetros.
 - **Por qué importa:** Una función que hace varias cosas cuesta leerla, nombrarla y reutilizarla.
-- **Tu resultado:** **27** método(s)/función(es) largos o con muchos parámetros
+- **Tu resultado:** **25** método(s)/función(es) largos o con muchos parámetros
 - **Para investigar la causa:**
     - ¿La función creció por acumulación de pasos?
     - ¿Agrupa operaciones que podrían describirse por separado?
@@ -144,9 +139,9 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 ### 9. Acoplamiento alto (CBO) (acoplamiento) — con señales
 
-- **Qué mide:** Cuánto depende una clase de otros tipos del proyecto.
+- **Qué mide:** Cuánto depende una clase de otros tipos del proyecto. No cuentan los tipos de la plataforma (biblioteca estándar, DOM, motor Godot) ni los métodos/propiedades propias.
 - **Por qué importa:** Piezas muy enlazadas hacen que un cambio se propague y que sea difícil reemplazar partes.
-- **Tu resultado:** **55** clase(s) muy acoplada(s)
+- **Tu resultado:** **14** clase(s) muy acoplada(s)
 - **Para investigar la causa:**
     - ¿La clase conoce detalles internos de muchas otras?
     - ¿Se puede cambiar una parte sin tocar las demás?
@@ -158,15 +153,11 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 - **Por qué importa:** Jerarquías muy profundas vuelven difícil saber de dónde viene cada comportamiento.
 - **Tu resultado:** **0** clase(s) con herencia profunda
 
-### 11. Switch sobre tipos (OCP) (ocp) — con señales
+### 11. Switch sobre tipos (OCP) (ocp) — sin señales
 
-- **Qué mide:** Chequeos repetidos de tipo (`instanceof`/`is`/`typeof`) que equivalen a un switch sobre el tipo.
+- **Qué mide:** Cadenas de dispatch por tipo (`else if ... is` / `else if ... instanceof`, `switch` sobre tipo o `typeof`). Un `is Tipo variable` aislado (pattern matching / cast seguro) NO cuenta como switch.
 - **Por qué importa:** Cada tipo nuevo obliga a tocar varios lugares, en vez de extender con una implementación nueva.
-- **Tu resultado:** **25** clase(s) con switch sobre tipos
-- **Para investigar la causa:**
-    - ¿Qué operación se resuelve preguntando el tipo?
-    - ¿Qué se toca cada vez que aparece un tipo o caso nuevo?
-    - ¿El comportamiento podría vivir en la propia jerarquía de tipos?
+- **Tu resultado:** **0** clase(s) con switch sobre tipos
 
 ### 12. Interfaz con demasiados métodos (ISP) (isp) — sin señales
 
@@ -174,21 +165,17 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 - **Por qué importa:** Obliga a implementar operaciones que no se usan y acopla a los clientes a métodos que no necesitan.
 - **Tu resultado:** **0** interfaz(es) con demasiados métodos
 
-### 13. Override vacío o 'no implementado' (LSP) (lsp) — con señales
+### 13. Override vacío o 'no implementado' (LSP) (lsp) — sin señales
 
 - **Qué mide:** Métodos sobrescritos que quedan vacíos o lanzan 'no implementado'.
 - **Por qué importa:** Suele indicar que la jerarquía no representa bien el problema y rompe la sustitución entre clases.
-- **Tu resultado:** **1** override(s) vacío(s) o 'no implementado'
-- **Para investigar la causa:**
-    - ¿Por qué ese método no tiene comportamiento en esa clase?
-    - ¿La clase hereda algo que en realidad no le corresponde?
-    - ¿Qué contrato se esperaba cumplir al heredar?
+- **Tu resultado:** **0** override(s) vacío(s) o 'no implementado'
 
 ### 14. Dependencia de concretos y falta de abstracciones (DIP) (dip) — con señales
 
-- **Qué mide:** Instanciación directa de clases concretas y ausencia de interfaces o clases abstractas pese al acoplamiento.
+- **Qué mide:** Instanciación directa de clases **propias** concretas y ausencia de interfaces o clases abstractas pese al acoplamiento. No cuentan los structs ni los nodos/tipos del motor.
 - **Por qué importa:** Depender de implementaciones concretas dificulta cambiar o probar una parte sin arrastrar las demás.
-- **Tu resultado:** **52** dependencia(s) de concretos sin abstracciones
+- **Tu resultado:** **47** dependencia(s) de concretos sin abstracciones
 - **Para investigar la causa:**
     - ¿La clase crea por dentro a sus colaboradores en vez de recibirlos?
     - ¿Hay puntos de variación que convendría expresar como abstracción?
@@ -198,7 +185,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Clases que solo acumulan campos y no tienen comportamiento.
 - **Por qué importa:** Separar datos de comportamiento reparte por el proyecto la lógica que debería estar cerca de esos datos.
-- **Tu resultado:** **24** clase(s) sin métodos (solo datos)
+- **Tu resultado:** **29** clase(s) sin métodos (solo datos)
 - **Para investigar la causa:**
     - ¿Dónde vive el comportamiento que opera sobre esos datos?
     - ¿La clase representa un concepto del dominio o un contenedor técnico?
@@ -208,7 +195,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Clases que exponen campos sin control de acceso.
 - **Por qué importa:** Expone el estado interno y hace que cualquier cambio dependa de quién lo modifica desde afuera.
-- **Tu resultado:** **54** clase(s) con campos públicos
+- **Tu resultado:** **58** clase(s) con campos públicos
 - **Para investigar la causa:**
     - ¿Se accede al campo desde otras clases para evitar un método?
     - ¿Qué reglas deberían respetarse al modificar ese estado?
