@@ -194,8 +194,10 @@ class ControladorAccionesTeclado {
  * acciones puntuales para que el bucle de juego consulte una unica API (SRP).
  */
 class ControladorTeclado(
-    private val movimiento: ControladorMovimientoTeclado = ControladorMovimientoTeclado(),
-    private val acciones: ControladorAccionesTeclado = ControladorAccionesTeclado()
+    private val movimiento: ControladorMovimientoTeclado =
+        FabricaDominio.crearControladorMovimientoTeclado(),
+    private val acciones: ControladorAccionesTeclado =
+        FabricaDominio.crearControladorAccionesTeclado()
 ) {
 
     fun conectar(escena: Scene) {

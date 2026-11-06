@@ -27,12 +27,13 @@ class Submarino(
     velocidad: Double = 0.0,
     casco: Casco,
     pesoBase: Double = PESO_BASE_DEFAULT,
-    bodega: Almacenamiento? = Bodega(capacidadMaxima = BODEGA_CAPACIDAD_DEFAULT),
+    bodega: Almacenamiento? = null,
     velocidadAscensoBase: Double = if (velocidad > 0.0) velocidad else VELOCIDAD_ASCENSO_DEFAULT,
-    calculadorPeso: CalculadorPeso = CalculadorPesoSubmarino(),
-    estrategiaAscenso: EstrategiaAscenso = EstrategiaAscensoLineal(),
-    billetera: Billetera = Monedero(0),
-    notificador: Notificador = NotificadorConsola
+    calculadorPeso: CalculadorPeso? = null,
+    estrategiaAscenso: EstrategiaAscenso? = null,
+    billetera: Billetera? = null,
+    notificador: Notificador = NotificadorConsola,
+    private val factoria: FabricaSubsistemasSubmarino = FabricaSubsistemasEstandar
 ) : EntidadFisica(posX, posY, velocidad), Navegable, Pesable, Acoplable, NaveComercial, SubmarinoMejorable {
 
     companion object {
@@ -51,23 +52,26 @@ class Submarino(
     override var bodega: Almacenamiento? = bodega
         private set
 
-    override var billetera: Billetera = billetera
+    override var billetera: Billetera = billetera ?: factoria.crearBilletera(0)
         private set
 
     // Dependency injection through abstractions - DIP
     // All collaborator types are interfaces, concretions provided by caller
 
-    private val energia: SistemaEnergia = SistemaEnergia(100.0, CONSUMO_BATERIA_POR_METRO)
-    private val acople: ControladorAcople = ControladorAcople()
-    private val propulsion: SistemaPropulsion = SistemaPropulsion(velocidadAscensoBase)
-    private val sistemaCasco: SistemaCasco = SistemaCasco(casco)
-    private val gestorAscenso: GestorAscenso = GestorAscenso(calculadorPeso, estrategiaAscenso)
-    private val gestorBodega: GestorBodega = GestorBodega()
-    private val gestorVelocidad: GestorVelocidadNavegacion = GestorVelocidadNavegacion(
+    private val energia: SistemaEnergia = factoria.crearEnergia(100.0, CONSUMO_BATERIA_POR_METRO)
+    private val acople: ControladorAcople = factoria.crearAcople()
+    private val propulsion: SistemaPropulsion = factoria.crearPropulsion(velocidadAscensoBase)
+    private val sistemaCasco: SistemaCasco = factoria.crearSistemaCasco(casco)
+    private val gestorAscenso: GestorAscenso = factoria.crearGestorAscenso(
+        calculadorPeso = calculadorPeso ?: factoria.crearCalculadorPeso(),
+        estrategiaAscenso = estrategiaAscenso ?: factoria.crearEstrategiaAscenso()
+    )
+    private val gestorBodega: GestorBodega = factoria.crearGestorBodega()
+    private val gestorVelocidad: GestorVelocidadNavegacion = factoria.crearGestorVelocidad(
         velocidadActual = { this.velocidad },
         actualizarVelocidad = { actualizarVelocidad(it) }
     )
-    private val movimiento: GestorMovimiento = GestorMovimiento(
+    private val movimiento: GestorMovimiento = factoria.crearMovimiento(
         energia = energia,
         acople = acople,
         notificador = notificador,
@@ -78,7 +82,7 @@ class Submarino(
             actualizarPosY(y)
         }
     )
-    private val navegador: NavegadorSubmarino = NavegadorSubmarino(
+    private val navegador: NavegadorSubmarino = factoria.crearNavegador(
         movimiento = movimiento,
         gestorAscenso = gestorAscenso,
         posicionActual = { this.posX to this.posY },
@@ -86,14 +90,14 @@ class Submarino(
         pesoBaseActual = { this.pesoBase },
         bodegaActual = { this.bodega }
     )
-    private val gestorMejoras: GestorMejorasSubmarino = GestorMejorasSubmarino(
+    private val gestorMejoras: GestorMejorasSubmarino = factoria.crearGestorMejoras(
         propulsion = propulsion,
         sistemaCasco = sistemaCasco,
         gestorBodega = gestorBodega,
         gestorVelocidad = gestorVelocidad,
         bodegaActual = { this.bodega }
     )
-    private val formateadorEstado: FormateadorEstadoSubmarino = FormateadorEstadoSubmarino()
+    private val formateadorEstado: FormateadorEstadoSubmarino = factoria.crearFormateadorEstado()
 
     init {
         require(pesoBase >= 0.0) { "El peso base no puede ser negativo: $pesoBase" }
@@ -184,7 +188,7 @@ class Submarino(
 
     fun obtenerBateria(): Double = bateria
 
-    private fun estadoActual(): EstadoSubmarino = EstadoSubmarino(
+    private fun estadoActual(): EstadoSubmarino = factoria.crearEstadoSubmarino(
         posX = posX,
         posY = posY,
         pesoTotal = pesoTotal,

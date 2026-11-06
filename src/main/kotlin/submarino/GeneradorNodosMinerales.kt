@@ -62,13 +62,13 @@ class GeneradorNodosMinerales(
         y: Double,
         id: String
     ): NodoMineral {
-        val mineral = Mineral(
+        val mineral = FabricaDominio.crearMineral(
             id = id,
             tipo = tipo.tipoMineral,
             posX = x.roundToInt(),
             posY = y.roundToInt()
         )
-        return NodoMineral(
+        return FabricaDominio.crearNodoMineral(
             id = id,
             tipo = tipo,
             mineral = mineral

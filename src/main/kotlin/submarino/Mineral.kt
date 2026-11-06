@@ -82,8 +82,10 @@ class Mineral(
 
     override val posY: Int = posY
 
-    private val clasificacion: ClasificacionRecurso = ClasificacionRecurso(tipo)
-    private val estadoRecoleccion: EstadoRecoleccionMineral = EstadoRecoleccionMineral(recolectado)
+    private val clasificacion: ClasificacionRecurso =
+        FabricaDominio.crearClasificacionRecurso(tipo)
+    private val estadoRecoleccion: EstadoRecoleccionMineral =
+        FabricaDominio.crearEstadoRecoleccionMineral(recolectado)
 
     val tipo: TipoMineral
         get() = clasificacion.tipo
@@ -157,7 +159,7 @@ class Mineral(
     fun estaEnRangoProfundidad(profundidad: Double): Boolean =
         clasificacion.estaEnRangoProfundidad(profundidad)
 
-    fun obtenerPosicion(): Posicion = Posicion(posX, posY)
+    fun obtenerPosicion(): Posicion = FabricaDominio.crearPosicion(posX, posY)
 
     fun obtenerTipo(): TipoMineral = tipo
 

@@ -235,7 +235,7 @@ class EstrategiaAscensoPorMasa : EstrategiaAscenso {
  * Estrategia física hidrostática y de flotabilidad de Arquímedes (Principio OCP).
  */
 class EstrategiaFisicaFlotabilidad(
-    private val calculadorPresion: CalculadorPresion = CalculadoraPresionFluido(),
+    private val calculadorPresion: CalculadorPresion = FabricaDominio.crearCalculadoraPresionFluido(),
     factorEmpujeMinimo: Double = 0.2
 ) : EstrategiaAscenso {
 

@@ -35,7 +35,7 @@ class BarraUmbralHUD(
     private val estiloCritico: String
 ) {
 
-    private val barra: BarraHUD = BarraHUD(ancho, estiloEstable, progresoInicial)
+    private val barra: BarraHUD = FabricaHUD.crearBarraHUD(ancho, estiloEstable, progresoInicial)
 
     private val umbrales: List<Pair<Double, String>> = listOf(
         UMBRAL_CRITICO to estiloCritico,
@@ -69,7 +69,7 @@ class BarraEstadoOxigenoHUD(
     private val estiloAgotado: String
 ) {
 
-    private val barra: BarraHUD = BarraHUD(ancho, estiloEstable, 1.0)
+    private val barra: BarraHUD = FabricaHUD.crearBarraHUD(ancho, estiloEstable, 1.0)
 
     private val estilos: Map<EstadoOxigeno, String> = mapOf(
         EstadoOxigeno.ESTABLE to estiloEstable,

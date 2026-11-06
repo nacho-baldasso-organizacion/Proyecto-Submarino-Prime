@@ -5,7 +5,7 @@ import javafx.scene.Group
 class SubmarinoVectorial {
 
     private val helice: Group = HeliceSubmarinoVectorial.crear()
-    private val animacionHelice: AnimacionHeliceSubmarino = AnimacionHeliceSubmarino()
+    private val animacionHelice: AnimacionHeliceSubmarino = FabricaVisual.crearAnimacionHeliceSubmarino()
     val nodo: Group = CuerpoSubmarinoVectorial.crear(helice)
 
     init {

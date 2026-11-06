@@ -11,7 +11,7 @@ import javafx.scene.shape.Circle
 class EstacionVectorial {
 
     private val baliza: Circle = BalizaEstacionVectorial.crear()
-    private val animacionBaliza: AnimacionBalizaEstacion = AnimacionBalizaEstacion()
+    private val animacionBaliza: AnimacionBalizaEstacion = FabricaVisual.crearAnimacionBalizaEstacion()
 
     val nodo: Group = ConstructorEstacionVectorial.crear(baliza)
 

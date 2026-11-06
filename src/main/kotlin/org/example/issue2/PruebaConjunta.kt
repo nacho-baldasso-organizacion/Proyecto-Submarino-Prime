@@ -14,13 +14,15 @@ package submarino
  *  - Refactor SOLID: Desacoplamiento mediante interfaces, polimorfismo, OCP con CascoReforzado y Calculadora configurable.
  */
 open class SimuladorSubmarino(
-    private val reporte: ReporteSimulacionSubmarino = ReporteSimulacionSubmarino(),
-    private val fabrica: FabricaNavesSimulacion = FabricaNavesSimulacion()
+    private val reporte: ReporteSimulacionSubmarino =
+        FabricaDominio.crearReporteSimulacionSubmarino(),
+    private val fabrica: FabricaNavesSimulacion =
+        FabricaDominio.crearFabricaNavesSimulacion()
 ) {
 
-    private val escenarioNavegacion = EscenarioNavegacionSubmarino()
-    private val escenarioInmersion = EscenarioInmersionSubmarino()
-    private val escenarioSolid = EscenarioSolidSubmarino()
+    private val escenarioNavegacion = FabricaDominio.crearEscenarioNavegacionSubmarino()
+    private val escenarioInmersion = FabricaDominio.crearEscenarioInmersionSubmarino()
+    private val escenarioSolid = FabricaDominio.crearEscenarioSolidSubmarino()
 
     /**
      * Ejecuta el flujo secuencial completo de simulacion y validacion de sistemas.
@@ -50,7 +52,7 @@ open class PruebaConjunta : SimuladorSubmarino() {
     companion object {
         @JvmStatic
         fun main(args: Array<String> = emptyArray()) {
-            SimuladorSubmarino().ejecutarSimulacionCompleta()
+            FabricaDominio.crearSimuladorSubmarino().ejecutarSimulacionCompleta()
         }
     }
 }

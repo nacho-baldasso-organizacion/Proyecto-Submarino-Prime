@@ -46,19 +46,19 @@ class ServicioRecoleccion(
             ?: return ResultadoRecoleccion.SinColision
 
         if (itemColisionado.recolectado) {
-            return ResultadoRecoleccion.YaRecolectado(itemColisionado)
+            return FabricaServicios.crearResultadoRecoleccionYaRecolectado(itemColisionado)
         }
 
         val agregadoExitoso = almacenamiento.agregar(itemColisionado)
 
         return if (agregadoExitoso) {
-            ResultadoRecoleccion.Exito(
+            FabricaServicios.crearResultadoRecoleccionExito(
                 item = itemColisionado,
                 pesoAcumulado = almacenamiento.pesoActual
             )
         } else {
             val exceso = (almacenamiento.pesoActual + itemColisionado.peso) - almacenamiento.capacidadMaxima
-            ResultadoRecoleccion.BodegaLlena(
+            FabricaServicios.crearResultadoRecoleccionBodegaLlena(
                 item = itemColisionado,
                 excesoPeso = exceso,
                 capacidadMaxima = almacenamiento.capacidadMaxima

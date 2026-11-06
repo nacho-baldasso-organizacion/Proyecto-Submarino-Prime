@@ -122,7 +122,7 @@ class ServicioComercio(
      * Constructor de conveniencia que configura la calculadora estándar de precios.
      * La lógica de negocio depende únicamente de la abstracción [CalculadoraPrecios].
      */
-    constructor() : this(CalculadoraPreciosEstandar())
+    constructor() : this(FabricaServicios.crearCalculadoraPreciosEstandar())
 
     private val observadores: MutableList<ObservadorComercio> = mutableListOf()
 
@@ -179,14 +179,14 @@ class ServicioComercio(
         receptorFondos.acreditar(totalCreditos)
         almacenamiento.vaciar()
 
-        val transaccion = TransaccionComercial(
+        val transaccion = FabricaServicios.crearTransaccionComercial(
             itemsVendidos = items,
             totalCreditos = totalCreditos,
             cantidadItems = items.size
         )
         notificarObservadores(transaccion)
 
-        return ResultadoComercio.Exito(
+        return FabricaServicios.crearResultadoComercioExito(
             transaccion = transaccion,
             saldoActualizado = receptorFondos.saldo
         )

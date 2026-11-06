@@ -71,7 +71,8 @@ open class Mejora(
 
     override fun descripcion(): String = descripcionTexto
 
-    private val gestorNivel: ControladorNivelMejora = ControladorNivelMejora(nivelInicial, nivelMaximo)
+    private val gestorNivel: ControladorNivelMejora =
+        FabricaServicios.crearControladorNivelMejora(nivelInicial, nivelMaximo)
     private var efectoMejora: EfectoMejora = efecto
     private var estrategiaCostoMejora: EstrategiaCosto = estrategiaCosto
 

@@ -15,14 +15,14 @@ class IndicadorPresionHUD(
     estiloBarraCritico: String
 ) {
 
-    private val barra: BarraUmbralHUD = BarraUmbralHUD(
+    private val barra: BarraUmbralHUD = FabricaHUD.crearBarraUmbralHUD(
         anchoBarra,
         0.0,
         estiloBarraEstable,
         estiloBarraPrecaucion,
         estiloBarraCritico
     )
-    private val tarjeta: TarjetaHUD = TarjetaHUD("PRESIÓN", estiloTitulo, estiloValor, barra.nodo)
+    private val tarjeta: TarjetaHUD = FabricaHUD.crearTarjetaHUD("PRESIÓN", estiloTitulo, estiloValor, barra.nodo)
 
     private val colores: List<Pair<Double, String>> = listOf(
         100.0 to "-fx-text-fill: #FF5A36;",
@@ -62,14 +62,14 @@ class IndicadorOxigenoJuegoHUD(
     estiloBarraCritico: String
 ) {
 
-    private val barra: BarraUmbralHUD = BarraUmbralHUD(
+    private val barra: BarraUmbralHUD = FabricaHUD.crearBarraUmbralHUD(
         anchoBarra,
         1.0,
         estiloBarraEstable,
         estiloBarraPrecaucion,
         estiloBarraCritico
     )
-    private val tarjeta: TarjetaHUD = TarjetaHUD("OXÍGENO", estiloTitulo, estiloValor, barra.nodo)
+    private val tarjeta: TarjetaHUD = FabricaHUD.crearTarjetaHUD("OXÍGENO", estiloTitulo, estiloValor, barra.nodo)
 
     fun nodo(): VBox = tarjeta.nodo()
 
@@ -93,14 +93,14 @@ class IndicadorCascoHUD(
     estiloBarraCritico: String
 ) {
 
-    private val barra: BarraUmbralHUD = BarraUmbralHUD(
+    private val barra: BarraUmbralHUD = FabricaHUD.crearBarraUmbralHUD(
         anchoBarra,
         1.0,
         estiloBarraEstable,
         estiloBarraPrecaucion,
         estiloBarraCritico
     )
-    private val tarjeta: TarjetaHUD = TarjetaHUD("CASCO", estiloTitulo, estiloValor, barra.nodo)
+    private val tarjeta: TarjetaHUD = FabricaHUD.crearTarjetaHUD("CASCO", estiloTitulo, estiloValor, barra.nodo)
 
     fun nodo(): VBox = tarjeta.nodo()
 
@@ -118,7 +118,7 @@ class IndicadorCargoHUD(
     estiloValor: String
 ) {
 
-    private val tarjeta: TarjetaHUD = TarjetaHUD("BODEGA", estiloTitulo, estiloValor)
+    private val tarjeta: TarjetaHUD = FabricaHUD.crearTarjetaHUD("BODEGA", estiloTitulo, estiloValor)
 
     fun nodo(): VBox = tarjeta.nodo()
 
@@ -137,7 +137,7 @@ class IndicadorMonedasHUD(
     estiloValor: String
 ) {
 
-    private val tarjeta: TarjetaHUD = TarjetaHUD("MONEDAS", estiloTitulo, estiloValor)
+    private val tarjeta: TarjetaHUD = FabricaHUD.crearTarjetaHUD("MONEDAS", estiloTitulo, estiloValor)
 
     fun nodo(): VBox = tarjeta.nodo()
 
@@ -154,7 +154,7 @@ class IndicadorNodosHUD(
     estiloValor: String
 ) {
 
-    private val tarjeta: TarjetaHUD = TarjetaHUD("NODOS", estiloTitulo, estiloValor)
+    private val tarjeta: TarjetaHUD = FabricaHUD.crearTarjetaHUD("NODOS", estiloTitulo, estiloValor)
 
     fun nodo(): VBox = tarjeta.nodo()
 
@@ -171,7 +171,7 @@ class IndicadorAcopleHUD(
     estiloValor: String
 ) {
 
-    private val tarjeta: TarjetaHUD = TarjetaHUD("ESTADO", estiloTitulo, estiloValor)
+    private val tarjeta: TarjetaHUD = FabricaHUD.crearTarjetaHUD("ESTADO", estiloTitulo, estiloValor)
 
     fun nodo(): VBox = tarjeta.nodo()
 

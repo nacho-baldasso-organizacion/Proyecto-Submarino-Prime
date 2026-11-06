@@ -16,7 +16,7 @@ class GameOverModal(
     alVolverAlMenu: () -> Unit
 ) {
 
-    private val panel: GameOverPanel = GameOverPanel(alReintentar, alVolverAlMenu)
+    private val panel: GameOverPanel = FabricaHUD.crearGameOverPanel(alReintentar, alVolverAlMenu)
 
     fun obtenerNodo(): Parent = panel.obtenerNodo()
 

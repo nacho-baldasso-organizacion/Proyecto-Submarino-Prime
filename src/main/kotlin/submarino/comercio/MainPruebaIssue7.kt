@@ -1,5 +1,7 @@
 package submarino
 
+import submarino.FabricaServicios
+
 /**
  * ============================================================================
  * DEMOSTRACIÓN INTEGRAL DE LA ISSUE #7:
@@ -22,9 +24,9 @@ object MainPruebaIssue7 {
     fun ejecutarDemostracion() {
         VisualizadorConsola.imprimirEncabezado("SUBMARINO PRIME - PRUEBA DE ISSUE #7: ZONA DE ACOPLE, VENTA Y MONEDAS")
 
-        val zonaSuperficie = ZonaSuperficie(profundidadMaxima = 0.0)
+        val zonaSuperficie: ZonaAcople = FabricaServicios.crearZonaSuperficie(profundidadMaxima = 0.0)
         val estacion = EstacionAcople(zonaAcople = zonaSuperficie)
-        val servicioComercio: ServicioComercioContrato = ServicioComercio(CalculadoraPreciosEstandar())
+        val servicioComercio: ServicioComercioContrato = ServicioComercio(FabricaServicios.crearCalculadoraPreciosEstandar())
         servicioComercio.registrarObservador(ObservadorComercioConsola())
 
         val submarino = configurarSubmarino()

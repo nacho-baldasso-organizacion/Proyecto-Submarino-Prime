@@ -20,7 +20,7 @@ class VistaJuego(
     private val anchoEscena: Double,
     private val altoEscena: Double,
     private val sesion: SesionJuego,
-    private val hud: HUDJuego = HUDJuego(),
+    private val hud: HUDJuego = FabricaVisual.crearHUDJuego(),
     private val alReintentar: () -> Unit = {},
     private val alVolverAlMenu: () -> Unit = {}
 ) {
@@ -29,65 +29,65 @@ class VistaJuego(
     private val anchoMundo: Double = SesionJuego.ANCHO_MAPA * escala
     private val altoMundo: Double = SesionJuego.ALTO_MAPA * escala
 
-    private val fondo: FondoAbisal = FondoAbisal(
+    private val fondo: FondoAbisal = FabricaVisual.crearFondoAbisal(
         anchoMundo + anchoEscena,
         altoMundo + altoEscena,
         SEMILLA_FONDO,
         PROFUNDIDAD_RAYOS * escala
     )
     private val capaEntidades: Group = Group()
-    private val terreno: TerrenoRocosoVisual = TerrenoRocosoVisual(
+    private val terreno: TerrenoRocosoVisual = FabricaVisual.crearTerrenoRocosoVisual(
         sesion.terreno(),
         anchoMundo,
         altoMundo,
         escala,
         SEMILLA_TERRENO
     )
-    private val peces: PecesMarinos = PecesMarinos(
+    private val peces: PecesMarinos = FabricaVisual.crearPecesMarinos(
         anchoEscena,
         altoEscena,
         SEMILLA_PECES
     )
-    private val submarino: SubmarinoVectorial = SubmarinoVectorial()
-    private val estacion: EstacionVectorial = EstacionVectorial()
-    private val particulas: ParticulasMarinas = ParticulasMarinas(
+    private val submarino: SubmarinoVectorial = FabricaVisual.crearSubmarinoVectorial()
+    private val estacion: EstacionVectorial = FabricaVisual.crearEstacionVectorial()
+    private val particulas: ParticulasMarinas = FabricaVisual.crearParticulasMarinas(
         anchoEscena,
         altoEscena,
         SEMILLA_PARTICULAS
     )
-    private val explosion: ExplosionSubmarino = ExplosionSubmarino()
-    private val gameOver: GameOverModal = GameOverModal(alReintentar, alVolverAlMenu)
+    private val explosion: ExplosionSubmarino = FabricaVisual.crearExplosionSubmarino()
+    private val gameOver: GameOverModal = FabricaVisual.crearGameOverModal(alReintentar, alVolverAlMenu)
     private var gameOverMostrado: Boolean = false
     private val visualesNodos: Map<NodoMineral, NodoMineralVectorial> =
-        sesion.nodos().associateWith { NodoMineralVectorial(it) }
-    private val veloAbisal: VeloAbisal = VeloAbisal(anchoEscena, altoEscena)
-    private val veloPresion: VeloPresion = VeloPresion(anchoEscena, altoEscena)
-    private val camara: CamaraJuego = CamaraJuego(
+        sesion.nodos().associateWith { FabricaVisual.crearNodoMineralVectorial(it) }
+    private val veloAbisal: VeloAbisal = FabricaVisual.crearVeloAbisal(anchoEscena, altoEscena)
+    private val veloPresion: VeloPresion = FabricaVisual.crearVeloPresion(anchoEscena, altoEscena)
+    private val camara: CamaraJuego = FabricaVisual.crearCamaraJuego(
         anchoMundo,
         altoMundo,
         anchoEscena,
         altoEscena,
         escala
     )
-    private val avisos: AvisosJuego = AvisosJuego()
-    private val tienda: TiendaModal = TiendaModal(sesion)
+    private val avisos: AvisosJuego = FabricaVisual.crearAvisosJuego()
+    private val tienda: TiendaModal = FabricaVisual.crearTiendaModal(sesion)
     private val raiz: StackPane = StackPane()
 
-    private val parallaxLejano: CapaParallaxVisual = CapaParallaxVisual(
+    private val parallaxLejano: CapaParallaxVisual = FabricaVisual.crearCapaParallaxVisual(
         contenedor = fondo.capaLejana,
-        capa = CapaParallax(FACTOR_LEJANO),
+        capa = FabricaVisual.crearCapaParallax(FACTOR_LEJANO),
         origenX = 0.0,
         origenY = 0.0
     )
-    private val parallaxMedio: CapaParallaxVisual = CapaParallaxVisual(
+    private val parallaxMedio: CapaParallaxVisual = FabricaVisual.crearCapaParallaxVisual(
         contenedor = fondo.capaMedia,
-        capa = CapaParallax(FACTOR_MEDIO),
+        capa = FabricaVisual.crearCapaParallax(FACTOR_MEDIO),
         origenX = 0.0,
         origenY = 0.0
     )
-    private val parallaxEntidades: CapaParallaxVisual = CapaParallaxVisual(
+    private val parallaxEntidades: CapaParallaxVisual = FabricaVisual.crearCapaParallaxVisual(
         contenedor = capaEntidades,
-        capa = CapaParallax(FACTOR_ENTIDADES),
+        capa = FabricaVisual.crearCapaParallax(FACTOR_ENTIDADES),
         origenX = 0.0,
         origenY = 0.0
     )

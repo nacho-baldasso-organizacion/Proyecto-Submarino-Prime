@@ -16,10 +16,10 @@ class HUDJuego {
 
     private val contenedor: VBox = VBox(8.0)
     private val indicadorProfundidad: IndicadorMetrosHUD =
-        IndicadorMetrosHUD("PROFUNDIDAD", ESTILO_TITULO, ESTILO_VALOR_BASE, "%.0f m")
+        FabricaHUD.crearIndicadorMetrosHUD("PROFUNDIDAD", ESTILO_TITULO, ESTILO_VALOR_BASE, "%.0f m")
     private val indicadorPosicionX: IndicadorMetrosHUD =
-        IndicadorMetrosHUD("POSICIÓN X", ESTILO_TITULO, ESTILO_VALOR_BASE, "%.0f m")
-    private val indicadorPresion: IndicadorPresionHUD = IndicadorPresionHUD(
+        FabricaHUD.crearIndicadorMetrosHUD("POSICIÓN X", ESTILO_TITULO, ESTILO_VALOR_BASE, "%.0f m")
+    private val indicadorPresion: IndicadorPresionHUD = FabricaHUD.crearIndicadorPresionHUD(
         ESTILO_TITULO,
         ESTILO_VALOR_BASE,
         ANCHO_BARRA,
@@ -27,7 +27,7 @@ class HUDJuego {
         ESTILO_BARRA_PRECAUCION,
         ESTILO_BARRA_CRITICO
     )
-    private val indicadorOxigeno: IndicadorOxigenoJuegoHUD = IndicadorOxigenoJuegoHUD(
+    private val indicadorOxigeno: IndicadorOxigenoJuegoHUD = FabricaHUD.crearIndicadorOxigenoJuegoHUD(
         ESTILO_TITULO,
         ESTILO_VALOR_BASE,
         ANCHO_BARRA,
@@ -35,7 +35,7 @@ class HUDJuego {
         ESTILO_BARRA_PRECAUCION,
         ESTILO_BARRA_CRITICO
     )
-    private val indicadorCasco: IndicadorCascoHUD = IndicadorCascoHUD(
+    private val indicadorCasco: IndicadorCascoHUD = FabricaHUD.crearIndicadorCascoHUD(
         ESTILO_TITULO,
         ESTILO_VALOR_BASE,
         ANCHO_BARRA,
@@ -44,13 +44,13 @@ class HUDJuego {
         ESTILO_BARRA_CRITICO
     )
     private val indicadorMonedas: IndicadorMonedasHUD =
-        IndicadorMonedasHUD(ESTILO_TITULO, ESTILO_VALOR_BASE)
+        FabricaHUD.crearIndicadorMonedasHUD(ESTILO_TITULO, ESTILO_VALOR_BASE)
     private val indicadorBodega: IndicadorCargoHUD =
-        IndicadorCargoHUD(ESTILO_TITULO, ESTILO_VALOR_BASE)
+        FabricaHUD.crearIndicadorCargoHUD(ESTILO_TITULO, ESTILO_VALOR_BASE)
     private val indicadorNodos: IndicadorNodosHUD =
-        IndicadorNodosHUD(ESTILO_TITULO, ESTILO_VALOR_BASE)
+        FabricaHUD.crearIndicadorNodosHUD(ESTILO_TITULO, ESTILO_VALOR_BASE)
     private val indicadorEstado: IndicadorAcopleHUD =
-        IndicadorAcopleHUD(ESTILO_TITULO, ESTILO_VALOR_BASE)
+        FabricaHUD.crearIndicadorAcopleHUD(ESTILO_TITULO, ESTILO_VALOR_BASE)
 
     init {
         contenedor.alignment = Pos.TOP_CENTER
@@ -63,15 +63,15 @@ class HUDJuego {
             alignment = Pos.CENTER_LEFT
             children.addAll(
                 indicadorProfundidad.nodo(),
-                SeparadorHUD(ESTILO_SEPARADOR).nodo,
+                FabricaHUD.crearSeparadorHUD(ESTILO_SEPARADOR).nodo,
                 indicadorPosicionX.nodo(),
-                SeparadorHUD(ESTILO_SEPARADOR).nodo,
+                FabricaHUD.crearSeparadorHUD(ESTILO_SEPARADOR).nodo,
                 indicadorPresion.nodo(),
-                SeparadorHUD(ESTILO_SEPARADOR).nodo,
+                FabricaHUD.crearSeparadorHUD(ESTILO_SEPARADOR).nodo,
                 indicadorOxigeno.nodo(),
-                SeparadorHUD(ESTILO_SEPARADOR).nodo,
+                FabricaHUD.crearSeparadorHUD(ESTILO_SEPARADOR).nodo,
                 indicadorCasco.nodo(),
-                SeparadorHUD(ESTILO_SEPARADOR).nodo,
+                FabricaHUD.crearSeparadorHUD(ESTILO_SEPARADOR).nodo,
                 indicadorMonedas.nodo()
             )
         }
@@ -80,12 +80,12 @@ class HUDJuego {
             alignment = Pos.CENTER_LEFT
             children.addAll(
                 indicadorBodega.nodo(),
-                SeparadorHUD(ESTILO_SEPARADOR).nodo,
+                FabricaHUD.crearSeparadorHUD(ESTILO_SEPARADOR).nodo,
                 indicadorNodos.nodo(),
-                SeparadorHUD(ESTILO_SEPARADOR).nodo,
+                FabricaHUD.crearSeparadorHUD(ESTILO_SEPARADOR).nodo,
                 indicadorEstado.nodo(),
-                SeparadorHUD(ESTILO_SEPARADOR).nodo,
-                TextoAyudaHUD("WASD / FLECHAS · ESPACIO: MINAR · E: ACOPLAR", ESTILO_AYUDA).nodo
+                FabricaHUD.crearSeparadorHUD(ESTILO_SEPARADOR).nodo,
+                FabricaHUD.crearTextoAyudaHUD("WASD / FLECHAS · ESPACIO: MINAR · E: ACOPLAR", ESTILO_AYUDA).nodo
             )
         }
 

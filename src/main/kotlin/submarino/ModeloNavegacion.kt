@@ -89,7 +89,7 @@ class ModeloNavegacion(
 
     private var posicionX: Double = anchoEscena / 2.0
     private var posicionY: Double = altoEscena / 2.0
-    private val sistemaOxigeno: SistemaOxigeno = SistemaOxigeno(
+    private val sistemaOxigeno: SistemaOxigeno = FabricaDominio.crearSistemaOxigeno(
         oxigenoInicial = OXIGENO_INICIAL,
         maximoInicial = OXIGENO_MAXIMO,
         consumoBasePorSegundo = consumoOxigenoPorSegundo,
@@ -133,7 +133,7 @@ class ModeloNavegacion(
     /**
      * Genera una instantánea inmutable del estado actual.
      */
-    fun estado(): EstadoNavegacion = EstadoNavegacion(
+    fun estado(): EstadoNavegacion = FabricaDominio.crearEstadoNavegacion(
         posicionX = posicionX,
         posicionY = posicionY,
         coordenadaX = posicionX * metrosPorPixel,

@@ -124,7 +124,8 @@ class SistemaCasco(
  */
 class GestorAscenso(
     private val calculadorPeso: CalculadorPeso,
-    private val estrategiaAscenso: EstrategiaAscenso
+    private val estrategiaAscenso: EstrategiaAscenso,
+    private val factoriaEstado: FabricaEstadoAscenso = FabricaEstadoAscensoEstandar
 ) {
     fun pesoTotal(pesoBase: Double, bodega: Almacenamiento?): Double =
         calculadorPeso.calcularPesoTotal(pesoBase, bodega)
@@ -162,7 +163,7 @@ class GestorAscenso(
         pesoBase: Double,
         bodega: Almacenamiento?,
         velocidadNominal: Double
-    ): EstadoAscenso = EstadoAscenso(
+    ): EstadoAscenso = factoriaEstado.crear(
         pesoBase = pesoBase,
         pesoCarga = bodega?.pesoActual ?: 0.0,
         pesoTotal = pesoTotal(pesoBase, bodega),

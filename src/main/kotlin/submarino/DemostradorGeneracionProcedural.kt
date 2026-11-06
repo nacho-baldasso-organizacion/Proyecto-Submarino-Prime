@@ -7,7 +7,7 @@ class DemostradorGeneracionProcedural {
 
     fun demostrar(ancho: Int, alto: Int): MutableList<Recolectable> {
         println("3. GENERACIÓN PROCEDURAL EN PAREDES (Profundidad = 200m - Zona Mesopelágica):")
-        val generador: GeneradorMinerales = GeneradorParedes()
+        val generador: GeneradorMinerales = FabricaDominio.crearGeneradorParedes()
         val minerales = generador.generarEnParedes(
             anchoMapa = ancho,
             altoMapa = alto,

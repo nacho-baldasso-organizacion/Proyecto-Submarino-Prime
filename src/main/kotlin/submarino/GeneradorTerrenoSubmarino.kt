@@ -20,38 +20,41 @@ class GeneradorTerrenoSubmarino {
         repeat(CANTIDAD_FORMACIONES) { indice ->
             formaciones.add(crearFormacionProcedural(indice, random, anchoMapa, altoMapa))
         }
-        return TerrenoSubmarino(formaciones, crearSueloMarino(random, anchoMapa, altoMapa))
+        return FabricaDominio.crearTerrenoSubmarino(
+            formaciones,
+            crearSueloMarino(random, anchoMapa, altoMapa)
+        )
     }
 
     private fun formacionesAncla(): List<FormacionRocosa> = listOf(
-        FormacionRocosa(
+        FabricaDominio.crearFormacionRocosa(
             id = "MONTANA-COBRE",
             puntos = listOf(
-                PuntoCresta(1460.0, 980.0),
-                PuntoCresta(1720.0, 910.0),
-                PuntoCresta(1960.0, 820.0),
-                PuntoCresta(2100.0, 720.0),
-                PuntoCresta(2200.0, 650.0),
-                PuntoCresta(2320.0, 515.0),
-                PuntoCresta(2410.0, 395.0),
-                PuntoCresta(2500.0, 300.0),
-                PuntoCresta(2615.0, 455.0),
-                PuntoCresta(2760.0, 690.0),
-                PuntoCresta(2940.0, 855.0),
-                PuntoCresta(3220.0, 965.0)
+                FabricaDominio.crearPuntoCresta(1460.0, 980.0),
+                FabricaDominio.crearPuntoCresta(1720.0, 910.0),
+                FabricaDominio.crearPuntoCresta(1960.0, 820.0),
+                FabricaDominio.crearPuntoCresta(2100.0, 720.0),
+                FabricaDominio.crearPuntoCresta(2200.0, 650.0),
+                FabricaDominio.crearPuntoCresta(2320.0, 515.0),
+                FabricaDominio.crearPuntoCresta(2410.0, 395.0),
+                FabricaDominio.crearPuntoCresta(2500.0, 300.0),
+                FabricaDominio.crearPuntoCresta(2615.0, 455.0),
+                FabricaDominio.crearPuntoCresta(2760.0, 690.0),
+                FabricaDominio.crearPuntoCresta(2940.0, 855.0),
+                FabricaDominio.crearPuntoCresta(3220.0, 965.0)
             ),
             baseY = 1060.0
         ),
-        FormacionRocosa(
+        FabricaDominio.crearFormacionRocosa(
             id = "ARRECIFE-HIERRO",
             puntos = listOf(
-                PuntoCresta(2190.0, 1770.0),
-                PuntoCresta(2400.0, 1680.0),
-                PuntoCresta(2520.0, 1590.0),
-                PuntoCresta(2650.0, 1450.0),
-                PuntoCresta(2790.0, 1515.0),
-                PuntoCresta(2960.0, 1660.0),
-                PuntoCresta(3170.0, 1775.0)
+                FabricaDominio.crearPuntoCresta(2190.0, 1770.0),
+                FabricaDominio.crearPuntoCresta(2400.0, 1680.0),
+                FabricaDominio.crearPuntoCresta(2520.0, 1590.0),
+                FabricaDominio.crearPuntoCresta(2650.0, 1450.0),
+                FabricaDominio.crearPuntoCresta(2790.0, 1515.0),
+                FabricaDominio.crearPuntoCresta(2960.0, 1660.0),
+                FabricaDominio.crearPuntoCresta(3170.0, 1775.0)
             ),
             baseY = 1830.0
         )
@@ -69,7 +72,7 @@ class GeneradorTerrenoSubmarino {
         val baseY = FRANJAS_BASE[indice % FRANJAS_BASE.size](random, altoMapa)
             .coerceIn(420.0, altoMapa - 8.0)
         val altura = min(random.nextDouble(240.0, 640.0), baseY - 150.0)
-        return FormacionRocosa(
+        return FabricaDominio.crearFormacionRocosa(
             id = "FORMACION-$indice",
             puntos = crearCrestas(random, centroX, ancho, baseY, altura, altoMapa),
             baseY = baseY
@@ -105,7 +108,7 @@ class GeneradorTerrenoSubmarino {
             if (indice == 0 || indice == cantidad - 1) {
                 y = baseY - altura * random.nextDouble(0.02, 0.12)
             }
-            puntos.add(PuntoCresta(x, y.coerceIn(130.0, altoMapa - 25.0)))
+            puntos.add(FabricaDominio.crearPuntoCresta(x, y.coerceIn(130.0, altoMapa - 25.0)))
         }
         return puntos
     }
@@ -124,9 +127,9 @@ class GeneradorTerrenoSubmarino {
             val desvio = random.nextDouble(-altoMapa * 0.005, altoMapa * 0.005)
             val y = (nivel + ondulacion + desvio)
                 .coerceIn(altoMapa * 0.925, altoMapa - 4.0)
-            PuntoCresta(x, y)
+            FabricaDominio.crearPuntoCresta(x, y)
         }
-        return FormacionRocosa("SUELO-MARINO", puntos, altoMapa)
+        return FabricaDominio.crearFormacionRocosa("SUELO-MARINO", puntos, altoMapa)
     }
 
     companion object {

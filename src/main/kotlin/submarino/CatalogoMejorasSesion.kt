@@ -15,19 +15,23 @@ class CatalogoMejorasSesion {
         return catalogo
     }
 
-    private fun crearMejoraOxigeno(aumentarOxigenoMaximo: (Double) -> Unit): Mejora = Mejora(
-        id = ID_MEJORA_OXIGENO,
-        nombre = "Tanque de Oxígeno Abisal",
-        descripcion = "Amplía la reserva de oxígeno en +${INCREMENTO_OXIGENO_POR_MEJORA.toInt()} puntos por nivel.",
-        nivelInicial = 1,
-        nivelMaximo = 5,
-        efecto = object : EfectoBase(INCREMENTO_OXIGENO_POR_MEJORA) {
-            override fun aplicar(submarino: SubmarinoMejorable) {
-                aumentarOxigenoMaximo(magnitud)
-            }
-        },
-        estrategiaCosto = EstrategiaCostoLineal(COSTO_BASE_OXIGENO, INCREMENTO_COSTO_OXIGENO)
-    )
+    private fun crearMejoraOxigeno(aumentarOxigenoMaximo: (Double) -> Unit): Mejora =
+        FabricaDominio.crearMejora(
+            id = ID_MEJORA_OXIGENO,
+            nombre = "Tanque de Oxígeno Abisal",
+            descripcion = "Amplía la reserva de oxígeno en +${INCREMENTO_OXIGENO_POR_MEJORA.toInt()} puntos por nivel.",
+            nivelInicial = 1,
+            nivelMaximo = 5,
+            efecto = FabricaDominio.crearEfectoOxigeno(
+                INCREMENTO_OXIGENO_POR_MEJORA,
+                aumentarOxigenoMaximo
+            ),
+            estrategiaCosto =
+                FabricaDominio.crearEstrategiaCostoLineal(
+                    COSTO_BASE_OXIGENO,
+                    INCREMENTO_COSTO_OXIGENO
+                )
+        )
 
     companion object {
         const val ID_MEJORA_OXIGENO = "UPG-OXIGENO"

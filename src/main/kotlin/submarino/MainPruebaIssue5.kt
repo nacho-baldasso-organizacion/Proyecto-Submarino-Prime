@@ -1,5 +1,8 @@
 package submarino
 
+import submarino.ConfiguracionSesion
+import submarino.FabricaDominio
+
 /**
  * Punto de entrada de prueba y demostración para la Issue #5:
  * "Clase Mineral y Lógica de Recolección" del proyecto Submarino Prime.
@@ -27,7 +30,8 @@ object MainPruebaIssue5 {
 
         val minerales = DemostradorGeneracionProcedural().demostrar(ANCHO_MAPA, ALTO_MAPA)
         val bodega = Bodega(capacidadMaxima = 7.0)
-        val servicio: ServicioRecoleccionContrato = ServicioRecoleccion(bodega, DetectorColisionesConcreto())
+        val detectorColisiones: DetectorColisiones = FabricaDominio.crearDetectorColisionesRadio(ConfiguracionSesion.RADIO_INTERACCION)
+        val servicio: ServicioRecoleccionContrato = ServicioRecoleccion(bodega, detectorColisiones)
 
         DemostradorNavegacionRecoleccion().demostrar(ANCHO_MAPA, ALTO_MAPA, minerales, bodega, servicio)
         DemostradorReporteBodega().demostrar(bodega)

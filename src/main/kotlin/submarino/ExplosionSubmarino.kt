@@ -30,7 +30,7 @@ class ExplosionSubmarino {
         nodo.layoutY = y
         nodo.children.clear()
 
-        val transiciones = ConstructorExplosionSubmarino.crear(
+        val transiciones = FabricaVisual.crearTransicionesExplosion(
             nodo.children,
             Random(SEMILLA_CHISPAS)
         )

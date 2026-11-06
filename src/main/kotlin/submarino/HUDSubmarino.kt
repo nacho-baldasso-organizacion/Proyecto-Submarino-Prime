@@ -15,10 +15,10 @@ class HUDSubmarino {
 
     private val contenedor: HBox = HBox(ESPACIADO)
     private val indicadorProfundidad: IndicadorMetrosHUD =
-        IndicadorMetrosHUD("PROFUNDIDAD", ESTILO_TITULO, ESTILO_VALOR_BASE, "%.1f m")
+        FabricaHUD.crearIndicadorMetrosHUD("PROFUNDIDAD", ESTILO_TITULO, ESTILO_VALOR_BASE, "%.1f m")
     private val indicadorCoordenadaX: IndicadorMetrosHUD =
-        IndicadorMetrosHUD("COORDENADA X", ESTILO_TITULO, ESTILO_VALOR_BASE, "%.1f m")
-    private val indicadorOxigeno: IndicadorOxigenoNavegacionHUD = IndicadorOxigenoNavegacionHUD(
+        FabricaHUD.crearIndicadorMetrosHUD("COORDENADA X", ESTILO_TITULO, ESTILO_VALOR_BASE, "%.1f m")
+    private val indicadorOxigeno: IndicadorOxigenoNavegacionHUD = FabricaHUD.crearIndicadorOxigenoNavegacionHUD(
         ESTILO_TITULO,
         ESTILO_VALOR_BASE,
         ANCHO_BARRA,
@@ -28,7 +28,7 @@ class HUDSubmarino {
         ESTILO_BARRA_AGOTADO
     )
     private val indicadorEstado: IndicadorEstadoOxigenoHUD =
-        IndicadorEstadoOxigenoHUD(ESTILO_TITULO, ESTILO_VALOR_BASE)
+        FabricaHUD.crearIndicadorEstadoOxigenoHUD(ESTILO_TITULO, ESTILO_VALOR_BASE)
 
     init {
         contenedor.alignment = Pos.CENTER_LEFT
@@ -39,13 +39,13 @@ class HUDSubmarino {
 
         contenedor.children.addAll(
             indicadorProfundidad.nodo(),
-            SeparadorHUD(ESTILO_SEPARADOR).nodo,
+            FabricaHUD.crearSeparadorHUD(ESTILO_SEPARADOR).nodo,
             indicadorCoordenadaX.nodo(),
-            SeparadorHUD(ESTILO_SEPARADOR).nodo,
+            FabricaHUD.crearSeparadorHUD(ESTILO_SEPARADOR).nodo,
             indicadorOxigeno.nodo(),
-            SeparadorHUD(ESTILO_SEPARADOR).nodo,
+            FabricaHUD.crearSeparadorHUD(ESTILO_SEPARADOR).nodo,
             indicadorEstado.nodo(),
-            TextoAyudaHUD("WASD / FLECHAS", ESTILO_AYUDA).nodo
+            FabricaHUD.crearTextoAyudaHUD("WASD / FLECHAS", ESTILO_AYUDA).nodo
         )
     }
 

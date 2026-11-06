@@ -36,13 +36,13 @@ class ServicioUpgrades(
         if (mejora == null) {
             val motivo = "Mejora no encontrada en el catálogo: '$idMejora'"
             notificarRechazo(idMejora, motivo)
-            return ResultadoCompra.MejoraNoEncontrada(idMejora)
+            return FabricaServicios.crearResultadoCompraMejoraNoEncontrada(idMejora)
         }
 
         if (mejora.esNivelMaximo) {
             val motivo = "La mejora '${mejora.nombre}' ya alcanzó el nivel máximo (${mejora.nivelMaximo()})"
             notificarRechazo(idMejora, motivo)
-            return ResultadoCompra.NivelMaximoAlcanzado(
+            return FabricaServicios.crearResultadoCompraNivelMaximoAlcanzado(
                 mejoraId = idMejora,
                 nivelActual = mejora.nivel,
                 nivelMaximo = mejora.nivelMaximo()
@@ -67,7 +67,7 @@ class ServicioUpgrades(
 
         notificarExito(mejora, pagable.saldo)
 
-        return ResultadoCompra.Exito(
+        return FabricaServicios.crearResultadoCompraExito(
             mejora = mejora,
             nivelAnterior = nivelAnterior,
             nuevoNivel = mejora.nivel,
@@ -78,7 +78,7 @@ class ServicioUpgrades(
 
     private fun rechazarFondos(idMejora: String, costo: Int, saldo: Int, motivo: String): ResultadoCompra.FondosInsuficientes {
         notificarRechazo(idMejora, motivo)
-        return ResultadoCompra.FondosInsuficientes(idMejora, costo, saldo)
+        return FabricaServicios.crearResultadoCompraFondosInsuficientes(idMejora, costo, saldo)
     }
 
     private fun notificarExito(mejora: Mejora, saldoRestante: Int) {

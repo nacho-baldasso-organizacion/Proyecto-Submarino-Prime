@@ -19,7 +19,7 @@ fun interface FabricaCatalogoUpgrades {
  */
 class FabricaCatalogoUpgradesEstandar : FabricaCatalogoUpgrades {
     override fun crear(mejoras: Collection<Mejora>): CatalogoUpgrades =
-        CatalogoUpgrades(mejoras)
+        FabricaServicios.crearCatalogoUpgrades(mejoras)
 }
 
 /**
@@ -34,7 +34,7 @@ fun interface FabricaProcesadorCompras {
  */
 class FabricaProcesadorComprasEstandar : FabricaProcesadorCompras {
     override fun crear(catalogo: ConsultableCatalogo): ProcesadorCompras =
-        ServicioUpgrades(catalogo)
+        FabricaServicios.crearServicioUpgrades(catalogo)
 }
 
 /**
@@ -49,7 +49,7 @@ fun interface FabricaTiendaMejoras {
  */
 class FabricaTiendaMejorasEstandar : FabricaTiendaMejoras {
     override fun crear(catalogo: ConsultableCatalogo, procesador: ProcesadorCompras): TiendaMejoras =
-        TiendaMejoras(catalogo, procesador)
+        FabricaServicios.crearTiendaMejoras(catalogo, procesador)
 }
 
 /**
@@ -57,17 +57,18 @@ class FabricaTiendaMejorasEstandar : FabricaTiendaMejoras {
  * el catálogo, el procesador de compras y la tienda (DIP).
  */
 class FabricaMejorasEstandar(
-    private val fabricaCatalogo: FabricaCatalogoUpgrades = FabricaCatalogoUpgradesEstandar(),
-    private val fabricaProcesador: FabricaProcesadorCompras = FabricaProcesadorComprasEstandar(),
-    private val fabricaTienda: FabricaTiendaMejoras = FabricaTiendaMejorasEstandar()
+    private val fabricaCatalogo: FabricaCatalogoUpgrades = FabricaServicios.crearFabricaCatalogoUpgradesEstandar(),
+    private val fabricaProcesador: FabricaProcesadorCompras = FabricaServicios.crearFabricaProcesadorComprasEstandar(),
+    private val fabricaTienda: FabricaTiendaMejoras = FabricaServicios.crearFabricaTiendaMejorasEstandar()
 ) : FabricaUpgrades {
 
     override fun crearMejoraBodega(
         id: String, nombre: String, descripcion: String, nivelInicial: Int,
         nivelMaximo: Int, incrementoCapacidadKg: Double, costoBase: Int, incrementoPorNivel: Int
-    ): MejoraCapacidadBodega = MejoraCapacidadBodega(
+    ): MejoraCapacidadBodega = FabricaServicios.crearMejoraCapacidadBodega(
         id, nombre, descripcion, nivelInicial, nivelMaximo,
-        EfectoCapacidadBodega(incrementoCapacidadKg), EstrategiaCostoLineal(costoBase, incrementoPorNivel)
+        FabricaServicios.crearEfectoCapacidadBodega(incrementoCapacidadKg),
+        FabricaServicios.crearEstrategiaCostoLineal(costoBase, incrementoPorNivel)
     )
 
     fun crearMejoraVelocidadAscenso(
@@ -76,9 +77,10 @@ class FabricaMejorasEstandar(
         descripcion: String = "Aumenta la velocidad nominal base de ascenso hacia la superficie (+2.0 m/s)",
         nivelInicial: Int = 1, nivelMaximo: Int = 5,
         incrementoVelocidadMs: Double = 2.0, costoBase: Int = 200, factorMultiplicador: Double = 1.7
-    ): MejoraVelocidadAscenso = MejoraVelocidadAscenso(
+    ): MejoraVelocidadAscenso = FabricaServicios.crearMejoraVelocidadAscenso(
         id, nombre, descripcion, nivelInicial, nivelMaximo,
-        EfectoVelocidadAscenso(incrementoVelocidadMs), EstrategiaCostoExponencial(costoBase, factorMultiplicador)
+        FabricaServicios.crearEfectoVelocidadAscenso(incrementoVelocidadMs),
+        FabricaServicios.crearEstrategiaCostoExponencial(costoBase, factorMultiplicador)
     )
 
     fun crearMejoraResistenciaCasco(
@@ -87,9 +89,10 @@ class FabricaMejorasEstandar(
         descripcion: String = "Refuerza la tolerancia del casco ante la sobrepresión (+150,000 Pa)",
         nivelInicial: Int = 1, nivelMaximo: Int = 5,
         incrementoPresionPa: Double = 150_000.0, costoBase: Int = 260, incrementoPorNivel: Int = 160
-    ): MejoraResistenciaCasco = MejoraResistenciaCasco(
+    ): MejoraResistenciaCasco = FabricaServicios.crearMejoraResistenciaCasco(
         id, nombre, descripcion, nivelInicial, nivelMaximo,
-        EfectoResistenciaCasco(incrementoPresionPa), EstrategiaCostoLineal(costoBase, incrementoPorNivel)
+        FabricaServicios.crearEfectoResistenciaCasco(incrementoPresionPa),
+        FabricaServicios.crearEstrategiaCostoLineal(costoBase, incrementoPorNivel)
     )
 
     fun crearMejoraVelocidadPropulsion(
@@ -98,9 +101,10 @@ class FabricaMejorasEstandar(
         descripcion: String = "Incrementa la velocidad de propulsión horizontal en navegación (+2.5 m/s)",
         nivelInicial: Int = 1, nivelMaximo: Int = 5,
         incrementoVelocidadMs: Double = 2.5, costoBase: Int = 150, incrementoPorNivel: Int = 80
-    ): MejoraVelocidadPropulsion = MejoraVelocidadPropulsion(
+    ): MejoraVelocidadPropulsion = FabricaServicios.crearMejoraVelocidadPropulsion(
         id, nombre, descripcion, nivelInicial, nivelMaximo,
-        EfectoVelocidadPropulsion(incrementoVelocidadMs), EstrategiaCostoLineal(costoBase, incrementoPorNivel)
+        FabricaServicios.crearEfectoVelocidadPropulsion(incrementoVelocidadMs),
+        FabricaServicios.crearEstrategiaCostoLineal(costoBase, incrementoPorNivel)
     )
 
     override fun crearCatalogoEstandar(): CatalogoUpgrades =
@@ -127,7 +131,8 @@ object FabricaMejoras : FabricaUpgrades {
     const val ID_CASCO = "UPG-CASCO"
     const val ID_PROPULSION = "UPG-PROPULSION"
 
-    private val implementacion: FabricaMejorasEstandar = FabricaMejorasEstandar()
+    private val implementacion: FabricaMejorasEstandar =
+        FabricaServicios.crearFabricaMejorasEstandar()
 
     override fun crearMejoraBodega(
         id: String, nombre: String, descripcion: String, nivelInicial: Int,

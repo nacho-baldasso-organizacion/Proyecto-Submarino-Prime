@@ -16,14 +16,14 @@ class IndicadorOxigenoNavegacionHUD(
     estiloBarraAgotado: String
 ) {
 
-    private val barra: BarraEstadoOxigenoHUD = BarraEstadoOxigenoHUD(
+    private val barra: BarraEstadoOxigenoHUD = FabricaHUD.crearBarraEstadoOxigenoHUD(
         anchoBarra,
         estiloBarraEstable,
         estiloBarraPrecaucion,
         estiloBarraCritico,
         estiloBarraAgotado
     )
-    private val tarjeta: TarjetaHUD = TarjetaHUD("OXÍGENO", estiloTitulo, estiloValor, barra.nodo)
+    private val tarjeta: TarjetaHUD = FabricaHUD.crearTarjetaHUD("OXÍGENO", estiloTitulo, estiloValor, barra.nodo)
 
     fun nodo(): VBox = tarjeta.nodo()
 
@@ -42,7 +42,7 @@ class IndicadorEstadoOxigenoHUD(
     estiloValor: String
 ) {
 
-    private val tarjeta: TarjetaHUD = TarjetaHUD("ESTADO", estiloTitulo, estiloValor)
+    private val tarjeta: TarjetaHUD = FabricaHUD.crearTarjetaHUD("ESTADO", estiloTitulo, estiloValor)
 
     private val colores: Map<EstadoOxigeno, String> = mapOf(
         EstadoOxigeno.ESTABLE to "-fx-text-fill: #6EE7B7;",
