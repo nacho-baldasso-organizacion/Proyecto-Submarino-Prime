@@ -33,7 +33,7 @@ class TiendaModal(
     private val contenedorMejoras: VBox = VBox(8.0).apply {
         style = "-fx-background-color: transparent;"
     }
-    private val constructorFilasMejora: ConstructorFilasMejoraTienda = ConstructorFilasMejoraTienda(
+    private val constructorFilasMejora: ConstructorFilasMejoraTienda = FabricaHUD.crearConstructorFilasMejoraTienda(
         sesion,
         contenedorMejoras,
         { texto -> etiquetaMensaje.text = texto },
@@ -41,16 +41,16 @@ class TiendaModal(
     )
 
     init {
-        val compositor = CompositorTienda(
+        val compositor = FabricaHUD.crearCompositorTienda(
             raiz,
-            ConstructorEncabezadoTienda(
+            FabricaHUD.crearConstructorEncabezadoTienda(
                 etiquetaMonedas,
                 etiquetaOxigeno,
                 etiquetaCasco,
                 etiquetaBodega,
                 etiquetaNodos
             ),
-            ConstructorAccionesTienda(
+            FabricaHUD.crearConstructorAccionesTienda(
                 sesion,
                 etiquetaMensaje,
                 { cerrar() },

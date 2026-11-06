@@ -5,13 +5,13 @@ package submarino
  * Garantiza cumplimiento con Liskov Substitution Principle (LSP) y provee métodos de dominio polimórficos.
  * Elimina clases anémicas dotando de comportamiento de cálculo a los resultados.
  */
-sealed class ResultadoCompra {
+sealed interface ResultadoCompra {
 
-    abstract val esExitosa: Boolean
-    abstract fun obtenerMensaje(): String
+    val esExitosa: Boolean
+    fun obtenerMensaje(): String
 
-    open fun obtenerIdMejora(): String = ""
-    open fun saldoFinal(): Int = -1
+    fun obtenerIdMejora(): String = ""
+    fun saldoFinal(): Int = -1
 
     /**
      * Transacción de compra concretada exitosamente.
@@ -22,7 +22,7 @@ sealed class ResultadoCompra {
         nuevoNivel: Int,
         costoPagado: Int,
         saldoRestante: Int
-    ) : ResultadoCompra() {
+    ) : ResultadoCompra {
         var mejora: Mejora = mejora
             private set
 
@@ -70,7 +70,7 @@ sealed class ResultadoCompra {
         mejoraId: String,
         costoRequerido: Int,
         saldoDisponible: Int
-    ) : ResultadoCompra() {
+    ) : ResultadoCompra {
         var mejoraId: String = mejoraId
             private set
 
@@ -110,7 +110,7 @@ sealed class ResultadoCompra {
         mejoraId: String,
         nivelActual: Int,
         nivelMaximo: Int
-    ) : ResultadoCompra() {
+    ) : ResultadoCompra {
         var mejoraId: String = mejoraId
             private set
 
@@ -146,7 +146,7 @@ sealed class ResultadoCompra {
      */
     class MejoraNoEncontrada(
         mejoraId: String
-    ) : ResultadoCompra() {
+    ) : ResultadoCompra {
         var mejoraId: String = mejoraId
             private set
 

@@ -5,22 +5,24 @@ package submarino
  */
 class FabricaNavesSimulacion {
 
-    fun cascoEstandar(): Casco = ModuloCasco(presionMaximaPa = 500_000.0, integridad = 100.0)
+    fun cascoEstandar(): Casco =
+        FabricaDominio.crearModuloCasco(presionMaximaPa = 500_000.0, integridad = 100.0)
 
     fun submarinoEstandar(casco: Casco): Submarino =
-        Submarino(posX = 0.0, posY = 0.0, velocidad = 10.0, casco = casco)
+        FabricaDominio.crearSubmarino(posX = 0.0, posY = 0.0, velocidad = 10.0, casco = casco)
 
-    fun cascoCritico(): Casco = ModuloCasco(presionMaximaPa = 250_000.0, integridad = 5.0)
+    fun cascoCritico(): Casco =
+        FabricaDominio.crearModuloCasco(presionMaximaPa = 250_000.0, integridad = 5.0)
 
     fun submarinoCritico(casco: Casco): Submarino =
-        Submarino(posX = 0.0, posY = 0.0, velocidad = 10.0, casco = casco)
+        FabricaDominio.crearSubmarino(posX = 0.0, posY = 0.0, velocidad = 10.0, casco = casco)
 }
 
 /**
  * Escenario de navegacion horizontal, propulsion y limites fisicos (SRP).
  */
 class EscenarioNavegacionSubmarino(
-    private val reporte: ReporteNavegacionSimulacion = ReporteNavegacionSimulacion()
+    private val reporte: ReporteNavegacionSimulacion = FabricaDominio.crearReporteNavegacionSimulacion()
 ) {
 
     fun ejecutar(submarino: Submarino) {
@@ -36,7 +38,7 @@ class EscenarioNavegacionSubmarino(
  * Escenarios de inmersion segura y critica con verificacion de integridad (SRP).
  */
 class EscenarioInmersionSubmarino(
-    private val reporte: ReporteInmersionSimulacion = ReporteInmersionSimulacion()
+    private val reporte: ReporteInmersionSimulacion = FabricaDominio.crearReporteInmersionSimulacion()
 ) {
 
     fun ejecutarInmersionSegura(submarino: Submarino, profMaxSegura: Double) {
@@ -76,7 +78,7 @@ class EscenarioInmersionSubmarino(
  * Escenario de validacion de los principios SOLID (OCP, DIP, ISP, SRP) (SRP).
  */
 class EscenarioSolidSubmarino(
-    private val reporte: ReporteSolidSimulacion = ReporteSolidSimulacion()
+    private val reporte: ReporteSolidSimulacion = FabricaDominio.crearReporteSolidSimulacion()
 ) {
 
     fun ejecutar() {
@@ -86,12 +88,13 @@ class EscenarioSolidSubmarino(
     }
 
     private fun validarCascoReforzado(): Double {
-        val cascoBlindado = CascoReforzado(
+        val cascoBlindado = FabricaDominio.crearCascoReforzado(
             presionMaximaPa = 250_000.0,
             integridad = 100.0,
             factorAbsorcion = 0.5
         )
-        val subAvanzado = Submarino(posX = 0.0, posY = 0.0, casco = cascoBlindado)
+        val subAvanzado =
+            FabricaDominio.crearSubmarino(posX = 0.0, posY = 0.0, casco = cascoBlindado)
 
         subAvanzado.sumergir(30.0)
         val presionExterna = CalculadoraHidrostatica.calcularPresion(subAvanzado.posY)
@@ -102,7 +105,7 @@ class EscenarioSolidSubmarino(
     }
 
     private fun validarFisicaAguaDulce(presionExterna: Double) {
-        val fisicaAguaDulce = CalculadoraPresionFluido(densidadFluido = 1000.0)
+        val fisicaAguaDulce = FabricaDominio.crearCalculadoraPresionFluido(densidadFluido = 1000.0)
         val presionDulce = fisicaAguaDulce.calcularPresion(30.0)
         reporte.fisicaAguaDulce(presionDulce, presionExterna)
     }

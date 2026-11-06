@@ -1,5 +1,7 @@
 package submarino
 
+import submarino.FabricaServicios
+
 /**
  * ============================================================================
  * DEMOSTRACIÓN INTEGRAL DE LA ISSUE #8:
@@ -27,7 +29,7 @@ object MainPruebaIssue8 {
         servicioUpgrades.registrarObservador(ObservadorTiendaConsola())
 
         val tienda: TiendaMejorasContrato = TiendaMejoras(catalogo, servicioUpgrades)
-        val servicioComercio: ServicioComercioContrato = ServicioComercio(CalculadoraPreciosEstandar())
+        val servicioComercio: ServicioComercioContrato = ServicioComercio(FabricaServicios.crearCalculadoraPreciosEstandar())
 
         val submarino = configurarSubmarino()
         demostrarCatalogo(catalogo)

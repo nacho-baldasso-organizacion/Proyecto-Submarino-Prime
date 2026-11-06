@@ -17,17 +17,17 @@ class MenuPrincipal(
 ) {
 
     private val raiz: StackPane = StackPane()
-    private val fondoMenu: FondoMenuPrincipal = FondoMenuPrincipal(anchoEscena, altoEscena)
-    private val submarino: SubmarinoVectorial = SubmarinoVectorial().apply {
+    private val fondoMenu: FondoMenuPrincipal = FabricaHUD.crearFondoMenuPrincipal(anchoEscena, altoEscena)
+    private val submarino: SubmarinoVectorial = FabricaHUD.crearSubmarinoVectorial().apply {
         nodo.scaleX = 1.55
         nodo.scaleY = 1.55
     }
-    private val botones: BotonesMenuPrincipal = BotonesMenuPrincipal()
-    private val overlayReglas: PanelReglasMenuPrincipal = PanelReglasMenuPrincipal(raiz, botones)
+    private val botones: BotonesMenuPrincipal = FabricaHUD.crearBotonesMenuPrincipal()
+    private val overlayReglas: PanelReglasMenuPrincipal = FabricaHUD.crearPanelReglasMenuPrincipal(raiz, botones)
 
     init {
-        val contenido = ContenidoMenuPrincipal(
-            bloqueTexto = TituloMenuPrincipal().crear(),
+        val contenido = FabricaHUD.crearContenidoMenuPrincipal(
+            bloqueTexto = FabricaHUD.crearTituloMenuPrincipal().crear(),
             panelBotones = botones.crearPanel(alJugar) { mostrarReglas(true) },
             nodoSubmarino = submarino.nodo
         ).crear()

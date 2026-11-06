@@ -24,16 +24,17 @@ class VistaSubmarino(
     private val anchoEscena: Double,
     private val altoEscena: Double,
     private val hud: HUDSubmarino,
-    capaFondoParallax: CapaParallax = CapaParallax(FACTOR_FONDO),
-    capaIntermediaParallax: CapaParallax = CapaParallax(FACTOR_INTERMEDIO)
+    capaFondoParallax: CapaParallax = FabricaVisual.crearCapaParallax(FACTOR_FONDO),
+    capaIntermediaParallax: CapaParallax = FabricaVisual.crearCapaParallax(FACTOR_INTERMEDIO)
 ) {
 
     private val anchoMundo: Double = anchoEscena * ESCALA_MUNDO
     private val altoMundo: Double = altoEscena * ESCALA_MUNDO
     private val raiz: StackPane = StackPane()
-    private val avatar: Group = AvatarSubmarino().crear()
-    private val capaFondo: Pane = CapaFondoParallax(anchoMundo, altoMundo).crear()
-    private val capaIntermedia: Pane = CapaIntermediaParallax(anchoMundo, altoMundo).crear()
+    private val avatar: Group = FabricaVisual.crearAvatarSubmarino().crear()
+    private val capaFondo: Pane = FabricaVisual.crearCapaFondoParallax(anchoMundo, altoMundo).crear()
+    private val capaIntermedia: Pane =
+        FabricaVisual.crearCapaIntermediaParallax(anchoMundo, altoMundo).crear()
     private val capaEntidades: Pane = crearCapaEntidades()
     private val parallaxFondo: CapaParallaxVisual
     private val parallaxIntermedio: CapaParallaxVisual
@@ -49,13 +50,13 @@ class VistaSubmarino(
         StackPane.setAlignment(hud.obtenerNodo(), Pos.TOP_CENTER)
         StackPane.setMargin(hud.obtenerNodo(), Insets(18.0, 18.0, 0.0, 18.0))
 
-        parallaxFondo = CapaParallaxVisual(
+        parallaxFondo = FabricaVisual.crearCapaParallaxVisual(
             contenedor = capaFondo,
             capa = capaFondoParallax,
             origenX = anchoEscena / 2.0,
             origenY = altoEscena / 2.0
         )
-        parallaxIntermedio = CapaParallaxVisual(
+        parallaxIntermedio = FabricaVisual.crearCapaParallaxVisual(
             contenedor = capaIntermedia,
             capa = capaIntermediaParallax,
             origenX = anchoEscena / 2.0,

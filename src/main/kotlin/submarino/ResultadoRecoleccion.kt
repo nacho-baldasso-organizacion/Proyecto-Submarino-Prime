@@ -5,33 +5,33 @@ package submarino
  * Provee polimorfismo de estado para evitar verificaciones externas de tipo (OCP).
  * Incorpora métodos de dominio con comportamiento propio (elimina clases anémicas).
  */
-sealed class ResultadoRecoleccion {
+sealed interface ResultadoRecoleccion {
 
     /**
      * Indica si la operación de recolección fue exitosa y el ítem ingresó en la bodega.
      */
-    abstract val esExito: Boolean
+    val esExito: Boolean
 
     /**
      * Retorna un mensaje descriptivo legible del resultado.
      */
-    abstract fun obtenerMensaje(): String
+    fun obtenerMensaje(): String
 
     /**
      * Retorna el mensaje orientado al jugador. Por defecto coincide con [obtenerMensaje],
      * pero cada resultado puede adaptarlo sin que el cliente consulte su tipo (OCP).
      */
-    open fun obtenerMensajeJugador(): String = obtenerMensaje()
+    fun obtenerMensajeJugador(): String = obtenerMensaje()
 
     /**
      * Retorna el elemento involucrado en la interacción si existe.
      */
-    open fun obtenerItem(): Recolectable? = null
+    fun obtenerItem(): Recolectable? = null
 
     /**
      * Indica si el resultado requiere que el jugador vacíe o amplíe la bodega.
      */
-    open fun requiereLiberarEspacio(): Boolean = false
+    fun requiereLiberarEspacio(): Boolean = false
 
     /**
      * El ítem colisionó y fue ingresado exitosamente en la bodega.
@@ -39,7 +39,7 @@ sealed class ResultadoRecoleccion {
     class Exito(
         item: Recolectable,
         pesoAcumulado: Double
-    ) : ResultadoRecoleccion() {
+    ) : ResultadoRecoleccion {
         var item: Recolectable = item
             private set
 
@@ -78,7 +78,7 @@ sealed class ResultadoRecoleccion {
         item: Recolectable,
         excesoPeso: Double,
         capacidadMaxima: Double
-    ) : ResultadoRecoleccion() {
+    ) : ResultadoRecoleccion {
         var item: Recolectable = item
             private set
 
@@ -119,7 +119,7 @@ sealed class ResultadoRecoleccion {
     /**
      * No existe ningún ítem colisionable en las coordenadas actuales.
      */
-    data object SinColision : ResultadoRecoleccion() {
+    data object SinColision : ResultadoRecoleccion {
         override val esExito: Boolean = false
         override fun obtenerMensaje(): String =
             "Sin colisión en las coordenadas actuales."
@@ -133,7 +133,7 @@ sealed class ResultadoRecoleccion {
      */
     class YaRecolectado(
         item: Recolectable
-    ) : ResultadoRecoleccion() {
+    ) : ResultadoRecoleccion {
         var item: Recolectable = item
             private set
 

@@ -20,7 +20,7 @@ class EstadoPartida(
         private set
     var posicionY: Double = ConfiguracionSesion.PROFUNDIDAD_INICIAL
         private set
-    private val sistemaOxigeno: SistemaOxigeno = SistemaOxigeno(
+    private val sistemaOxigeno: SistemaOxigeno = FabricaDominio.crearSistemaOxigeno(
         oxigenoInicial = ConfiguracionSesion.OXIGENO_MAXIMO_INICIAL,
         maximoInicial = ConfiguracionSesion.OXIGENO_MAXIMO_INICIAL,
         consumoBasePorSegundo = ConfiguracionSesion.CONSUMO_OXIGENO_BASE,

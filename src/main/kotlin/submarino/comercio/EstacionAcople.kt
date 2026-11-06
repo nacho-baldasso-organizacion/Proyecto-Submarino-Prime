@@ -99,7 +99,7 @@ class ZonaAcoplePlataforma(
  * - Patrón Observer
  */
 class EstacionAcople(
-    zonaAcople: ZonaAcople = ZonaSuperficie()
+    zonaAcople: ZonaAcople = FabricaServicios.crearZonaSuperficie()
 ) : ControlAcople, ConsultaAcople {
 
     var zonaAcople: ZonaAcople = zonaAcople

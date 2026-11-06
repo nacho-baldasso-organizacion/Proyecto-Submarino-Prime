@@ -13,7 +13,7 @@ class IndicadorMetrosHUD(
     private val patron: String
 ) {
 
-    private val tarjeta: TarjetaHUD = TarjetaHUD(titulo, estiloTitulo, estiloValor)
+    private val tarjeta: TarjetaHUD = FabricaHUD.crearTarjetaHUD(titulo, estiloTitulo, estiloValor)
 
     fun nodo(): VBox = tarjeta.nodo()
 

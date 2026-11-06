@@ -52,7 +52,7 @@ class EstrategiaPreciosMultiplicador(
  * @param estrategia Abstracción de la estrategia de tasación a utilizar.
  */
 class CalculadoraPreciosEstandar(
-    private val estrategia: EstrategiaPrecios = EstrategiaPreciosBase()
+    private val estrategia: EstrategiaPrecios = FabricaServicios.crearEstrategiaPreciosBase()
 ) : CalculadoraPrecios {
 
     override fun calcularPrecio(item: Vendible): Int = estrategia.calcularPrecio(item)

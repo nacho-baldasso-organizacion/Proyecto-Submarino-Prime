@@ -7,7 +7,7 @@ import javafx.scene.layout.VBox
 /**
  * Regla configurable de aviso: se aplica cuando el estado cumple la condición.
  */
-private class ReglaAviso(
+internal class ReglaAviso(
     val condicion: (EstadoJuego) -> Boolean,
     val texto: String
 )
@@ -41,10 +41,10 @@ class AvisosJuego {
     }
 
     private val reglas: List<ReglaAviso> = listOf(
-        ReglaAviso({ it.presionActual > it.presionMaxima }, "¡PRESIÓN CRÍTICA! Asciende o el casco colapsará"),
-        ReglaAviso({ it.oxigeno <= it.capacidadOxigeno * UMBRAL_OXIGENO_BAJO }, "¡OXÍGENO BAJO! Regresa a la estación para recargar"),
-        ReglaAviso({ it.acoplado }, "Acoplado · pulsa DESACOPLAR en la tienda para continuar"),
-        ReglaAviso({ it.enZonaAcople }, "Presiona E para acoplar")
+        FabricaHUD.crearReglaAviso({ it.presionActual > it.presionMaxima }, "¡PRESIÓN CRÍTICA! Asciende o el casco colapsará"),
+        FabricaHUD.crearReglaAviso({ it.oxigeno <= it.capacidadOxigeno * UMBRAL_OXIGENO_BAJO }, "¡OXÍGENO BAJO! Regresa a la estación para recargar"),
+        FabricaHUD.crearReglaAviso({ it.acoplado }, "Acoplado · pulsa DESACOPLAR en la tienda para continuar"),
+        FabricaHUD.crearReglaAviso({ it.enZonaAcople }, "Presiona E para acoplar")
     )
 
     fun actualizar(estado: EstadoJuego) {

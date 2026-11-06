@@ -16,7 +16,13 @@ interface FabricaRecolectables {
  */
 class FabricaRecolectablesMineral : FabricaRecolectables {
     override fun crear(id: String, tipo: TipoMineral, posX: Int, posY: Int): Recolectable =
-        Mineral(id = id, tipo = tipo, posX = posX, posY = posY, recolectado = false)
+        FabricaDominio.crearMineral(
+            id = id,
+            tipo = tipo,
+            posX = posX,
+            posY = posY,
+            recolectado = false
+        )
 }
 
 /**
@@ -26,7 +32,8 @@ class FabricaRecolectablesMineral : FabricaRecolectables {
  */
 class GeneradorParedes(
     private val random: Random = Random.Default,
-    private val fabricaRecolectables: FabricaRecolectables = FabricaRecolectablesMineral()
+    private val fabricaRecolectables: FabricaRecolectables =
+        FabricaDominio.crearFabricaRecolectablesMineral()
 ) : GeneradorMinerales {
 
     override fun generarEnParedes(

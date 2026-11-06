@@ -48,11 +48,17 @@ class FondoAbisal(
         )
         gc.fillRect(0.0, 0.0, anchoMundo, altoMundo)
 
-        val particulas = PincelParticulas(gc, random, anchoMundo, altoMundo, profundidadRayos)
+        val particulas = FabricaVisual.crearPincelParticulas(
+            gc,
+            random,
+            anchoMundo,
+            altoMundo,
+            profundidadRayos
+        )
         particulas.dibujarSuperficie()
         particulas.dibujarRayos()
 
-        val cordillera = PincelCordillera(gc, random, anchoMundo)
+        val cordillera = FabricaVisual.crearPincelCordillera(gc, random, anchoMundo)
         cordillera.dibujar(altoMundo * 0.46, altoMundo * 0.20, Color.web("#0B4C60", 0.62), 9, 0.16)
         cordillera.dibujar(altoMundo * 0.56, altoMundo * 0.24, Color.web("#083A4B", 0.74), 12, 0.14)
         cordillera.dibujar(altoMundo * 0.68, altoMundo * 0.22, Color.web("#052B39", 0.84), 16, 0.12)
@@ -64,7 +70,7 @@ class FondoAbisal(
 
     private fun dibujarCapaMedia(random: Random) {
         val gc = capaMedia.graphicsContext2D
-        val arrecifes = PincelArrecifes(gc, random, anchoMundo, altoMundo)
+        val arrecifes = FabricaVisual.crearPincelArrecifes(gc, random, anchoMundo, altoMundo)
 
         arrecifes.dibujarArrecifes(altoMundo * 0.58, Color.web("#0A3C47", 0.78), 10)
         arrecifes.dibujarEstructurasRocosas(altoMundo * 0.64, Color.web("#07313D", 0.88), 8)

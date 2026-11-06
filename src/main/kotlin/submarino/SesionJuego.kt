@@ -19,12 +19,17 @@ class SesionJuego(
         require(altoMapa > 0.0) { "La altura del mapa debe ser positiva: $altoMapa" }
     }
 
-    private val bodega: Bodega = Bodega(ConfiguracionSesion.CAPACIDAD_INICIAL_BODEGA)
-    private val billetera: Monedero = Monedero(ConfiguracionSesion.SALDO_INICIAL)
-    private val casco: ModuloCasco = ModuloCasco(ConfiguracionSesion.PRESION_MAXIMA_INICIAL)
-    private val gestorDanio: GestorDanioSubmarino = GestorDanioSubmarino(casco)
-    private val partida: EstadoPartida = EstadoPartida(anchoMapa, altoMapa, gestorDanio, casco)
-    private val submarino: Submarino = Submarino(
+    private val bodega: Bodega =
+        FabricaDominio.crearBodega(ConfiguracionSesion.CAPACIDAD_INICIAL_BODEGA)
+    private val billetera: Monedero =
+        FabricaDominio.crearMonedero(ConfiguracionSesion.SALDO_INICIAL)
+    private val casco: ModuloCasco =
+        FabricaDominio.crearModuloCasco(ConfiguracionSesion.PRESION_MAXIMA_INICIAL)
+    private val gestorDanio: GestorDanioSubmarino =
+        FabricaDominio.crearGestorDanioSubmarino(casco)
+    private val partida: EstadoPartida =
+        FabricaDominio.crearEstadoPartida(anchoMapa, altoMapa, gestorDanio, casco)
+    private val submarino: Submarino = FabricaDominio.crearSubmarino(
         posX = ConfiguracionSesion.ESTACION_X,
         posY = ConfiguracionSesion.PROFUNDIDAD_INICIAL,
         velocidad = ConfiguracionSesion.VELOCIDAD_INICIAL,
@@ -36,24 +41,26 @@ class SesionJuego(
         notificador = NotificadorSilencioso
     )
 
-    private val zonaAcople: ZonaAcoplePlataforma = ZonaAcoplePlataforma(
+    private val zonaAcople: ZonaAcoplePlataforma = FabricaDominio.crearZonaAcoplePlataforma(
         xMin = ConfiguracionSesion.ESTACION_X - ConfiguracionSesion.ESTACION_ANCHO / 2.0,
         xMax = ConfiguracionSesion.ESTACION_X + ConfiguracionSesion.ESTACION_ANCHO / 2.0,
         profundidadMaxima = ConfiguracionSesion.PROFUNDIDAD_ZONA_ACOPLE
     )
-    private val estacion: EstacionAcople = EstacionAcople(zonaAcople)
-    private val servicioRecoleccion: ServicioRecoleccionContrato = ServicioRecoleccion(
-        almacenamiento = bodega,
-        detectorColisiones = DetectorColisionesRadio(ConfiguracionSesion.RADIO_INTERACCION)
-    )
-    private val servicioComercio: ServicioComercioContrato = ServicioComercio()
-    private val catalogoMejoras: CatalogoMejorasSesion = CatalogoMejorasSesion()
+    private val estacion: EstacionAcople = FabricaDominio.crearEstacionAcople(zonaAcople)
+    private val servicioRecoleccion: ServicioRecoleccionContrato =
+        FabricaDominio.crearServicioRecoleccion(
+            almacenamiento = bodega,
+            detectorColisiones =
+                FabricaDominio.crearDetectorColisionesRadio(ConfiguracionSesion.RADIO_INTERACCION)
+        )
+    private val servicioComercio: ServicioComercioContrato = FabricaDominio.crearServicioComercio()
+    private val catalogoMejoras: CatalogoMejorasSesion = FabricaDominio.crearCatalogoMejorasSesion()
     private val catalogo: CatalogoUpgrades = crearCatalogo()
-    private val tienda: TiendaMejoras = TiendaMejoras(
+    private val tienda: TiendaMejoras = FabricaDominio.crearTiendaMejoras(
         catalogo = catalogo,
-        procesadorCompras = ServicioUpgrades(catalogo)
+        procesadorCompras = FabricaDominio.crearServicioUpgrades(catalogo)
     )
-    private val economia: EconomiaEstacion = EconomiaEstacion(
+    private val economia: EconomiaEstacion = FabricaDominio.crearEconomiaEstacion(
         billetera = billetera,
         casco = casco,
         submarino = submarino,
@@ -63,7 +70,7 @@ class SesionJuego(
 
     private val terreno: TerrenoSubmarino = TerrenoSubmarino.crear(semilla, anchoMapa, altoMapa)
     private val generadorNodos: GeneradorNodosMinerales =
-        GeneradorNodosMinerales(terreno, anchoMapa, altoMapa, semilla)
+        FabricaDominio.crearGeneradorNodosMinerales(terreno, anchoMapa, altoMapa, semilla)
     private val nodos: List<NodoMineral> = generadorNodos.generar()
     private val minerales: List<Recolectable> = nodos.map { it.mineral }
 
@@ -100,7 +107,10 @@ class SesionJuego(
             return ResultadoRecoleccion.SinColision
         }
 
-        val posicion = Posicion(partida.posicionX.roundToInt(), partida.posicionY.roundToInt())
+        val posicion = FabricaDominio.crearPosicion(
+            partida.posicionX.roundToInt(),
+            partida.posicionY.roundToInt()
+        )
         val resultado = servicioRecoleccion.procesarRecoleccion(posicion, minerales)
         partida.actualizarMensaje(resultado.obtenerMensajeJugador())
         return resultado
@@ -183,7 +193,7 @@ class SesionJuego(
     /**
      * Instantánea inmutable para el HUD y la vista del mundo.
      */
-    fun estado(): EstadoJuego = EstadoJuego(
+    fun estado(): EstadoJuego = FabricaDominio.crearEstadoJuego(
         posicionX = partida.posicionX,
         profundidad = partida.posicionY,
         oxigeno = partida.oxigeno,

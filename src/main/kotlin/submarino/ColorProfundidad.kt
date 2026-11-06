@@ -21,7 +21,7 @@ data class ColorRgb(
      */
     fun interpolar(otro: ColorRgb, factor: Double): ColorRgb {
         val f = factor.coerceIn(0.0, 1.0)
-        return ColorRgb(
+        return FabricaDominio.crearColorRgb(
             r = (r + (otro.r - r) * f).roundToInt(),
             g = (g + (otro.g - g) * f).roundToInt(),
             b = (b + (otro.b - b) * f).roundToInt()
@@ -40,29 +40,40 @@ private const val PROFUNDIDAD_LIMITE_FOTICA_M = 1000.0
  * obliga a modificar el calculador (OCP).
  */
 enum class ColorProfundidad(
-    val color: ColorRgb,
+    private val r: Int,
+    private val g: Int,
+    private val b: Int,
     private val profundidadMinima: Double,
     private val profundidadMaxima: Double,
     private val incluyeMaximo: Boolean
 ) {
     SUPERFICIE(
-        ColorRgb(r = 255, g = 200, b = 150),
+        255,
+        200,
+        150,
         PROFUNDIDAD_MINIMA_M,
         PROFUNDIDAD_LIMITE_SUPERFICIE_M,
         true
     ),
     FOTICA(
-        ColorRgb(r = 100, g = 150, b = 255),
+        100,
+        150,
+        255,
         PROFUNDIDAD_LIMITE_SUPERFICIE_M,
         PROFUNDIDAD_LIMITE_FOTICA_M,
         false
     ),
     ABISAL(
-        ColorRgb(r = 0, g = 0, b = 80),
+        0,
+        0,
+        80,
         PROFUNDIDAD_LIMITE_FOTICA_M,
         Double.POSITIVE_INFINITY,
         true
     );
+
+    val color: ColorRgb
+        get() = FabricaDominio.crearColorRgb(r, g, b)
 
     /**
      * Indica si esta zona es la que corresponde a la [profundidad] indicada.

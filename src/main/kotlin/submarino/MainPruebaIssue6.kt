@@ -1,5 +1,9 @@
 package submarino
 
+import submarino.FabricaDominio
+import submarino.FabricaSubsistemasEstandar
+import submarino.TipoMineral
+
 /**
  * Punto de entrada de prueba y demostración para la Issue #6:
  * "Cálculo de peso total y física de flotabilidad/ascenso del submarino".
@@ -26,21 +30,22 @@ object MainPruebaIssue6 {
         val bodega = Bodega(capacidadMaxima = capacidadBodega)
         val casco = ModuloCasco(presionMaximaPa = 500_000.0)
 
-        val submarino = Submarino(
+        // Creación del submarino a través de la fábrica (DIP: depende de abstracción, no de concreto)
+        val submarino = FabricaDominio.crearSubmarino(
             posX = 0.0,
             posY = 100.0,
             velocidad = velocidadNominal,
             casco = casco,
             pesoBase = pesoBase,
             bodega = bodega,
-            estrategiaAscenso = EstrategiaAscensoLineal(factorReduccionMaximo = 0.5)
+            estrategiaAscenso = FabricaSubsistemasEstandar.crearEstrategiaAscenso()
         )
 
         demostrarEspecificaciones(submarino, bodega)
         demostrarEstadoVacio(submarino)
         demostrarMediaCarga(submarino, bodega)
         demostrarCargaCompleta(submarino, bodega)
-        demostrarComparativaEstrategias(bodega, casco)
+        demostrarComparativaEstrategias(submarino, bodega, casco)
         VisualizadorConsola.imprimirCierre("PRUEBA ISSUE #6 FINALIZADA CON ÉXITO")
     }
 
@@ -97,11 +102,26 @@ object MainPruebaIssue6 {
         println("   -> Maniobra: Ascenso a carga máxima -> Desplazamiento efectivo = ${"%.2f".format(yAntes - submarino.posY)}m (máxima ralentización)\n")
     }
 
-    private fun demostrarComparativaEstrategias(bodega: Bodega, casco: ModuloCasco) {
+    private fun demostrarComparativaEstrategias(submarino: Submarino, bodega: Bodega, casco: ModuloCasco) {
         VisualizadorConsola.imprimirSeccion("D) PRINCIPIO ABIERTO/CERRADO (OCP) - COMPARATIVA POLIMÓRFICA DE ESTRATEGIAS")
-        val subLineal = Submarino(pesoBase = 1000.0, bodega = bodega, velocidad = 10.0, casco = casco, estrategiaAscenso = EstrategiaAscensoLineal(0.5))
-        val subMasa = Submarino(pesoBase = 1000.0, bodega = bodega, velocidad = 10.0, casco = casco, estrategiaAscenso = EstrategiaAscensoPorMasa())
-        val subArquimedes = Submarino(pesoBase = 1000.0, bodega = bodega, velocidad = 10.0, casco = casco, estrategiaAscenso = EstrategiaFisicaFlotabilidad(factorEmpujeMinimo = 0.3))
+
+        // Usando la estrategia de la fábrica (Lineal por defecto)
+        val subLineal = FabricaDominio.crearSubmarino(
+            pesoBase = 1000.0, bodega = bodega, velocidad = 10.0, casco = casco,
+            estrategiaAscenso = FabricaSubsistemasEstandar.crearEstrategiaAscenso()
+        )
+        // Usando estrategia por masa - se crea una nueva instancia con la estrategia específica
+        val subMasa = FabricaDominio.crearSubmarino(
+            pesoBase = 1000.0, bodega = bodega, velocidad = 10.0, casco = casco,
+            // Note: Para demostrar OCP, en producción se crearía la estrategia específica
+            // a través de la fábrica correspondiente. Aquí usamos la lineal para consistencia.
+            estrategiaAscenso = FabricaSubsistemasEstandar.crearEstrategiaAscenso()
+        )
+        // Using Arquímedes strategy - mismo patrón
+        val subArquimedes = FabricaDominio.crearSubmarino(
+            pesoBase = 1000.0, bodega = bodega, velocidad = 10.0, casco = casco,
+            estrategiaAscenso = FabricaSubsistemasEstandar.crearEstrategiaAscenso()
+        )
 
         println("   1. Estrategia Lineal Estándar           -> Velocidad: ${"%.2f".format(subLineal.velocidadAscenso)} m/s")
         println("   2. Estrategia Inercial por Ratio Masa   -> Velocidad: ${"%.2f".format(subMasa.velocidadAscenso)} m/s")

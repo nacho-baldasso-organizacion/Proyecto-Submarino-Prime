@@ -35,7 +35,7 @@ class SubmarinoApp : Application() {
 
     private fun mostrarMenu() {
         detenerJuego()
-        val menu = MenuPrincipal(
+        val menu = FabricaVisual.crearMenuPrincipal(
             anchoEscena = ANCHO_ESCENA,
             altoEscena = ALTO_ESCENA,
             alJugar = { iniciarJuego() }
@@ -54,15 +54,15 @@ class SubmarinoApp : Application() {
     private fun iniciarJuego() {
         detenerJuego()
 
-        val sesion = SesionJuego()
-        val vista = VistaJuego(
+        val sesion = FabricaVisual.crearSesionJuego()
+        val vista = FabricaVisual.crearVistaJuego(
             anchoEscena = ANCHO_ESCENA,
             altoEscena = ALTO_ESCENA,
             sesion = sesion,
             alReintentar = { iniciarJuego() },
             alVolverAlMenu = { mostrarMenu() }
         )
-        val controlador = ControladorTeclado()
+        val controlador = FabricaVisual.crearControladorTeclado()
         val escena = Scene(
             vista.obtenerRaiz(),
             ANCHO_ESCENA,
@@ -71,7 +71,7 @@ class SubmarinoApp : Application() {
         )
         controlador.conectar(escena)
 
-        val bucle = BucleJuego(
+        val bucle = FabricaVisual.crearBucleJuego(
             sesion = sesion,
             vista = vista,
             controlador = controlador
