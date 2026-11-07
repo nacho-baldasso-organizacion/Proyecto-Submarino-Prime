@@ -247,11 +247,11 @@ xychart-beta
 <!-- actividad-clases:inicio -->
 ## Actividad en días de clase
 
-> Período **2026-08-14 → 2026-10-29** · **17 clases** (lunes, viernes) · calendario oficial de la materia.
+> Período evaluado **2026-08-14 → 2026-11-07** · **20 clases** (lunes, viernes) · días de clase del calendario, extendidos hasta la fecha de corte.
 >
 > `Commits` = commits de trabajo (no-merge); `Merges` = merges de PR (también son push). Los días sin actividad dicen **sin actividad**. El cuadro principal usa sólo las fechas de clase del calendario oficial.
 >
-> **Aportes fuera del calendario:** cada alumno tiene un cuadro aparte con las fechas no lectivas con actividad, desde **2026-08-14** hasta **2026-11-06** (ventana de aportes). Esas fechas no forman parte del cuadro principal, pero se muestran para no perder trabajo hecho en fines de semana, feriados o después del período.
+> **Aportes fuera del calendario:** cada alumno tiene un cuadro aparte con las fechas no lectivas con actividad, desde **2026-08-14** hasta **2026-11-07** (ventana de aportes). Esas fechas no forman parte del cuadro principal, pero se muestran para no perder trabajo hecho en fines de semana, feriados o después del período.
 >
 > Se recorre `git log --all` sobre un mirror (todas las ramas y `refs/pull/*`), con deduplicación por commit. Fecha = fecha de autor en UTC-3. Los commits locales no pusheados no se ven. Si el trabajo fue en pareja y el commit es de otra persona, figura a nombre del autor del commit; para reflejarlo, usar `Co-authored-by` o una nota manual.
 >
@@ -259,7 +259,7 @@ xychart-beta
 
 ### ibaldasso-elpepe
 
-**10/17 clases con actividad** · 14 commits · 9 merges
+**13/20 clases con actividad** · 25 commits · 18 merges
 
 | Fecha | Marca | Repositorios | Commits / merges |
 |---|:--:|---|--:|
@@ -280,19 +280,19 @@ xychart-beta
 | 2026-10-19 | No | sin actividad | 0 / 0 |
 | 2026-10-23 | **Sí** | Proyecto-Submarino-Prime | 1 / 1 |
 | 2026-10-26 | **Sí** | Proyecto-Submarino-Prime | 1 / 1 |
+| 2026-10-30 | **Sí** | Proyecto-Submarino-Prime | 9 / 6 |
+| 2026-11-02 | **Sí** | Proyecto-Submarino-Prime | 1 / 2 |
+| 2026-11-06 | **Sí** | Proyecto-Submarino-Prime | 1 / 1 |
 
 #### Aportes fuera del calendario de clases — ibaldasso-elpepe
 
-**ibaldasso-elpepe — 6 fechas fuera del calendario** · 15 commits · 13 merges
+**ibaldasso-elpepe — 3 fechas fuera del calendario** · 4 commits · 4 merges
 
 | Alumno | Fecha | Repositorios | Commits / merges |
 |---|---|---|---|
-| ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-10-30 | Proyecto-Submarino-Prime | 9 / 6 |
 | ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-11-01 | Proyecto-Submarino-Prime | 1 / 1 |
-| ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-11-02 | Proyecto-Submarino-Prime | 1 / 2 |
 | ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-11-03 | Proyecto-Submarino-Prime | 1 / 0 |
 | ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-11-04 | Proyecto-Submarino-Prime | 2 / 3 |
-| ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-11-06 | Proyecto-Submarino-Prime | 1 / 1 |
 
 <!-- actividad-clases:fin -->
 
