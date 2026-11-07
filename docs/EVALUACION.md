@@ -281,18 +281,18 @@ xychart-beta
 | 2026-10-23 | **Sí** | Proyecto-Submarino-Prime | 1 / 1 |
 | 2026-10-26 | **Sí** | Proyecto-Submarino-Prime | 1 / 1 |
 
-#### Aportes fuera del calendario de clases
+#### Aportes fuera del calendario de clases — ibaldasso-elpepe
 
-**6 fechas fuera del calendario** · 15 commits · 13 merges
+**ibaldasso-elpepe — 6 fechas fuera del calendario** · 15 commits · 13 merges
 
-| Fecha | Repositorios | Commits / merges |
-|---|---|--:|
-| 2026-10-30 | Proyecto-Submarino-Prime | 9 / 6 |
-| 2026-11-01 | Proyecto-Submarino-Prime | 1 / 1 |
-| 2026-11-02 | Proyecto-Submarino-Prime | 1 / 2 |
-| 2026-11-03 | Proyecto-Submarino-Prime | 1 / 0 |
-| 2026-11-04 | Proyecto-Submarino-Prime | 2 / 3 |
-| 2026-11-06 | Proyecto-Submarino-Prime | 1 / 1 |
+| Alumno | Fecha | Repositorios | Commits / merges |
+|---|---|---|---|
+| ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-10-30 | Proyecto-Submarino-Prime | 9 / 6 |
+| ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-11-01 | Proyecto-Submarino-Prime | 1 / 1 |
+| ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-11-02 | Proyecto-Submarino-Prime | 1 / 2 |
+| ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-11-03 | Proyecto-Submarino-Prime | 1 / 0 |
+| ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-11-04 | Proyecto-Submarino-Prime | 2 / 3 |
+| ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-11-06 | Proyecto-Submarino-Prime | 1 / 1 |
 
 <!-- actividad-clases:fin -->
 
