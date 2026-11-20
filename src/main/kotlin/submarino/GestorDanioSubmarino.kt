@@ -10,7 +10,17 @@ class GestorDanioSubmarino(
     private val casco: Casco
 ) {
 
-    fun presionActual(posicionY: Double): Double = PRESION_POR_METRO * posicionY
+    /**
+     * Calcula la presión actual basándose en la profundidad.
+     * El gradiente de presión aumenta linealmente con la profundidad,
+     * haciendo que el casco explote antes (a menor profundidad) que con
+     * una relación lineal pura.
+     */
+    fun presionActual(posicionY: Double): Double {
+        // Presión cuadrática: aumenta más rápido que lineal a medida que profundizas
+        val gradienteBase = 1025.0 * 9.81
+        return gradienteBase * posicionY * (1.0 + 0.01 * posicionY)
+    }
 
     fun aplicarDanioProfundidad(posicionY: Double, deltaSegundos: Double) {
         val presionMaxima = casco.presionMaximaPa
@@ -31,7 +41,6 @@ class GestorDanioSubmarino(
     }
 
     companion object {
-        private const val PRESION_POR_METRO = 1025.0 * 9.81
         private const val DANIO_POR_EXCESO = 6.0
         private const val DANIO_POR_ASFIXIA = 0.5
     }
