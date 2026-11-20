@@ -41,13 +41,19 @@ interface LimiteNivel {
 }
 
 /**
- * Inversión de Dependencias (DIP):
- * Abstracción del receptor de estadísticas sobre el cual se aplican los efectos de una mejora.
- * Permite que [Mejora], los efectos y los servicios de compras operen sobre el dominio
- * sin conocer la clase concreta del submarino.
+ * CONTRATOS E INTERFACES DEL SISTEMA DE UPGRADES / MEJORAS (ISSUE #8)
+ * PRINCIPIOS SOLID (ISP, DIP, OCP)
+ */
+
+/**
+ * Segregación de Interfaces (ISP):
+ * Contrato elemental para entidades submarinas capaces de recibir mejoras.
+ * Proporciona los métodos de actualización de estadísticas sin acoplarse
+ * a la responsabilidad de la billetera.
  */
 interface SubmarinoMejorable {
     val billetera: Billetera
+
     fun aumentarCapacidadBodega(incremento: Double)
     fun aumentarVelocidadAscenso(incremento: Double)
     fun aumentarResistenciaCasco(incrementoPa: Double)
@@ -55,8 +61,11 @@ interface SubmarinoMejorable {
 }
 
 /**
- * Segregación de Interfaces (ISP) e Inversión de Dependencias (DIP):
- * Contrato mínimo de aplicación de una mejora sobre un receptor abstracto [SubmarinoMejorable].
+ * Inversión de Dependencias (DIP):
+ * Abstracción del receptor de estadísticas sobre el cual se aplican los efectos de una mejora.
+ * Permite que [Mejora], los efectos y los servicios de compras operen sobre el dominio
+ * sin conocer la clase concreta del submarino.
+ * Segregación de Interfaces (ISP): la interfaz está segregada en responsabilidades concretas.
  */
 interface AplicableSubmarino {
     fun aplicar(submarino: SubmarinoMejorable)
