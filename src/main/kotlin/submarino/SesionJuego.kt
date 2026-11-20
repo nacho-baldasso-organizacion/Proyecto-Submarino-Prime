@@ -113,7 +113,6 @@ class SesionJuego(
             partida.posicionY.roundToInt()
         )
         val resultado = servicioRecoleccion.procesarRecoleccion(posicion, minerales)
-        partida.actualizarMensaje(resultado.obtenerMensajeJugador())
         return resultado
     }
 
