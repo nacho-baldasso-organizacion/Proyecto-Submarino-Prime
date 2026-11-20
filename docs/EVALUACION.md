@@ -3,7 +3,7 @@
 
 > Documento **generado automáticamente** por la cátedra de Programación II (RepoSense + análisis de calidad POO/SOLID). **No editar a mano**: se regenera en cada evaluación.
 > Rama evaluada: `main`. Análisis **heurístico** (regex + métricas): es una criba para orientar la revisión, **no una nota**.
-> Generado: 2026-11-17.
+> Generado: 2026-11-20.
 
 ## 1. Veredicto
 
@@ -194,6 +194,88 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 - **Por qué importa:** Es comportamiento procedural disfrazado de clase: no se instancia ni participa del modelo de objetos.
 - **Tu resultado:** **0** clase(s) solo con métodos estáticos
 
+### Archivos donde se originan las señales
+
+> Se listan **75** hallazgo(s) localizados en **61** archivo(s). La columna `Línea` es la línea del archivo donde el análisis detectó la señal; `—` indica una señal de nivel repositorio (sin archivo propio).
+
+| Aspecto | Archivo | Línea | Hallazgo |
+|---|---|---:|---|
+| Duplicación lógica (DRY) | — | — | duplicación lógica: 3.0% · boilerplate: 2.7% |
+| Duplicación lógica (DRY) | `build.gradle.kts` | 25 | bloque de 8 líneas repetido 4 veces en build.gradle.kts:25, build.gradle.kts:43, build.gradle.kts:50 |
+| Duplicación lógica (DRY) | `build.gradle.kts` | 40 | bloque de 8 líneas repetido 3 veces en build.gradle.kts:40, build.gradle.kts:47, build.gradle.kts:54 |
+| Duplicación lógica (DRY) | `build.gradle.kts` | 41 | bloque de 8 líneas repetido 3 veces en build.gradle.kts:41, build.gradle.kts:48, build.gradle.kts:55 |
+| Duplicación lógica (DRY) | `build.gradle.kts` | 42 | bloque de 8 líneas repetido 3 veces en build.gradle.kts:42, build.gradle.kts:49, build.gradle.kts:56 |
+| Duplicación lógica (DRY) | `src/main/kotlin/submarino/GameOverEstilos.kt` | 41 | bloque de 8 líneas repetido 14 veces en src/main/kotlin/submarino/GameOverEstilos.kt:41, src/main/kotlin/submarino/GameOverEstilos.kt:52, src/main/kotlin/submarino/GameOverEstilos.kt:63 |
+| Baja cohesión (LCOM) | `src/main/kotlin/org/example/issue1/GestorMejorasSubmarino.kt` | 10 | clase 'GestorMejorasSubmarino' con baja cohesión (0%) |
+| Baja cohesión (LCOM) | `src/main/kotlin/org/example/issue1/NavegadorSubmarino.kt` | 9 | clase 'NavegadorSubmarino' con baja cohesión (10%) |
+| Baja cohesión (LCOM) | `src/main/kotlin/org/example/issue1/Submarino.kt` | 24 | clase 'Submarino' con baja cohesión (12%) |
+| Baja cohesión (LCOM) | `src/main/kotlin/submarino/Bodega.kt` | 13 | clase 'Bodega' con baja cohesión (36%) |
+| Baja cohesión (LCOM) | `src/main/kotlin/submarino/ControladorTeclado.kt` | 13 | clase 'ControladorMovimientoTeclado' con baja cohesión (20%) |
+| Baja cohesión (LCOM) | `src/main/kotlin/submarino/ControladorTeclado.kt` | 107 | clase 'ControladorAccionesTeclado' con baja cohesión (30%) |
+| Baja cohesión (LCOM) | `src/main/kotlin/submarino/EstadoJuego.kt` | 9 | clase 'EstadoJuego' con baja cohesión (10%) |
+| Baja cohesión (LCOM) | `src/main/kotlin/submarino/FisicaAscenso.kt` | 15 | clase 'EstadoAscenso' con baja cohesión (49%) |
+| Baja cohesión (LCOM) | `src/main/kotlin/submarino/HUDView.kt` | 38 | clase 'EstadoHUD' con baja cohesión (40%) |
+| Baja cohesión (LCOM) | `src/main/kotlin/submarino/Mineral.kt` | 71 | clase 'Mineral' con baja cohesión (22%) |
+| Baja cohesión (LCOM) | `src/main/kotlin/submarino/ModeloNavegacion.kt` | 33 | clase 'EstadoNavegacion' con baja cohesión (10%) |
+| Baja cohesión (LCOM) | `src/main/kotlin/submarino/PanelReglasMenuPrincipal.kt` | 14 | clase 'PanelReglasMenuPrincipal' con baja cohesión (17%) |
+| Baja cohesión (LCOM) | `src/main/kotlin/submarino/ParticulasMarinas.kt` | 14 | clase 'ParticulasMarinas' con baja cohesión (33%) |
+| Baja cohesión (LCOM) | `src/main/kotlin/submarino/PecesMarinos.kt` | 14 | clase 'PecesMarinos' con baja cohesión (33%) |
+| Baja cohesión (LCOM) | `src/main/kotlin/submarino/TarjetaHUD.kt` | 13 | clase 'TarjetaHUD' con baja cohesión (30%) |
+| Baja cohesión (LCOM) | `src/main/kotlin/submarino/VistaJuego.kt` | 19 | clase 'VistaJuego' con baja cohesión (30%) |
+| Baja cohesión (LCOM) | `src/main/kotlin/submarino/comercio/EstacionAcople.kt` | 101 | clase 'EstacionAcople' con baja cohesión (36%) |
+| Baja cohesión (LCOM) | `src/main/kotlin/submarino/upgrades/Mejora.kt` | 49 | clase 'Mejora' con baja cohesión (17%) |
+| Complejidad alta | `src/test/kotlin/submarino/Issue7ObservadoresTest.kt` | 46 | método 'Issue7ObservadoresTest.`test observador de comercio es notificado con recibo transaccional completo`' con complejidad 10 |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/AvatarSubmarino.kt` | 21 | método 'AvatarSubmarino.crear' de 91 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/CapaFondoParallax.kt` | 22 | método 'CapaFondoParallax.crear' de 44 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/ConstructorAccionesTienda.kt` | 18 | método 'ConstructorAccionesTienda.crearFilaAcciones' de 37 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/ConstructorExplosionSubmarino.kt` | 17 | método 'ConstructorExplosionSubmarino.crear' de 35 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/ConstructorFilasMejoraTienda.kt` | 30 | método 'ConstructorFilasMejoraTienda.crearFilaMejora' de 35 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/CristalNodoMineralVectorial.kt` | 14 | método 'CristalNodoMineralVectorial.crear' de 52 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/CuerpoSubmarinoVectorial.kt` | 19 | método 'CuerpoSubmarinoVectorial.crear' de 118 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/DemostradorNavegacionRecoleccion.kt` | 8 | método 'DemostradorNavegacionRecoleccion.demostrar' con 5 parámetros |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/DetallesRoca.kt` | 50 | método 'DetallesRoca.dibujarRocasInteriores' de 30 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/DetallesRoca.kt` | 102 | método 'DetallesRoca.dibujarSedimento' de 36 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/EstadoPartida.kt` | 49 | método 'EstadoPartida.actualizar' con 5 parámetros |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/EstadoPartida.kt` | 49 | método 'EstadoPartida.actualizar' de 38 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/FabricaPecesMarinos.kt` | 16 | método 'FabricaPecesMarinos.crear' de 30 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/FondoAbisal.kt` | 35 | método 'FondoAbisal.dibujarCapaLejana' de 31 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/GeneradorTerrenoSubmarino.kt` | 29 | método 'GeneradorTerrenoSubmarino.formacionesAncla' de 32 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/GeneradorTerrenoSubmarino.kt` | 82 | método 'GeneradorTerrenoSubmarino.crearCrestas' con 6 parámetros |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/GeneradorTerrenoSubmarino.kt` | 82 | método 'GeneradorTerrenoSubmarino.crearCrestas' de 32 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/HeliceSubmarinoVectorial.kt` | 12 | método 'HeliceSubmarinoVectorial.crear' de 31 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/PanelReglasMenuPrincipal.kt` | 28 | método 'PanelReglasMenuPrincipal.crearOverlayReglas' de 33 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/PincelArrecifes.kt` | 24 | método 'PincelArrecifes.dibujarEstructurasRocosas' de 55 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/PincelCordillera.kt` | 26 | método 'PincelCordillera.dibujar' con 5 parámetros |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/PincelCordillera.kt` | 26 | método 'PincelCordillera.dibujar' de 79 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/PincelFormacionRocosa.kt` | 22 | método 'PincelFormacionRocosa.dibujar' de 58 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/PintorPecesMarinos.kt` | 21 | método 'PintorPecesMarinos.dibujarPez' de 43 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/PlataformaEstacionVectorial.kt` | 14 | método 'PlataformaEstacionVectorial.crear' de 40 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/RocaNodoMineralVectorial.kt` | 15 | método 'RocaNodoMineralVectorial.crear' de 66 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/SubmarinoApp.kt` | 54 | método 'SubmarinoApp.iniciarJuego' de 31 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/TorreEstacionVectorial.kt` | 17 | método 'TorreEstacionVectorial.crear' de 64 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/main/kotlin/submarino/upgrades/ServicioUpgrades.kt` | 30 | método 'ServicioUpgrades.comprarMejora' de 42 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/test/kotlin/submarino/Issue5Test.kt` | 124 | método 'Issue5Test.verificarMineral' con 5 parámetros |
+| Métodos/funciones largos o con muchos parámetros | `src/test/kotlin/submarino/Issue6EstrategiasAscensoTest.kt` | 43 | método 'Issue6EstrategiasAscensoTest.testPolimorfismoOCPConEstrategiaFisicaFlotabilidadArquimedes' de 41 líneas |
+| Métodos/funciones largos o con muchos parámetros | `src/test/kotlin/submarino/Issue7ComercioTest.kt` | 111 | método 'Issue7ComercioTest.verificarVentaExitosa' con 5 parámetros |
+| Métodos/funciones largos o con muchos parámetros | `src/test/kotlin/submarino/Issue8ComprasTest.kt` | 152 | método 'Issue8ComprasTest.verificarCompraExitosa' con 5 parámetros |
+| Métodos/funciones largos o con muchos parámetros | `src/test/kotlin/submarino/Issue8ObservadoresTest.kt` | 15 | método 'Issue8ObservadoresTest.`test observador de tienda es notificado en compras exitosas y rechazos`' de 30 líneas |
+| Acoplamiento alto (CBO) | `src/main/kotlin/org/example/issue1/FabricaSubsistemasSubmarino.kt` | 69 | clase 'FabricaSubsistemasEstandar' muy acoplada (CBO=18) |
+| Acoplamiento alto (CBO) | `src/main/kotlin/org/example/issue1/Submarino.kt` | 24 | clase 'Submarino' muy acoplada (CBO=25) |
+| Acoplamiento alto (CBO) | `src/main/kotlin/submarino/FabricaDominio.kt` | 10 | clase 'FabricaDominio' muy acoplada (CBO=67) |
+| Acoplamiento alto (CBO) | `src/main/kotlin/submarino/FabricaHUD.kt` | 14 | clase 'FabricaHUD' muy acoplada (CBO=33) |
+| Acoplamiento alto (CBO) | `src/main/kotlin/submarino/FabricaServicios.kt` | 7 | clase 'FabricaServicios' muy acoplada (CBO=37) |
+| Acoplamiento alto (CBO) | `src/main/kotlin/submarino/FabricaVisual.kt` | 15 | clase 'FabricaVisual' muy acoplada (CBO=52) |
+| Acoplamiento alto (CBO) | `src/main/kotlin/submarino/HUDJuego.kt` | 15 | clase 'HUDJuego' muy acoplada (CBO=11) |
+| Acoplamiento alto (CBO) | `src/main/kotlin/submarino/SesionJuego.kt` | 11 | clase 'SesionJuego' muy acoplada (CBO=23) |
+| Acoplamiento alto (CBO) | `src/main/kotlin/submarino/VistaJuego.kt` | 19 | clase 'VistaJuego' muy acoplada (CBO=21) |
+| Acoplamiento alto (CBO) | `src/main/kotlin/submarino/VistaSubmarino.kt` | 23 | clase 'VistaSubmarino' muy acoplada (CBO=8) |
+| Acoplamiento alto (CBO) | `src/main/kotlin/submarino/comercio/ServicioComercio.kt` | 117 | clase 'ServicioComercio' muy acoplada (CBO=9) |
+| Acoplamiento alto (CBO) | `src/main/kotlin/submarino/upgrades/FabricaMejoras.kt` | 59 | clase 'FabricaMejorasEstandar' muy acoplada (CBO=8) |
+| Acoplamiento alto (CBO) | `src/main/kotlin/submarino/upgrades/ServicioUpgrades.kt` | 14 | clase 'ServicioUpgrades' muy acoplada (CBO=8) |
+| Acoplamiento alto (CBO) | `src/test/kotlin/submarino/FabricaDatosPrueba.kt` | 8 | clase 'FabricaDatosPrueba' muy acoplada (CBO=12) |
+| Interfaz con demasiados métodos (ISP) | `src/main/kotlin/submarino/ResultadoRecoleccion.kt` | 8 | interfaz 'ResultadoRecoleccion' con 24 métodos |
+| Interfaz con demasiados métodos (ISP) | `src/main/kotlin/submarino/upgrades/ResultadoCompra.kt` | 8 | interfaz 'ResultadoCompra' con 28 métodos |
+
 ### Desglose de la columna S (SRP)
 
 > La columna **S** no es un puntaje: cuenta **señales** de SRP. Aquí suma **19** entrada(s) sobre **19** clase(s) distinta(s).
@@ -234,14 +316,14 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 ## 5. Evolución por commit
 
-Métricas calculadas sobre el estado de `main` en **cada commit** (33 commits con trabajo), del primero al último. La calidad usa el perfil `exigente`; el aporte de código lo mide RepoSense. El índice puede **bajar** al crecer el proyecto: se acumulan señales.
+Métricas calculadas sobre el estado de `main` en **cada commit** (34 commits con trabajo), del primero al último. La calidad usa el perfil `exigente`; el aporte de código lo mide RepoSense. El índice puede **bajar** al crecer el proyecto: se acumulan señales.
 
 ```mermaid
 xychart-beta
     title "Índice POO/SOLID a lo largo de los commits"
-    x-axis ["dbfd5be", "f3d175b", "493b71f", "ae28d33", "0e5cb85", "1120c1a", "086d3a6", "c792a2f", "8f4e517", "a3e5d7a", "24401a4", "b941d71", "6739160", "6a83318", "6aacd31", "1ed61bb", "ec547ac", "ebe5217", "7468e30", "bf43829", "23cb875", "7d876c5", "c7f1398", "46021c2", "6f8da22", "35025bb", "c86747c", "6dc2110", "77a0f17", "03fbc47", "ba904e3", "7628d73", "930e93d"]
+    x-axis ["dbfd5be", "f3d175b", "493b71f", "ae28d33", "0e5cb85", "1120c1a", "086d3a6", "c792a2f", "8f4e517", "a3e5d7a", "24401a4", "b941d71", "6739160", "6a83318", "6aacd31", "1ed61bb", "ec547ac", "ebe5217", "7468e30", "bf43829", "23cb875", "7d876c5", "c7f1398", "46021c2", "6f8da22", "35025bb", "c86747c", "6dc2110", "77a0f17", "03fbc47", "ba904e3", "7628d73", "930e93d", "9b7fee6"]
     y-axis "Índice" 0 --> 100
-    line [0, 0, 58, 60, 60, 76, 70, 73, 71, 78, 87, 88, 88, 89, 90, 90, 92, 92, 92, 92, 83, 83, 86, 86, 86, 85, 85, 85, 85, 85, 85, 85, 85]
+    line [0, 0, 58, 60, 60, 76, 70, 73, 71, 78, 87, 88, 88, 89, 90, 90, 92, 92, 92, 92, 83, 83, 86, 86, 86, 85, 85, 85, 85, 85, 85, 85, 85, 85]
 ```
 
 | # | Fecha | Commit | Autor | LOC | Índice | %POO | Duplic. | Sueltas |
@@ -279,60 +361,7 @@ xychart-beta
 | 31 | 2026-11-13 | `ba904e3` | dqmdz-etec | 14,113 | 85 | 99% | 3.0% | 0 |
 | 32 | 2026-11-14 | `7628d73` | dqmdz-etec | 14,113 | 85 | 99% | 3.0% | 0 |
 | 33 | 2026-11-16 | `930e93d` | dqmdz-etec | 14,113 | 85 | 99% | 3.0% | 0 |
-
-<!-- actividad-clases:inicio -->
-## Actividad en días de clase
-
-> Período evaluado **2026-08-14 → 2026-11-17** · **22 clases** (lunes, viernes) · días de clase del calendario, extendidos hasta la fecha de corte.
->
-> `Commits` = commits de trabajo (no-merge); `Merges` = merges de PR (también son push). Los días sin actividad dicen **sin actividad**. El cuadro principal usa sólo las fechas de clase del calendario oficial.
->
-> **Aportes fuera del calendario:** cada alumno tiene un cuadro aparte con las fechas no lectivas con actividad, desde **2026-08-14** hasta **2026-11-17** (ventana de aportes). Esas fechas no forman parte del cuadro principal, pero se muestran para no perder trabajo hecho en fines de semana, feriados o después del período.
->
-> Se recorre `git log --all` sobre un mirror (todas las ramas y `refs/pull/*`), con deduplicación por commit. Fecha = fecha de autor en UTC-3. Los commits locales no pusheados no se ven. Si el trabajo fue en pareja y el commit es de otra persona, figura a nombre del autor del commit; para reflejarlo, usar `Co-authored-by` o una nota manual.
->
-> Sección informativa: no modifica el semáforo de aprobación.
-
-### ibaldasso-elpepe
-
-**13/22 clases con actividad** · 25 commits · 18 merges
-
-| Fecha | Marca | Repositorios | Commits / merges |
-|---|:--:|---|--:|
-| 2026-08-14 | **Sí** | Proyecto-Submarino-Prime | 1 / 0 |
-| 2026-08-21 | No | sin actividad | 0 / 0 |
-| 2026-08-24 | **Sí** | Proyecto-Submarino-Prime | 1 / 0 |
-| 2026-08-28 | **Sí** | Proyecto-Submarino-Prime | 0 / 1 |
-| 2026-08-31 | No | sin actividad | 0 / 0 |
-| 2026-09-04 | No | sin actividad | 0 / 0 |
-| 2026-09-07 | **Sí** | Proyecto-Submarino-Prime | 1 / 0 |
-| 2026-09-14 | No | sin actividad | 0 / 0 |
-| 2026-09-25 | No | sin actividad | 0 / 0 |
-| 2026-09-28 | No | sin actividad | 0 / 0 |
-| 2026-10-02 | **Sí** | Proyecto-Submarino-Prime | 1 / 1 |
-| 2026-10-05 | **Sí** | Proyecto-Submarino-Prime | 0 / 1 |
-| 2026-10-09 | **Sí** | Proyecto-Submarino-Prime | 5 / 2 |
-| 2026-10-16 | **Sí** | Proyecto-Submarino-Prime | 3 / 2 |
-| 2026-10-19 | No | sin actividad | 0 / 0 |
-| 2026-10-23 | **Sí** | Proyecto-Submarino-Prime | 1 / 1 |
-| 2026-10-26 | **Sí** | Proyecto-Submarino-Prime | 1 / 1 |
-| 2026-10-30 | **Sí** | Proyecto-Submarino-Prime | 9 / 6 |
-| 2026-11-02 | **Sí** | Proyecto-Submarino-Prime | 1 / 2 |
-| 2026-11-06 | **Sí** | Proyecto-Submarino-Prime | 1 / 1 |
-| 2026-11-13 | No | sin actividad | 0 / 0 |
-| 2026-11-16 | No | sin actividad | 0 / 0 |
-
-#### Aportes fuera del calendario de clases — ibaldasso-elpepe
-
-**ibaldasso-elpepe — 3 fechas fuera del calendario** · 4 commits · 4 merges
-
-| Alumno | Fecha | Repositorios | Commits / merges |
-|---|---|---|---|
-| ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-11-01 | Proyecto-Submarino-Prime | 1 / 1 |
-| ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-11-03 | Proyecto-Submarino-Prime | 1 / 0 |
-| ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-11-04 | Proyecto-Submarino-Prime | 2 / 3 |
-
-<!-- actividad-clases:fin -->
+| 34 | 2026-11-17 | `9b7fee6` | dqmdz-etec | 14,113 | 85 | 99% | 3.0% | 0 |
 
 ---
 _Informe generado por la cátedra. Los criterios y umbrales de medición corresponden al perfil `exigente` de `calidad.py`; el semáforo de aprobación, a `CRITERIOS-CALIDAD.md` (ver `README.md`). Ante dudas, revisá el archivo señalado._
