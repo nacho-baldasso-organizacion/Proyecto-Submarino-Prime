@@ -38,7 +38,8 @@ object MainPruebaIssue6 {
             casco = casco,
             pesoBase = pesoBase,
             bodega = bodega,
-            estrategiaAscenso = FabricaSubsistemasEstandar.crearEstrategiaAscenso()
+            estrategiaAscenso = FabricaSubsistemasEstandar.crearEstrategiaAscenso(),
+            factoria = FabricaSubsistemasEstandar
         )
 
         demostrarEspecificaciones(submarino, bodega)
@@ -108,19 +109,22 @@ object MainPruebaIssue6 {
         // Usando la estrategia de la fábrica (Lineal por defecto)
         val subLineal = FabricaDominio.crearSubmarino(
             pesoBase = 1000.0, bodega = bodega, velocidad = 10.0, casco = casco,
-            estrategiaAscenso = FabricaSubsistemasEstandar.crearEstrategiaAscenso()
+            estrategiaAscenso = FabricaSubsistemasEstandar.crearEstrategiaAscenso(),
+            factoria = FabricaSubsistemasEstandar
         )
         // Usando estrategia por masa - se crea una nueva instancia con la estrategia específica
         val subMasa = FabricaDominio.crearSubmarino(
             pesoBase = 1000.0, bodega = bodega, velocidad = 10.0, casco = casco,
             // Note: Para demostrar OCP, en producción se crearía la estrategia específica
             // a través de la fábrica correspondiente. Aquí usamos la lineal para consistencia.
-            estrategiaAscenso = FabricaSubsistemasEstandar.crearEstrategiaAscenso()
+            estrategiaAscenso = FabricaSubsistemasEstandar.crearEstrategiaAscenso(),
+            factoria = FabricaSubsistemasEstandar
         )
         // Using Arquímedes strategy - mismo patrón
         val subArquimedes = FabricaDominio.crearSubmarino(
             pesoBase = 1000.0, bodega = bodega, velocidad = 10.0, casco = casco,
-            estrategiaAscenso = FabricaSubsistemasEstandar.crearEstrategiaAscenso()
+            estrategiaAscenso = FabricaSubsistemasEstandar.crearEstrategiaAscenso(),
+            factoria = FabricaSubsistemasEstandar
         )
 
         println("   1. Estrategia Lineal Estándar           -> Velocidad: ${"%.2f".format(subLineal.velocidadAscenso)} m/s")
