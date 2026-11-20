@@ -10,7 +10,7 @@
 | Aspecto | Resultado |
 |---|---|
 | Índice de calidad POO/SOLID | **85/100** |
-| Código (LOC) | 14,113 |
+| Código (LOC) | 14,144 |
 | Archivos de código | 192 |
 | Clases (bien usadas) | 332 (218 OK) |
 | Código dentro de clases (%POO) | 99% |
@@ -60,7 +60,7 @@ Sube cuando el código que hoy está **fuera** de clases pasa a ser método de u
 
 | Autor | Commits | Código (LOC) | Tests (LOC) | Docs (LOC) | Días activos | % del código |
 |---|---:|---:|---:|---:|---:|---:|
-| ibaldasso-elpepe | 27 | 13,492 | 2,974 | 1 | 16 | 100% |
+| ibaldasso-elpepe | 30 | 13,525 | 2,974 | 1 | 17 | 100% |
 
 > _El LOC de autoría lo calcula RepoSense sobre el historial y puede diferir del LOC de código del análisis de calidad (que mira solo el estado de `main`)._
 
@@ -93,7 +93,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Proporción de las **líneas de lógica** que viven dentro de una clase. Quedan fuera `package`/`import`/`using`/anotaciones y comentarios/Javadoc/docstrings: no son código que pueda estar dentro de una clase y, si contaran, el porcentaje quedaría topado por el boilerplate de cada archivo.
 - **Por qué importa:** El diseño orientado a objetos es el eje de la materia: el comportamiento debería vivir como método de una clase.
-- **Tu resultado:** **98.9%** del código dentro de clases
+- **Tu resultado:** **99.0%** del código dentro de clases
 - **Cómo leerlo:** Es una **proporción**, no un acumulado: agregar código dentro de una clase no la sube por sí solo (numerador y denominador crecen juntos). Sube cuando el código que está **fuera** de clases (funciones sueltas, `main`, constantes de módulo, scripts) pasa a ser método de una clase o deja de existir. La medición se hace sobre `main`: el trabajo que todavía vive en otra rama no se refleja hasta que se integra.
 
 ### 4. Funciones fuera de clases (sueltas) — sin señales
@@ -316,14 +316,14 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 ## 5. Evolución por commit
 
-Métricas calculadas sobre el estado de `main` en **cada commit** (34 commits con trabajo), del primero al último. La calidad usa el perfil `exigente`; el aporte de código lo mide RepoSense. El índice puede **bajar** al crecer el proyecto: se acumulan señales.
+Métricas calculadas sobre el estado de `main` en **cada commit** (38 commits con trabajo), del primero al último. La calidad usa el perfil `exigente`; el aporte de código lo mide RepoSense. El índice puede **bajar** al crecer el proyecto: se acumulan señales.
 
 ```mermaid
 xychart-beta
     title "Índice POO/SOLID a lo largo de los commits"
-    x-axis ["dbfd5be", "f3d175b", "493b71f", "ae28d33", "0e5cb85", "1120c1a", "086d3a6", "c792a2f", "8f4e517", "a3e5d7a", "24401a4", "b941d71", "6739160", "6a83318", "6aacd31", "1ed61bb", "ec547ac", "ebe5217", "7468e30", "bf43829", "23cb875", "7d876c5", "c7f1398", "46021c2", "6f8da22", "35025bb", "c86747c", "6dc2110", "77a0f17", "03fbc47", "ba904e3", "7628d73", "930e93d", "9b7fee6"]
+    x-axis ["dbfd5be", "f3d175b", "493b71f", "ae28d33", "0e5cb85", "1120c1a", "086d3a6", "c792a2f", "8f4e517", "a3e5d7a", "24401a4", "b941d71", "6739160", "6a83318", "6aacd31", "1ed61bb", "ec547ac", "ebe5217", "7468e30", "bf43829", "23cb875", "7d876c5", "c7f1398", "46021c2", "6f8da22", "35025bb", "c86747c", "6dc2110", "77a0f17", "03fbc47", "ba904e3", "7628d73", "930e93d", "9b7fee6", "4efc72c", "e197922", "59781fc", "d0e1119"]
     y-axis "Índice" 0 --> 100
-    line [0, 0, 58, 60, 60, 76, 70, 73, 71, 78, 87, 88, 88, 89, 90, 90, 92, 92, 92, 92, 83, 83, 86, 86, 86, 85, 85, 85, 85, 85, 85, 85, 85, 85]
+    line [0, 0, 58, 60, 60, 76, 70, 73, 71, 78, 87, 88, 88, 89, 90, 90, 92, 92, 92, 92, 83, 83, 86, 86, 86, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85]
 ```
 
 | # | Fecha | Commit | Autor | LOC | Índice | %POO | Duplic. | Sueltas |
@@ -362,61 +362,10 @@ xychart-beta
 | 32 | 2026-11-14 | `7628d73` | dqmdz-etec | 14,113 | 85 | 99% | 3.0% | 0 |
 | 33 | 2026-11-16 | `930e93d` | dqmdz-etec | 14,113 | 85 | 99% | 3.0% | 0 |
 | 34 | 2026-11-17 | `9b7fee6` | dqmdz-etec | 14,113 | 85 | 99% | 3.0% | 0 |
-
-<!-- actividad-clases:inicio -->
-## Actividad en días de clase
-
-> Período evaluado **2026-08-14 → 2026-11-20** · **23 clases** (lunes, viernes) · días de clase del calendario, extendidos hasta la fecha de corte.
->
-> `Commits` = commits de trabajo (no-merge); `Merges` = merges de PR (también son push). Los días sin actividad dicen **sin actividad**. El cuadro principal usa sólo las fechas de clase del calendario oficial.
->
-> **Aportes fuera del calendario:** cada alumno tiene un cuadro aparte con las fechas no lectivas con actividad, desde **2026-08-14** hasta **2026-11-20** (ventana de aportes). Esas fechas no forman parte del cuadro principal, pero se muestran para no perder trabajo hecho en fines de semana, feriados o después del período.
->
-> Se recorre `git log --all` sobre un mirror (todas las ramas y `refs/pull/*`), con deduplicación por commit. Fecha = fecha de autor en UTC-3. Los commits locales no pusheados no se ven. Si el trabajo fue en pareja y el commit es de otra persona, figura a nombre del autor del commit; para reflejarlo, usar `Co-authored-by` o una nota manual.
->
-> Sección informativa: no modifica el semáforo de aprobación.
-
-### ibaldasso-elpepe
-
-**13/23 clases con actividad** · 25 commits · 18 merges
-
-| Fecha | Marca | Repositorios | Commits / merges |
-|---|:--:|---|--:|
-| 2026-08-14 | **Sí** | Proyecto-Submarino-Prime | 1 / 0 |
-| 2026-08-21 | No | sin actividad | 0 / 0 |
-| 2026-08-24 | **Sí** | Proyecto-Submarino-Prime | 1 / 0 |
-| 2026-08-28 | **Sí** | Proyecto-Submarino-Prime | 0 / 1 |
-| 2026-08-31 | No | sin actividad | 0 / 0 |
-| 2026-09-04 | No | sin actividad | 0 / 0 |
-| 2026-09-07 | **Sí** | Proyecto-Submarino-Prime | 1 / 0 |
-| 2026-09-14 | No | sin actividad | 0 / 0 |
-| 2026-09-25 | No | sin actividad | 0 / 0 |
-| 2026-09-28 | No | sin actividad | 0 / 0 |
-| 2026-10-02 | **Sí** | Proyecto-Submarino-Prime | 1 / 1 |
-| 2026-10-05 | **Sí** | Proyecto-Submarino-Prime | 0 / 1 |
-| 2026-10-09 | **Sí** | Proyecto-Submarino-Prime | 5 / 2 |
-| 2026-10-16 | **Sí** | Proyecto-Submarino-Prime | 3 / 2 |
-| 2026-10-19 | No | sin actividad | 0 / 0 |
-| 2026-10-23 | **Sí** | Proyecto-Submarino-Prime | 1 / 1 |
-| 2026-10-26 | **Sí** | Proyecto-Submarino-Prime | 1 / 1 |
-| 2026-10-30 | **Sí** | Proyecto-Submarino-Prime | 9 / 6 |
-| 2026-11-02 | **Sí** | Proyecto-Submarino-Prime | 1 / 2 |
-| 2026-11-06 | **Sí** | Proyecto-Submarino-Prime | 1 / 1 |
-| 2026-11-13 | No | sin actividad | 0 / 0 |
-| 2026-11-16 | No | sin actividad | 0 / 0 |
-| 2026-11-20 | No | sin actividad | 0 / 0 |
-
-#### Aportes fuera del calendario de clases — ibaldasso-elpepe
-
-**ibaldasso-elpepe — 3 fechas fuera del calendario** · 4 commits · 4 merges
-
-| Alumno | Fecha | Repositorios | Commits / merges |
-|---|---|---|---|
-| ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-11-01 | Proyecto-Submarino-Prime | 1 / 1 |
-| ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-11-03 | Proyecto-Submarino-Prime | 1 / 0 |
-| ibaldasso-elpepe (`ibaldasso-elpepe`) | 2026-11-04 | Proyecto-Submarino-Prime | 2 / 3 |
-
-<!-- actividad-clases:fin -->
+| 35 | 2026-11-20 | `4efc72c` | dqmdz-etec | 14,113 | 85 | 99% | 3.0% | 0 |
+| 36 | 2026-11-20 | `e197922` | ibaldasso-elpepe | 14,120 | 85 | 99% | 3.0% | 0 |
+| 37 | 2026-11-20 | `59781fc` | dqmdz-etec | 14,136 | 85 | 99% | 3.0% | 0 |
+| 38 | 2026-11-20 | `d0e1119` | dqmdz-etec | 14,144 | 85 | 99% | 3.0% | 0 |
 
 ---
 _Informe generado por la cátedra. Los criterios y umbrales de medición corresponden al perfil `exigente` de `calidad.py`; el semáforo de aprobación, a `CRITERIOS-CALIDAD.md` (ver `README.md`). Ante dudas, revisá el archivo señalado._
