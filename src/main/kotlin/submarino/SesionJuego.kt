@@ -38,7 +38,8 @@ class SesionJuego(
         bodega = bodega,
         velocidadAscensoBase = ConfiguracionSesion.VELOCIDAD_ASCENSO_INICIAL,
         billetera = billetera,
-        notificador = NotificadorSilencioso
+        notificador = NotificadorSilencioso,
+        factoria = FabricaSubsistemasEstandar
     )
 
     private val zonaAcople: ZonaAcoplePlataforma = FabricaDominio.crearZonaAcoplePlataforma(

@@ -38,14 +38,15 @@ object MainPruebaIssue7 {
     }
 
     private fun configurarSubmarino(): Submarino {
-        println("1. INICIALIZACIÓN DE LA ESTACIÓN Y NAVE:")
-        val sub = Submarino(
+        println("1. INICIALIZACIÓN DE LA ESTACIÓN y NAVE:")
+        val sub = FabricaDominio.crearSubmarino(
             posX = 50.0,
             posY = 100.0,
             velocidad = 10.0,
             casco = ModuloCasco(500_000.0),
             bodega = Bodega(capacidadMaxima = 50.0),
-            billetera = Monedero(saldoInicial = 0)
+            billetera = Monedero(saldoInicial = 0),
+            factoria = FabricaSubsistemasEstandar
         )
         println("   • Posición inicial submarino: (X: ${sub.posX}, Y: ${sub.posY}m) [Sumergido]")
         println("   • Saldo en billetera: $${sub.billetera.saldo}")

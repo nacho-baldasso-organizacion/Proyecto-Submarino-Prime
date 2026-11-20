@@ -9,13 +9,19 @@ class FabricaNavesSimulacion {
         FabricaDominio.crearModuloCasco(presionMaximaPa = 500_000.0, integridad = 100.0)
 
     fun submarinoEstandar(casco: Casco): Submarino =
-        FabricaDominio.crearSubmarino(posX = 0.0, posY = 0.0, velocidad = 10.0, casco = casco)
+        FabricaDominio.crearSubmarino(
+            posX = 0.0, posY = 0.0, velocidad = 10.0, casco = casco,
+            factoria = FabricaSubsistemasEstandar
+        )
 
     fun cascoCritico(): Casco =
         FabricaDominio.crearModuloCasco(presionMaximaPa = 250_000.0, integridad = 5.0)
 
     fun submarinoCritico(casco: Casco): Submarino =
-        FabricaDominio.crearSubmarino(posX = 0.0, posY = 0.0, velocidad = 10.0, casco = casco)
+        FabricaDominio.crearSubmarino(
+            posX = 0.0, posY = 0.0, velocidad = 10.0, casco = casco,
+            factoria = FabricaSubsistemasEstandar
+        )
 }
 
 /**
@@ -94,7 +100,10 @@ class EscenarioSolidSubmarino(
             factorAbsorcion = 0.5
         )
         val subAvanzado =
-            FabricaDominio.crearSubmarino(posX = 0.0, posY = 0.0, casco = cascoBlindado)
+            FabricaDominio.crearSubmarino(
+                posX = 0.0, posY = 0.0, casco = cascoBlindado,
+                factoria = FabricaSubsistemasEstandar
+            )
 
         subAvanzado.sumergir(30.0)
         val presionExterna = CalculadoraHidrostatica.calcularPresion(subAvanzado.posY)
