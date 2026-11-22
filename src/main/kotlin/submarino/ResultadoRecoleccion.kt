@@ -1,21 +1,46 @@
 package submarino
 
 /**
+ * Mixin para operaciones relacionadas con el ítem.
+ * Provee implementación por defecto que retorna null.
+ */
+interface ConResultadoItem {
+    fun obtenerItem(): Recolectable? = null
+}
+
+/**
+ * Mixin para requisitos de espacio de bodega.
+ * Por defecto indica que no se requiere liberar espacio.
+ */
+interface ConRequisitoEspacio {
+    fun requiereLiberarEspacio(): Boolean = false
+}
+
+/**
+ * Cálculos específicos a resultados de recolección exitosa.
+ */
+interface CalculosRecoleccion {
+    fun porcentajeOcupado(capacidadMaxima: Double): Double
+    fun espacioRemanente(capacidadMaxima: Double): Double
+}
+
+/**
+ * Núcleo mínimo de la jerarquía sellada.
+ * Los clientes dependiendo solo de esta interfaz no se ven obligados a
+ * depender de preocupaciones de item o espacio que no usan.
+ */
+interface ResultadoRecoleccionBase {
+    val esExito: Boolean
+    fun obtenerMensaje(): String
+}
+
+/**
  * Jerarquía sellada que modela exhaustivamente los posibles resultados de un intento de recolección.
  * Provee polimorfismo de estado para evitar verificaciones externas de tipo (OCP).
  * Incorpora métodos de dominio con comportamiento propio (elimina clases anémicas).
+ * Ahora segregado en interfaces más pequeñas y cohesivas (Principio ISP).
  */
-sealed interface ResultadoRecoleccion {
-
-    /**
-     * Indica si la operación de recolección fue exitosa y el ítem ingresó en la bodega.
-     */
-    val esExito: Boolean
-
-    /**
-     * Retorna un mensaje descriptivo legible del resultado.
-     */
-    fun obtenerMensaje(): String
+public sealed interface ResultadoRecoleccion : ResultadoRecoleccionBase, ConResultadoItem, ConRequisitoEspacio {
 
     /**
      * Retorna el mensaje orientado al jugador. Por defecto coincide con [obtenerMensaje],
@@ -24,22 +49,12 @@ sealed interface ResultadoRecoleccion {
     fun obtenerMensajeJugador(): String = obtenerMensaje()
 
     /**
-     * Retorna el elemento involucrado en la interacción si existe.
-     */
-    fun obtenerItem(): Recolectable? = null
-
-    /**
-     * Indica si el resultado requiere que el jugador vacíe o amplíe la bodega.
-     */
-    fun requiereLiberarEspacio(): Boolean = false
-
-    /**
      * El ítem colisionó y fue ingresado exitosamente en la bodega.
      */
     class Exito(
         item: Recolectable,
         pesoAcumulado: Double
-    ) : ResultadoRecoleccion {
+    ) : ResultadoRecoleccion, CalculosRecoleccion {
         var item: Recolectable = item
             private set
 
@@ -53,11 +68,14 @@ sealed interface ResultadoRecoleccion {
         override fun obtenerMensaje(): String =
             "Recolección completada: ${item.nombre} (ID: ${item.id}). Peso en bodega: ${pesoAcumulado}kg."
 
-        fun porcentajeOcupado(capacidadMaxima: Double): Double =
-            if (capacidadMaxima > 0.0) (pesoAcumulado / capacidadMaxima) * 100.0 else 0.0
+        override fun obtenerMensajeJugador(): String
+            = obtenerMensaje()
 
-        fun espacioRemanente(capacidadMaxima: Double): Double =
-            maxOf(capacidadMaxima - pesoAcumulado, 0.0)
+override fun porcentajeOcupado(capacidadMaxima: Double): Double
+        = if (capacidadMaxima > 0.0) (pesoAcumulado / capacidadMaxima) * 100.0 else 0.0
+
+    override fun espacioRemanente(capacidadMaxima: Double): Double
+        = maxOf(capacidadMaxima - pesoAcumulado, 0.0)
 
         override fun toString(): String =
             "Exito(item=$item, pesoAcumulado=$pesoAcumulado)"
@@ -96,6 +114,9 @@ sealed interface ResultadoRecoleccion {
 
         override fun obtenerMensaje(): String =
             "Bodega saturada: no se puede cargar ${item.nombre} (${item.peso}kg). Exceso: ${String.format("%.2f", excesoPeso)}kg sobre el límite de ${capacidadMaxima}kg."
+
+        override fun obtenerMensajeJugador(): String
+            = obtenerMensaje()
 
         fun pesoFaltante(): Double = excesoPeso
 
@@ -143,6 +164,9 @@ sealed interface ResultadoRecoleccion {
 
         override fun obtenerMensaje(): String =
             "El ítem ${item.nombre} ya fue recolectado previamente."
+
+        override fun obtenerMensajeJugador(): String
+            = obtenerMensaje()
 
         override fun toString(): String =
             "YaRecolectado(item=$item)"
