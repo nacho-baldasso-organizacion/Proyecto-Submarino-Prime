@@ -204,4 +204,34 @@ object FabricaVisualSupportDelegate {
         destino: ObservableList<Node>,
         random: Random
     ): List<Animation> = ConstructorExplosionSubmarino.crear(destino, random)
+
+    fun crearCapaParallax(factorVelocidad: Double): CapaParallax = CapaParallax(factorVelocidad)
+
+    fun crearCapaParallaxVisual(
+        contenedor: Node,
+        capa: CapaParallax,
+        origenX: Double,
+        origenY: Double
+    ): CapaParallaxVisual = CapaParallaxVisual(contenedor, capa, origenX, origenY)
+
+    fun crearParticulasMarinas(
+        ancho: Double,
+        alto: Double,
+        semilla: Long = 33L
+    ): ParticulasMarinas = ParticulasMarinas(ancho, alto, semilla)
+
+    fun crearPecesMarinos(
+        ancho: Double,
+        alto: Double,
+        semilla: Long = 91L,
+        cantidad: Int = 14
+    ): PecesMarinos = PecesMarinos(ancho, alto, semilla, cantidad)
+
+    fun crearTerrenoRocosoVisual(
+        terreno: TerrenoSubmarino,
+        anchoMundo: Double,
+        altoMundo: Double,
+        escala: Double,
+        semilla: Long = 53L
+    ): TerrenoRocosoVisual = TerrenoRocosoVisual(terreno, anchoMundo, altoMundo, escala, semilla)
 }

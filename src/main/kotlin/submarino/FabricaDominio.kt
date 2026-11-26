@@ -13,7 +13,7 @@ object FabricaDominio {
         densidadFluido: Double = 1025.0,
         gravedad: Double = 9.81,
         presionAtmosferica: Double = 101325.0
-    ): CalculadoraPresionFluido = CalculadoraPresionFluido(
+    ): CalculadoraPresionFluido = FabricaAmbienteDelegate.crearCalculadoraPresionFluido(
         densidadFluido = densidadFluido,
         gravedad = gravedad,
         presionAtmosferica = presionAtmosferica
@@ -82,32 +82,34 @@ object FabricaDominio {
     fun crearReporteSolidSimulacion(): ReporteSolidSimulacion =
         FabricaReportesDelegate.crearReporteSolidSimulacion()
 
-    fun crearFabricaNavesSimulacion(): FabricaNavesSimulacion = FabricaNavesSimulacion()
+    fun crearFabricaNavesSimulacion(): FabricaNavesSimulacion =
+        FabricaRecursosDelegate.crearFabricaNavesSimulacion()
 
     fun crearEscenarioNavegacionSubmarino(
-        reporte: ReporteNavegacionSimulacion = FabricaDominio.crearReporteNavegacionSimulacion()
+        reporte: ReporteNavegacionSimulacion = FabricaAmbienteDelegate.crearReporteNavegacionSimulacion()
     ): EscenarioNavegacionSubmarino = EscenarioNavegacionSubmarino(reporte = reporte)
 
     fun crearEscenarioInmersionSubmarino(
-        reporte: ReporteInmersionSimulacion = FabricaDominio.crearReporteInmersionSimulacion()
+        reporte: ReporteInmersionSimulacion = FabricaAmbienteDelegate.crearReporteInmersionSimulacion()
     ): EscenarioInmersionSubmarino = EscenarioInmersionSubmarino(reporte = reporte)
 
     fun crearEscenarioSolidSubmarino(
-        reporte: ReporteSolidSimulacion = FabricaDominio.crearReporteSolidSimulacion()
+        reporte: ReporteSolidSimulacion = FabricaAmbienteDelegate.crearReporteSolidSimulacion()
     ): EscenarioSolidSubmarino = EscenarioSolidSubmarino(reporte = reporte)
 
     fun crearSimuladorSubmarino(
-        reporte: ReporteSimulacionSubmarino = FabricaDominio.crearReporteSimulacionSubmarino(),
-        fabrica: FabricaNavesSimulacion = FabricaDominio.crearFabricaNavesSimulacion()
+        reporte: ReporteSimulacionSubmarino = FabricaAmbienteDelegate.crearReporteSimulacionSubmarino(),
+        fabrica: FabricaNavesSimulacion = FabricaRecursosDelegate.crearFabricaNavesSimulacion()
     ): SimuladorSubmarino = SimuladorSubmarino(reporte = reporte, fabrica = fabrica)
 
     fun crearBodega(capacidadMaxima: Double): Bodega =
         FabricaSubmarinoDelegate.crearBodega(capacidadMaxima = capacidadMaxima)
 
-    fun crearCatalogoMejorasSesion(): CatalogoMejorasSesion = CatalogoMejorasSesion()
+    fun crearCatalogoMejorasSesion(): CatalogoMejorasSesion =
+        FabricaRecursosDelegate.crearCatalogoMejorasSesion()
 
     fun crearDetectorColisionesRadio(radio: Double): DetectorColisionesRadio =
-        DetectorColisionesRadio(radio = radio)
+        FabricaRecursosDelegate.crearDetectorColisionesRadio(radio = radio)
 
     fun crearEconomiaEstacion(
         billetera: Monedero,
@@ -127,7 +129,7 @@ object FabricaDominio {
         FabricaSubmarinoDelegate.crearZonaSuperficie(profundidadMaxima = profundidadMaxima)
 
     fun crearEstacionAcople(
-        zonaAcople: ZonaAcople = FabricaSubmarinoDelegate.crearZonaSuperficie()
+        zonaAcople: ZonaAcople = FabricaRecursosDelegate.crearZonaSuperficie()
     ): EstacionAcople = EstacionAcople(zonaAcople = zonaAcople)
 
     fun crearEstadoJuego(
@@ -202,7 +204,7 @@ object FabricaDominio {
     fun crearMonedero(saldoInicial: Int = 0): Monedero =
         FabricaEconomíaYServiciosDelegate.crearMonedero(saldoInicial = saldoInicial)
 
-    fun crearPosicion(posX: Int, posY: Int): Posicion = Posicion(posX = posX, posY = posY)
+    fun crearPosicion(posX: Int, posY: Int): Posicion = FabricaAmbienteDelegate.crearPosicion(posX = posX, posY = posY)
 
     fun crearServicioComercio(): ServicioComercio =
         FabricaEconomíaYServiciosDelegate.crearServicioComercio()
@@ -233,7 +235,7 @@ object FabricaDominio {
         xMin: Double,
         xMax: Double,
         profundidadMaxima: Double = 0.0
-    ): ZonaAcoplePlataforma = ZonaAcoplePlataforma(
+    ): ZonaAcoplePlataforma = FabricaRecursosDelegate.crearZonaAcoplePlataforma(
         xMin = xMin,
         xMax = xMax,
         profundidadMaxima = profundidadMaxima
@@ -262,7 +264,7 @@ object FabricaDominio {
         profundidad: Double,
         oxigeno: Double,
         estadoOxigeno: EstadoOxigeno
-    ): EstadoNavegacion = EstadoNavegacion(
+    ): EstadoNavegacion = FabricaRecursosDelegate.crearEstadoNavegacion(
         posicionX = posicionX,
         posicionY = posicionY,
         coordenadaX = coordenadaX,
@@ -273,7 +275,7 @@ object FabricaDominio {
 
     fun crearGeneradorParedes(
         random: Random = Random.Default,
-        fabricaRecolectables: FabricaRecolectables = FabricaDominio.crearFabricaRecolectablesMineral()
+        fabricaRecolectables: FabricaRecolectables = FabricaRecursosDelegate.crearFabricaRecolectablesMineral()
     ): GeneradorParedes = GeneradorParedes(
         random = random,
         fabricaRecolectables = fabricaRecolectables
@@ -285,7 +287,7 @@ object FabricaDominio {
         posX: Int,
         posY: Int,
         recolectado: Boolean = false
-    ): Mineral = Mineral(
+    ): Mineral = FabricaRecursosDelegate.crearMineral(
         id = id,
         tipo = tipo,
         posX = posX,
@@ -298,7 +300,7 @@ object FabricaDominio {
         tipo: TipoNodoMineral,
         mineral: Mineral,
         radio: Double = SesionJuego.RADIO_INTERACCION
-    ): NodoMineral = NodoMineral(
+    ): NodoMineral = FabricaRecursosDelegate.crearNodoMineral(
         id = id,
         tipo = tipo,
         mineral = mineral,
@@ -342,11 +344,10 @@ object FabricaDominio {
     fun crearEfectoOxigeno(
         incremento: Double,
         aumentarOxigenoMaximo: (Double) -> Unit
-    ): EfectoMejora = object : EfectoBase(incremento) {
-        override fun aplicar(submarino: SubmarinoMejorable) {
-            aumentarOxigenoMaximo(magnitud)
-        }
-    }
+    ): EfectoMejora = FabricaRecursosDelegate.crearEfectoOxigeno(
+        incremento = incremento,
+        aumentarOxigenoMaximo = aumentarOxigenoMaximo
+    )
 
     fun crearMejora(
         id: String,

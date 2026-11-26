@@ -30,14 +30,21 @@ object FabricaVisual {
         escala = escala
     )
 
-    fun crearCapaParallax(factorVelocidad: Double): CapaParallax = CapaParallax(factorVelocidad)
+    fun crearCapaParallax(factorVelocidad: Double): CapaParallax =
+        FabricaVisualSupportDelegate.crearCapaParallax(factorVelocidad = factorVelocidad)
 
     fun crearCapaParallaxVisual(
         contenedor: Node,
         capa: CapaParallax,
         origenX: Double,
         origenY: Double
-    ): CapaParallaxVisual = CapaParallaxVisual(contenedor, capa, origenX, origenY)
+    ): CapaParallaxVisual =
+        FabricaVisualSupportDelegate.crearCapaParallaxVisual(
+            contenedor = contenedor,
+            capa = capa,
+            origenX = origenX,
+            origenY = origenY
+        )
 
     fun crearEstacionVectorial(): EstacionVectorial = FabricaVisualCoreDelegate.crearEstacionVectorial()
 
@@ -74,14 +81,16 @@ object FabricaVisual {
         ancho: Double,
         alto: Double,
         semilla: Long = 33L
-    ): ParticulasMarinas = ParticulasMarinas(ancho, alto, semilla)
+    ): ParticulasMarinas =
+        FabricaVisualSupportDelegate.crearParticulasMarinas(ancho = ancho, alto = alto, semilla = semilla)
 
     fun crearPecesMarinos(
         ancho: Double,
         alto: Double,
         semilla: Long = 91L,
         cantidad: Int = 14
-    ): PecesMarinos = PecesMarinos(ancho, alto, semilla, cantidad)
+    ): PecesMarinos =
+        FabricaVisualSupportDelegate.crearPecesMarinos(ancho = ancho, alto = alto, semilla = semilla, cantidad = cantidad)
 
     fun crearTerrenoRocosoVisual(
         terreno: TerrenoSubmarino,
@@ -89,7 +98,14 @@ object FabricaVisual {
         altoMundo: Double,
         escala: Double,
         semilla: Long = 53L
-    ): TerrenoRocosoVisual = TerrenoRocosoVisual(terreno, anchoMundo, altoMundo, escala, semilla)
+    ): TerrenoRocosoVisual =
+        FabricaVisualSupportDelegate.crearTerrenoRocosoVisual(
+            terreno = terreno,
+            anchoMundo = anchoMundo,
+            altoMundo = altoMundo,
+            escala = escala,
+            semilla = semilla
+        )
 
     fun crearTiendaModal(sesion: SesionJuego): TiendaModal = FabricaVisualSupportDelegate.crearTiendaModal(sesion = sesion)
 
