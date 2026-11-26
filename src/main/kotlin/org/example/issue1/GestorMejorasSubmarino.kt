@@ -15,19 +15,35 @@ class GestorMejorasSubmarino(
     private val bodegaActual: () -> Almacenamiento?
 ) {
 
+    internal data class Estado(
+        val propulsion: SistemaPropulsion,
+        val sistemaCasco: SistemaCasco,
+        val gestorBodega: GestorBodega,
+        val gestorVelocidad: GestorVelocidadNavegacion,
+        val bodegaActual: () -> Almacenamiento?
+    )
+
+    private val estado = Estado(
+        propulsion,
+        sistemaCasco,
+        gestorBodega,
+        gestorVelocidad,
+        bodegaActual
+    )
+
     fun aumentarCapacidadBodega(incremento: Double) {
-        gestorBodega.aumentarCapacidad(bodegaActual(), incremento)
+        estado.gestorBodega.aumentarCapacidad(estado.bodegaActual(), incremento)
     }
 
     fun aumentarVelocidadAscenso(incremento: Double) {
-        propulsion.aumentarVelocidadAscenso(incremento)
+        estado.propulsion.aumentarVelocidadAscenso(incremento)
     }
 
     fun aumentarResistenciaCasco(incrementoPa: Double) {
-        sistemaCasco.reforzar(incrementoPa)
+        estado.sistemaCasco.reforzar(incrementoPa)
     }
 
     fun aumentarVelocidadPropulsion(incremento: Double) {
-        gestorVelocidad.aumentarVelocidad(incremento)
+        estado.gestorVelocidad.aumentarVelocidad(incremento)
     }
 }

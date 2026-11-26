@@ -27,15 +27,31 @@ data class EstadoJuego(
     val presionActual: Double = 0.0,
     val presionMaxima: Double = 1.0
 ) {
-    fun porcentajeOxigeno(): Double = porcentaje(oxigeno, capacidadOxigeno)
+    internal data class Estadisticas(
+        val oxigeno: Double,
+        val capacidadOxigeno: Double,
+        val integridadCasco: Double,
+        val pesoBodega: Double,
+        val capacidadBodega: Double,
+        val presionActual: Double,
+        val presionMaxima: Double,
+        val destruido: Boolean
+    )
 
-    fun porcentajeCasco(): Double = porcentaje(integridadCasco, INTEGRIDAD_MAXIMA)
+    private val estadisticas = Estadisticas(
+        oxigeno, capacidadOxigeno, integridadCasco,
+        pesoBodega, capacidadBodega, presionActual, presionMaxima, destruido
+    )
 
-    fun porcentajeBodega(): Double = porcentaje(pesoBodega, capacidadBodega)
+    fun porcentajeOxigeno(): Double = porcentaje(estadisticas.oxigeno, estadisticas.capacidadOxigeno)
 
-    fun presionSegura(): Boolean = presionActual <= presionMaxima
+    fun porcentajeCasco(): Double = porcentaje(estadisticas.integridadCasco, INTEGRIDAD_MAXIMA)
 
-    fun enPeligro(): Boolean = destruido || !presionSegura() || oxigeno <= OXIGENO_MINIMO
+    fun porcentajeBodega(): Double = porcentaje(estadisticas.pesoBodega, estadisticas.capacidadBodega)
+
+    fun presionSegura(): Boolean = estadisticas.presionActual <= estadisticas.presionMaxima
+
+    fun enPeligro(): Boolean = estadisticas.destruido || !presionSegura() ||estadisticas.oxigeno <= OXIGENO_MINIMO
 
     private fun porcentaje(valor: Double, maximo: Double): Double =
         if (maximo <= 0.0) 0.0 else (valor / maximo * 100.0).coerceIn(0.0, 100.0)

@@ -15,28 +15,46 @@ class NavegadorSubmarino(
     private val bodegaActual: () -> Almacenamiento?
 ) {
 
+    internal data class Estado(
+        val movimiento: GestorMovimiento,
+        val gestorAscenso: GestorAscenso,
+        val posicionActual: () -> Pair<Double, Double>,
+        val velocidadAscensoActual: () -> Double,
+        val pesoBaseActual: () -> Double,
+        val bodegaActual: () -> Almacenamiento?
+    )
+
+    private val estado = Estado(
+        movimiento,
+        gestorAscenso,
+        posicionActual,
+        velocidadAscensoActual,
+        pesoBaseActual,
+        bodegaActual
+    )
+
     fun mover(deltaX: Double, deltaY: Double): Boolean =
-        movimiento.mover(deltaX, deltaY)
+        estado.movimiento.mover(deltaX, deltaY)
 
     fun navegar(deltaX: Double): Boolean = mover(deltaX = deltaX, deltaY = 0.0)
 
     fun sumergir(deltaY: Double): Boolean = mover(deltaX = 0.0, deltaY = deltaY)
 
     fun ascender(deltaY: Double): Boolean {
-        val desplazamientoEfectivo = gestorAscenso.desplazamientoAscenso(
+        val desplazamientoEfectivo = estado.gestorAscenso.desplazamientoAscenso(
             deltaY,
-            pesoBaseActual(),
-            bodegaActual()
+            estado.pesoBaseActual(),
+            estado.bodegaActual()
         )
         return mover(deltaX = 0.0, deltaY = -desplazamientoEfectivo)
     }
 
-    fun ascender(): Boolean = mover(deltaX = 0.0, deltaY = -velocidadAscensoActual())
+    fun ascender(): Boolean = mover(deltaX = 0.0, deltaY = -estado.velocidadAscensoActual())
 
-    fun estaEnSuperficie(): Boolean = posicionActual().second <= 0.0
+    fun estaEnSuperficie(): Boolean = estado.posicionActual().second <= 0.0
 
     fun estaEnZona(zona: ZonaAcople): Boolean {
-        val (x, y) = posicionActual()
+        val (x, y) = estado.posicionActual()
         return zona.estaEnZona(x, y)
     }
 }
