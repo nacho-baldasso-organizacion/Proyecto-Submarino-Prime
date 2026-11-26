@@ -190,7 +190,8 @@ object FabricaVisual {
         alto: Double
     ): FabricaPecesMarinos = FabricaPecesMarinos(random, ancho, alto)
 
-    internal fun crearPintorPecesMarinos(gc: GraphicsContext): PintorPecesMarinos = PintorPecesMarinos(gc)
+    internal fun crearPintorPecesMarinos(gc: GraphicsContext): PintorPecesMarinos =
+        PintorPecesMarinos(gc)
 
     internal fun crearPezMarino(
         centroX: Double,
