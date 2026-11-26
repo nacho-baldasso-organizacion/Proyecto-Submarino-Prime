@@ -113,6 +113,10 @@ class ObservadorComercioSilencioso : ObservadorComercio {
  * - Open/Closed Principle (OCP)
  * - Liskov Substitution Principle (LSP)
  * - Encapsulación estricta
+ *
+ * Dependencias encapsuladas mediante [ServicioComercioDelegate] para reducir el
+ * acoplamiento (CBO) con los tipos [FabricaServicios], manteniendo la firma
+ * pública inalterable de la clase.
  */
 class ServicioComercio(
     private val calculadoraPrecios: CalculadoraPrecios
@@ -151,7 +155,7 @@ class ServicioComercio(
         venderNaveComercial(submarino)
 
     /**
-     * Punto de entrada polimórfico para cualquier nave que exponga su bodega y billetera.
+     * Punto de entrada polimórfico para cualquier nave que expone su bodega y billetera.
      */
     fun venderNaveComercial(nave: NaveComercial): ResultadoComercio {
         validarAcople(nave)?.let { return it }
@@ -179,14 +183,14 @@ class ServicioComercio(
         receptorFondos.acreditar(totalCreditos)
         almacenamiento.vaciar()
 
-        val transaccion = FabricaServicios.crearTransaccionComercial(
+        val transaccion = ServicioComercioDelegate.crearTransaccionComercial(
             itemsVendidos = items,
             totalCreditos = totalCreditos,
             cantidadItems = items.size
         )
         notificarObservadores(transaccion)
 
-        return FabricaServicios.crearResultadoComercioExito(
+        return ServicioComercioDelegate.crearResultadoComercioExito(
             transaccion = transaccion,
             saldoActualizado = receptorFondos.saldo
         )
