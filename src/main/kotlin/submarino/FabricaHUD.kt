@@ -16,20 +16,29 @@ object FabricaHUD {
     internal fun crearReglaAviso(
         condicion: (EstadoJuego) -> Boolean,
         texto: String
-    ): ReglaAviso = ReglaAviso(condicion, texto)
+    ): ReglaAviso = FabricaHUDMenusDelegate.crearReglaAviso(condicion = condicion, texto = texto)
 
     fun crearBarraHUD(
         ancho: Double,
         estiloInicial: String,
         progresoInicial: Double = 1.0
-    ): BarraHUD = BarraHUD(ancho, estiloInicial, progresoInicial)
+    ): BarraHUD = FabricaHUDMenusDelegate.crearBarraHUD(
+        ancho = ancho,
+        estiloInicial = estiloInicial,
+        progresoInicial = progresoInicial
+    )
 
     fun crearIndicadorMetrosHUD(
         titulo: String,
         estiloTitulo: String,
         estiloValor: String,
         patron: String
-    ): IndicadorMetrosHUD = IndicadorMetrosHUD(titulo, estiloTitulo, estiloValor, patron)
+    ): IndicadorMetrosHUD = FabricaHUDIndicatorsDelegate.crearIndicadorMetrosHUD(
+        titulo = titulo,
+        estiloTitulo = estiloTitulo,
+        estiloValor = estiloValor,
+        patron = patron
+    )
 
     fun crearIndicadorPresionHUD(
         estiloTitulo: String,
@@ -38,13 +47,13 @@ object FabricaHUD {
         estiloBarraEstable: String,
         estiloBarraPrecaucion: String,
         estiloBarraCritico: String
-    ): IndicadorPresionHUD = IndicadorPresionHUD(
-        estiloTitulo,
-        estiloValor,
-        anchoBarra,
-        estiloBarraEstable,
-        estiloBarraPrecaucion,
-        estiloBarraCritico
+    ): IndicadorPresionHUD = FabricaHUDIndicatorsDelegate.crearIndicadorPresionHUD(
+        estiloTitulo = estiloTitulo,
+        estiloValor = estiloValor,
+        anchoBarra = anchoBarra,
+        estiloBarraEstable = estiloBarraEstable,
+        estiloBarraPrecaucion = estiloBarraPrecaucion,
+        estiloBarraCritico = estiloBarraCritico
     )
 
     fun crearIndicadorOxigenoJuegoHUD(
@@ -54,13 +63,13 @@ object FabricaHUD {
         estiloBarraEstable: String,
         estiloBarraPrecaucion: String,
         estiloBarraCritico: String
-    ): IndicadorOxigenoJuegoHUD = IndicadorOxigenoJuegoHUD(
-        estiloTitulo,
-        estiloValor,
-        anchoBarra,
-        estiloBarraEstable,
-        estiloBarraPrecaucion,
-        estiloBarraCritico
+    ): IndicadorOxigenoJuegoHUD = FabricaHUDIndicatorsDelegate.crearIndicadorOxigenoJuegoHUD(
+        estiloTitulo = estiloTitulo,
+        estiloValor = estiloValor,
+        anchoBarra = anchoBarra,
+        estiloBarraEstable = estiloBarraEstable,
+        estiloBarraPrecaucion = estiloBarraPrecaucion,
+        estiloBarraCritico = estiloBarraCritico
     )
 
     fun crearIndicadorCascoHUD(
@@ -70,44 +79,59 @@ object FabricaHUD {
         estiloBarraEstable: String,
         estiloBarraPrecaucion: String,
         estiloBarraCritico: String
-    ): IndicadorCascoHUD = IndicadorCascoHUD(
-        estiloTitulo,
-        estiloValor,
-        anchoBarra,
-        estiloBarraEstable,
-        estiloBarraPrecaucion,
-        estiloBarraCritico
+    ): IndicadorCascoHUD = FabricaHUDIndicatorsDelegate.crearIndicadorCascoHUD(
+        estiloTitulo = estiloTitulo,
+        estiloValor = estiloValor,
+        anchoBarra = anchoBarra,
+        estiloBarraEstable = estiloBarraEstable,
+        estiloBarraPrecaucion = estiloBarraPrecaucion,
+        estiloBarraCritico = estiloBarraCritico
     )
 
     fun crearIndicadorCargoHUD(
         estiloTitulo: String,
         estiloValor: String
-    ): IndicadorCargoHUD = IndicadorCargoHUD(estiloTitulo, estiloValor)
+    ): IndicadorCargoHUD = FabricaHUDIndicatorsDelegate.crearIndicadorCargoHUD(
+        estiloTitulo = estiloTitulo,
+        estiloValor = estiloValor
+    )
 
     fun crearIndicadorMonedasHUD(
         estiloTitulo: String,
         estiloValor: String
-    ): IndicadorMonedasHUD = IndicadorMonedasHUD(estiloTitulo, estiloValor)
+    ): IndicadorMonedasHUD = FabricaHUDIndicatorsDelegate.crearIndicadorMonedasHUD(
+        estiloTitulo = estiloTitulo,
+        estiloValor = estiloValor
+    )
 
     fun crearIndicadorNodosHUD(
         estiloTitulo: String,
         estiloValor: String
-    ): IndicadorNodosHUD = IndicadorNodosHUD(estiloTitulo, estiloValor)
+    ): IndicadorNodosHUD = FabricaHUDIndicatorsDelegate.crearIndicadorNodosHUD(
+        estiloTitulo = estiloTitulo,
+        estiloValor = estiloValor
+    )
 
     fun crearIndicadorAcopleHUD(
         estiloTitulo: String,
         estiloValor: String
-    ): IndicadorAcopleHUD = IndicadorAcopleHUD(estiloTitulo, estiloValor)
+    ): IndicadorAcopleHUD = FabricaHUDIndicatorsDelegate.crearIndicadorAcopleHUD(
+        estiloTitulo = estiloTitulo,
+        estiloValor = estiloValor
+    )
 
-    fun crearSeparadorHUD(estilo: String): SeparadorHUD = SeparadorHUD(estilo)
+    fun crearSeparadorHUD(estilo: String): SeparadorHUD = FabricaHUDIndicatorsDelegate.crearSeparadorHUD(estilo = estilo)
 
     fun crearTextoAyudaHUD(texto: String, estilo: String): TextoAyudaHUD =
-        TextoAyudaHUD(texto, estilo)
+        FabricaHUDIndicatorsDelegate.crearTextoAyudaHUD(texto = texto, estilo = estilo)
 
     fun crearIndicadorEstadoOxigenoHUD(
         estiloTitulo: String,
         estiloValor: String
-    ): IndicadorEstadoOxigenoHUD = IndicadorEstadoOxigenoHUD(estiloTitulo, estiloValor)
+    ): IndicadorEstadoOxigenoHUD = FabricaHUDIndicatorsDelegate.crearIndicadorEstadoOxigenoHUD(
+        estiloTitulo = estiloTitulo,
+        estiloValor = estiloValor
+    )
 
     fun crearIndicadorOxigenoNavegacionHUD(
         estiloTitulo: String,
@@ -117,14 +141,14 @@ object FabricaHUD {
         estiloBarraPrecaucion: String,
         estiloBarraCritico: String,
         estiloBarraAgotado: String
-    ): IndicadorOxigenoNavegacionHUD = IndicadorOxigenoNavegacionHUD(
-        estiloTitulo,
-        estiloValor,
-        anchoBarra,
-        estiloBarraEstable,
-        estiloBarraPrecaucion,
-        estiloBarraCritico,
-        estiloBarraAgotado
+    ): IndicadorOxigenoNavegacionHUD = FabricaHUDIndicatorsDelegate.crearIndicadorOxigenoNavegacionHUD(
+        estiloTitulo = estiloTitulo,
+        estiloValor = estiloValor,
+        anchoBarra = anchoBarra,
+        estiloBarraEstable = estiloBarraEstable,
+        estiloBarraPrecaucion = estiloBarraPrecaucion,
+        estiloBarraCritico = estiloBarraCritico,
+        estiloBarraAgotado = estiloBarraAgotado
     )
 
     fun crearTarjetaHUD(
@@ -140,12 +164,12 @@ object FabricaHUD {
         estiloEstable: String,
         estiloPrecaucion: String,
         estiloCritico: String
-    ): BarraUmbralHUD = BarraUmbralHUD(
-        ancho,
-        progresoInicial,
-        estiloEstable,
-        estiloPrecaucion,
-        estiloCritico
+    ): BarraUmbralHUD = FabricaHUDIndicatorsDelegate.crearBarraUmbralHUD(
+        ancho = ancho,
+        progresoInicial = progresoInicial,
+        estiloEstable = estiloEstable,
+        estiloPrecaucion = estiloPrecaucion,
+        estiloCritico = estiloCritico
     )
 
     fun crearBarraEstadoOxigenoHUD(
@@ -154,35 +178,45 @@ object FabricaHUD {
         estiloPrecaucion: String,
         estiloCritico: String,
         estiloAgotado: String
-    ): BarraEstadoOxigenoHUD = BarraEstadoOxigenoHUD(
-        ancho,
-        estiloEstable,
-        estiloPrecaucion,
-        estiloCritico,
-        estiloAgotado
+    ): BarraEstadoOxigenoHUD = FabricaHUDIndicatorsDelegate.crearBarraEstadoOxigenoHUD(
+        ancho = ancho,
+        estiloEstable = estiloEstable,
+        estiloPrecaucion = estiloPrecaucion,
+        estiloCritico = estiloCritico,
+        estiloAgotado = estiloAgotado
     )
 
-    fun crearBotonesMenuPrincipal(): BotonesMenuPrincipal = BotonesMenuPrincipal()
+    fun crearBotonesMenuPrincipal(): BotonesMenuPrincipal = FabricaHUDMenusDelegate.crearBotonesMenuPrincipal()
 
     fun crearContenidoMenuPrincipal(
         bloqueTexto: VBox,
         panelBotones: HBox,
         nodoSubmarino: Node
-    ): ContenidoMenuPrincipal = ContenidoMenuPrincipal(bloqueTexto, panelBotones, nodoSubmarino)
+    ): ContenidoMenuPrincipal = FabricaHUDMenusDelegate.crearContenidoMenuPrincipal(
+        bloqueTexto = bloqueTexto,
+        panelBotones = panelBotones,
+        nodoSubmarino = nodoSubmarino
+    )
 
     fun crearFondoMenuPrincipal(
         anchoEscena: Double,
         altoEscena: Double
-    ): FondoMenuPrincipal = FondoMenuPrincipal(anchoEscena, altoEscena)
+    ): FondoMenuPrincipal = FabricaHUDMenusDelegate.crearFondoMenuPrincipal(
+        anchoEscena = anchoEscena,
+        altoEscena = altoEscena
+    )
 
     fun crearPanelReglasMenuPrincipal(
         raiz: StackPane,
         botones: BotonesMenuPrincipal
-    ): PanelReglasMenuPrincipal = PanelReglasMenuPrincipal(raiz, botones)
+    ): PanelReglasMenuPrincipal = FabricaHUDMenusDelegate.crearPanelReglasMenuPrincipal(
+        raiz = raiz,
+        botones = botones
+    )
 
-    fun crearSubmarinoVectorial(): SubmarinoVectorial = SubmarinoVectorial()
+    fun crearSubmarinoVectorial(): SubmarinoVectorial = FabricaHUDMenusDelegate.crearSubmarinoVectorial()
 
-    fun crearTituloMenuPrincipal(): TituloMenuPrincipal = TituloMenuPrincipal()
+    fun crearTituloMenuPrincipal(): TituloMenuPrincipal = FabricaHUDMenusDelegate.crearTituloMenuPrincipal()
 
     fun crearCompositorTienda(
         raiz: StackPane,
@@ -190,12 +224,12 @@ object FabricaHUD {
         constructorAcciones: ConstructorAccionesTienda,
         etiquetaMensaje: Label,
         contenedorMejoras: VBox
-    ): CompositorTienda = CompositorTienda(
-        raiz,
-        constructorEncabezado,
-        constructorAcciones,
-        etiquetaMensaje,
-        contenedorMejoras
+    ): CompositorTienda = FabricaHUDMenusDelegate.crearCompositorTienda(
+        raiz = raiz,
+        constructorEncabezado = constructorEncabezado,
+        constructorAcciones = constructorAcciones,
+        etiquetaMensaje = etiquetaMensaje,
+        contenedorMejoras = contenedorMejoras
     )
 
     fun crearConstructorAccionesTienda(
@@ -203,11 +237,11 @@ object FabricaHUD {
         etiquetaMensaje: Label,
         alDesacoplar: () -> Unit,
         alRefrescar: () -> Unit
-    ): ConstructorAccionesTienda = ConstructorAccionesTienda(
-        sesion,
-        etiquetaMensaje,
-        alDesacoplar,
-        alRefrescar
+    ): ConstructorAccionesTienda = FabricaHUDMenusDelegate.crearConstructorAccionesTienda(
+        sesion = sesion,
+        etiquetaMensaje = etiquetaMensaje,
+        alDesacoplar = alDesacoplar,
+        alRefrescar = alRefrescar
     )
 
     fun crearConstructorEncabezadoTienda(
@@ -216,12 +250,12 @@ object FabricaHUD {
         etiquetaCasco: Label,
         etiquetaBodega: Label,
         etiquetaNodos: Label
-    ): ConstructorEncabezadoTienda = ConstructorEncabezadoTienda(
-        etiquetaMonedas,
-        etiquetaOxigeno,
-        etiquetaCasco,
-        etiquetaBodega,
-        etiquetaNodos
+    ): ConstructorEncabezadoTienda = FabricaHUDMenusDelegate.crearConstructorEncabezadoTienda(
+        etiquetaMonedas = etiquetaMonedas,
+        etiquetaOxigeno = etiquetaOxigeno,
+        etiquetaCasco = etiquetaCasco,
+        etiquetaBodega = etiquetaBodega,
+        etiquetaNodos = etiquetaNodos
     )
 
     fun crearConstructorFilasMejoraTienda(
@@ -229,15 +263,18 @@ object FabricaHUD {
         contenedor: VBox,
         alMensaje: (String) -> Unit,
         alRefrescar: () -> Unit
-    ): ConstructorFilasMejoraTienda = ConstructorFilasMejoraTienda(
-        sesion,
-        contenedor,
-        alMensaje,
-        alRefrescar
+    ): ConstructorFilasMejoraTienda = FabricaHUDMenusDelegate.crearConstructorFilasMejoraTienda(
+        sesion = sesion,
+        contenedor = contenedor,
+        alMensaje = alMensaje,
+        alRefrescar = alRefrescar
     )
 
     internal fun crearGameOverPanel(
         alReintentar: () -> Unit,
         alVolverAlMenu: () -> Unit
-    ): GameOverPanel = GameOverPanel(alReintentar, alVolverAlMenu)
+    ): GameOverPanel = FabricaHUDMenusDelegate.crearGameOverPanel(
+        alReintentar = alReintentar,
+        alVolverAlMenu = alVolverAlMenu
+    )
 }

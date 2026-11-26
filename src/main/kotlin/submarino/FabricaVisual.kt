@@ -14,7 +14,7 @@ import kotlin.random.Random
  */
 object FabricaVisual {
 
-    fun crearAvisosJuego(): AvisosJuego = AvisosJuego()
+    fun crearAvisosJuego(): AvisosJuego = FabricaVisualCoreDelegate.crearAvisosJuego()
 
     fun crearCamaraJuego(
         anchoMundo: Double,
@@ -22,7 +22,13 @@ object FabricaVisual {
         anchoEscena: Double,
         altoEscena: Double,
         escala: Double
-    ): CamaraJuego = CamaraJuego(anchoMundo, altoMundo, anchoEscena, altoEscena, escala)
+    ): CamaraJuego = FabricaVisualSupportDelegate.crearCamaraJuego(
+        anchoMundo = anchoMundo,
+        altoMundo = altoMundo,
+        anchoEscena = anchoEscena,
+        altoEscena = altoEscena,
+        escala = escala
+    )
 
     fun crearCapaParallax(factorVelocidad: Double): CapaParallax = CapaParallax(factorVelocidad)
 
@@ -33,28 +39,36 @@ object FabricaVisual {
         origenY: Double
     ): CapaParallaxVisual = CapaParallaxVisual(contenedor, capa, origenX, origenY)
 
-    fun crearEstacionVectorial(): EstacionVectorial = EstacionVectorial()
+    fun crearEstacionVectorial(): EstacionVectorial = FabricaVisualCoreDelegate.crearEstacionVectorial()
 
-    fun crearSubmarinoVectorial(): SubmarinoVectorial = SubmarinoVectorial()
+    fun crearSubmarinoVectorial(): SubmarinoVectorial = FabricaVisualCoreDelegate.crearSubmarinoVectorial()
 
-    fun crearExplosionSubmarino(): ExplosionSubmarino = ExplosionSubmarino()
+    fun crearExplosionSubmarino(): ExplosionSubmarino = FabricaVisualCoreDelegate.crearExplosionSubmarino()
 
     fun crearFondoAbisal(
         anchoMundo: Double,
         altoMundo: Double,
         semilla: Long = 7L,
         profundidadRayos: Double = altoMundo * 0.35
-    ): FondoAbisal = FondoAbisal(anchoMundo, altoMundo, semilla, profundidadRayos)
+    ): FondoAbisal = FabricaVisualCoreDelegate.crearFondoAbisal(
+        anchoMundo = anchoMundo,
+        altoMundo = altoMundo,
+        semilla = semilla,
+        profundidadRayos = profundidadRayos
+    )
 
     fun crearGameOverModal(
         alReintentar: () -> Unit,
         alVolverAlMenu: () -> Unit
-    ): GameOverModal = GameOverModal(alReintentar, alVolverAlMenu)
+    ): GameOverModal = FabricaVisualSupportDelegate.crearGameOverModal(
+        alReintentar = alReintentar,
+        alVolverAlMenu = alVolverAlMenu
+    )
 
-    fun crearHUDJuego(): HUDJuego = HUDJuego()
+    fun crearHUDJuego(): HUDJuego = FabricaVisualCoreDelegate.crearHUDJuego()
 
     fun crearNodoMineralVectorial(modelo: NodoMineral): NodoMineralVectorial =
-        NodoMineralVectorial(modelo)
+        FabricaVisualCoreDelegate.crearNodoMineralVectorial(modelo = modelo)
 
     fun crearParticulasMarinas(
         ancho: Double,
@@ -77,41 +91,53 @@ object FabricaVisual {
         semilla: Long = 53L
     ): TerrenoRocosoVisual = TerrenoRocosoVisual(terreno, anchoMundo, altoMundo, escala, semilla)
 
-    fun crearTiendaModal(sesion: SesionJuego): TiendaModal = TiendaModal(sesion)
+    fun crearTiendaModal(sesion: SesionJuego): TiendaModal = FabricaVisualSupportDelegate.crearTiendaModal(sesion = sesion)
 
     fun crearVeloAbisal(anchoEscena: Double, altoEscena: Double): VeloAbisal =
-        VeloAbisal(anchoEscena, altoEscena)
+        FabricaVisualSupportDelegate.crearVeloAbisal(anchoEscena = anchoEscena, altoEscena = altoEscena)
 
     fun crearVeloPresion(anchoEscena: Double, altoEscena: Double): VeloPresion =
-        VeloPresion(anchoEscena, altoEscena)
+        FabricaVisualSupportDelegate.crearVeloPresion(anchoEscena = anchoEscena, altoEscena = altoEscena)
 
-    fun crearAvatarSubmarino(): AvatarSubmarino = AvatarSubmarino()
+    fun crearAvatarSubmarino(): AvatarSubmarino = FabricaVisualSupportDelegate.crearAvatarSubmarino()
 
     fun crearCapaFondoParallax(anchoMundo: Double, altoMundo: Double): CapaFondoParallax =
-        CapaFondoParallax(anchoMundo, altoMundo)
+        FabricaVisualSupportDelegate.crearCapaFondoParallax(anchoMundo = anchoMundo, altoMundo = altoMundo)
 
     fun crearCapaIntermediaParallax(anchoMundo: Double, altoMundo: Double): CapaIntermediaParallax =
-        CapaIntermediaParallax(anchoMundo, altoMundo)
+        FabricaVisualSupportDelegate.crearCapaIntermediaParallax(anchoMundo = anchoMundo, altoMundo = altoMundo)
 
     fun crearBucleJuego(
         sesion: SesionJuego,
         vista: VistaJuego,
         controlador: ControladorTeclado
-    ): BucleJuego = BucleJuego(sesion, vista, controlador)
+    ): BucleJuego = FabricaVisualSupportDelegate.crearBucleJuego(
+        sesion = sesion,
+        vista = vista,
+        controlador = controlador
+    )
 
-    fun crearControladorTeclado(): ControladorTeclado = ControladorTeclado()
+    fun crearControladorTeclado(): ControladorTeclado = FabricaVisualSupportDelegate.crearControladorTeclado()
 
     fun crearMenuPrincipal(
         anchoEscena: Double,
         altoEscena: Double,
         alJugar: () -> Unit
-    ): MenuPrincipal = MenuPrincipal(anchoEscena, altoEscena, alJugar)
+    ): MenuPrincipal = FabricaVisualSupportDelegate.crearMenuPrincipal(
+        anchoEscena = anchoEscena,
+        altoEscena = altoEscena,
+        alJugar = alJugar
+    )
 
     fun crearSesionJuego(
         anchoMapa: Double = ConfiguracionSesion.ANCHO_MAPA,
         altoMapa: Double = ConfiguracionSesion.ALTO_MAPA,
         semilla: Long = ConfiguracionSesion.SEMILLA_DEFAULT
-    ): SesionJuego = SesionJuego(anchoMapa, altoMapa, semilla)
+    ): SesionJuego = FabricaVisualSupportDelegate.crearSesionJuego(
+        anchoMapa = anchoMapa,
+        altoMapa = altoMapa,
+        semilla = semilla
+    )
 
     fun crearVistaJuego(
         anchoEscena: Double,
@@ -120,24 +146,42 @@ object FabricaVisual {
         hud: HUDJuego = crearHUDJuego(),
         alReintentar: () -> Unit = {},
         alVolverAlMenu: () -> Unit = {}
-    ): VistaJuego = VistaJuego(anchoEscena, altoEscena, sesion, hud, alReintentar, alVolverAlMenu)
+    ): VistaJuego = FabricaVisualSupportDelegate.crearVistaJuego(
+        anchoEscena = anchoEscena,
+        altoEscena = altoEscena,
+        sesion = sesion,
+        hud = hud,
+        alReintentar = alReintentar,
+        alVolverAlMenu = alVolverAlMenu
+    )
 
-    internal fun crearAnimacionHeliceSubmarino(): AnimacionHeliceSubmarino = AnimacionHeliceSubmarino()
+    internal fun crearAnimacionHeliceSubmarino(): AnimacionHeliceSubmarino =
+        FabricaVisualSupportDelegate.crearAnimacionHeliceSubmarino()
 
-    internal fun crearAnimacionBalizaEstacion(): AnimacionBalizaEstacion = AnimacionBalizaEstacion()
+    internal fun crearAnimacionBalizaEstacion(): AnimacionBalizaEstacion =
+        FabricaVisualSupportDelegate.crearAnimacionBalizaEstacion()
 
     fun crearPincelArrecifes(
         gc: GraphicsContext,
         random: Random,
         anchoMundo: Double,
         altoMundo: Double
-    ): PincelArrecifes = PincelArrecifes(gc, random, anchoMundo, altoMundo)
+    ): PincelArrecifes = FabricaVisualSupportDelegate.crearPincelArrecifes(
+        gc = gc,
+        random = random,
+        anchoMundo = anchoMundo,
+        altoMundo = altoMundo
+    )
 
     fun crearPincelCordillera(
         gc: GraphicsContext,
         random: Random,
         anchoMundo: Double
-    ): PincelCordillera = PincelCordillera(gc, random, anchoMundo)
+    ): PincelCordillera = FabricaVisualSupportDelegate.crearPincelCordillera(
+        gc = gc,
+        random = random,
+        anchoMundo = anchoMundo
+    )
 
     fun crearPincelParticulas(
         gc: GraphicsContext,
@@ -145,32 +189,51 @@ object FabricaVisual {
         anchoMundo: Double,
         altoMundo: Double,
         profundidadRayos: Double
-    ): PincelParticulas = PincelParticulas(gc, random, anchoMundo, altoMundo, profundidadRayos)
+    ): PincelParticulas = FabricaVisualSupportDelegate.crearPincelParticulas(
+        gc = gc,
+        random = random,
+        anchoMundo = anchoMundo,
+        altoMundo = altoMundo,
+        profundidadRayos = profundidadRayos
+    )
 
     fun crearDetallesCordillera(
         gc: GraphicsContext,
         random: Random,
         anchoMundo: Double,
         perfil: PerfilCordillera
-    ): DetallesCordillera = DetallesCordillera(gc, random, anchoMundo, perfil)
+    ): DetallesCordillera = FabricaVisualSupportDelegate.crearDetallesCordillera(
+        gc = gc,
+        random = random,
+        anchoMundo = anchoMundo,
+        perfil = perfil
+    )
 
     fun crearPerfilCordillera(xs: DoubleArray, ys: DoubleArray): PerfilCordillera =
-        PerfilCordillera(xs, ys)
+        FabricaVisualSupportDelegate.crearPerfilCordillera(xs = xs, ys = ys)
 
     internal fun crearActualizadorParticulasMarinas(
         ancho: Double,
         alto: Double,
         random: Random
-    ): ActualizadorParticulasMarinas = ActualizadorParticulasMarinas(ancho, alto, random)
+    ): ActualizadorParticulasMarinas = FabricaVisualSupportDelegate.crearActualizadorParticulasMarinas(
+        ancho = ancho,
+        alto = alto,
+        random = random
+    )
 
     internal fun crearFabricaParticulasMarinas(
         random: Random,
         ancho: Double,
         alto: Double
-    ): FabricaParticulasMarinas = FabricaParticulasMarinas(random, ancho, alto)
+    ): FabricaParticulasMarinas = FabricaVisualSupportDelegate.crearFabricaParticulasMarinas(
+        random = random,
+        ancho = ancho,
+        alto = alto
+    )
 
     internal fun crearPintorParticulasMarinas(gc: GraphicsContext): PintorParticulasMarinas =
-        PintorParticulasMarinas(gc)
+        FabricaVisualSupportDelegate.crearPintorParticulasMarinas(gc = gc)
 
     internal fun crearParticulaMarina(
         x: Double,
@@ -180,18 +243,31 @@ object FabricaVisual {
         velocidadY: Double,
         alfa: Double,
         fase: Double
-    ): ParticulaMarina = ParticulaMarina(x, y, radio, velocidadX, velocidadY, alfa, fase)
+    ): ParticulaMarina = FabricaVisualSupportDelegate.crearParticulaMarina(
+        x = x,
+        y = y,
+        radio = radio,
+        velocidadX = velocidadX,
+        velocidadY = velocidadY,
+        alfa = alfa,
+        fase = fase
+    )
 
-    internal fun crearActualizadorPecesMarinos(): ActualizadorPecesMarinos = ActualizadorPecesMarinos()
+    internal fun crearActualizadorPecesMarinos(): ActualizadorPecesMarinos =
+        FabricaVisualSupportDelegate.crearActualizadorPecesMarinos()
 
     internal fun crearFabricaPecesMarinos(
         random: Random,
         ancho: Double,
         alto: Double
-    ): FabricaPecesMarinos = FabricaPecesMarinos(random, ancho, alto)
+    ): FabricaPecesMarinos = FabricaVisualSupportDelegate.crearFabricaPecesMarinos(
+        random = random,
+        ancho = ancho,
+        alto = alto
+    )
 
     internal fun crearPintorPecesMarinos(gc: GraphicsContext): PintorPecesMarinos =
-        PintorPecesMarinos(gc)
+        FabricaVisualSupportDelegate.crearPintorPecesMarinos(gc = gc)
 
     internal fun crearPezMarino(
         centroX: Double,
@@ -231,32 +307,51 @@ object FabricaVisual {
         gc: GraphicsContext,
         random: Random,
         escala: Double
-    ): DetallesRoca = DetallesRoca(gc, random, escala)
+    ): DetallesRoca = FabricaVisualSupportDelegate.crearDetallesRoca(
+        gc = gc,
+        random = random,
+        escala = escala
+    )
 
     fun crearPincelRocaExterior(
         gc: GraphicsContext,
         random: Random,
         escala: Double
-    ): PincelRocaExterior = PincelRocaExterior(gc, random, escala)
+    ): PincelRocaExterior = FabricaVisualSupportDelegate.crearPincelRocaExterior(
+        gc = gc,
+        random = random,
+        escala = escala
+    )
 
-    fun crearPaletaTerrenoRocoso(): PaletaTerrenoRocoso = PaletaTerrenoRocoso()
+    fun crearPaletaTerrenoRocoso(): PaletaTerrenoRocoso = FabricaVisualSupportDelegate.crearPaletaTerrenoRocoso()
 
     fun crearPincelFormacionRocosa(
         gc: GraphicsContext,
         random: Random,
         escala: Double,
         paleta: PaletaTerrenoRocoso = crearPaletaTerrenoRocoso()
-    ): PincelFormacionRocosa = PincelFormacionRocosa(gc, random, escala, paleta)
+    ): PincelFormacionRocosa = FabricaVisualSupportDelegate.crearPincelFormacionRocosa(
+        gc = gc,
+        random = random,
+        escala = escala,
+        paleta = paleta
+    )
 
     fun crearFondoParallaxState(
         offsetsY: List<Double>,
         colorActivo: ColorRgb
-    ): FondoParallaxState = FondoParallaxState(offsetsY, colorActivo)
+    ): FondoParallaxState = FabricaVisualSupportDelegate.crearFondoParallaxState(
+        offsetsY = offsetsY,
+        colorActivo = colorActivo
+    )
 
-    fun crearColorRgb(r: Int, g: Int, b: Int): ColorRgb = ColorRgb(r, g, b)
+    fun crearColorRgb(r: Int, g: Int, b: Int): ColorRgb = FabricaVisualCoreDelegate.crearColorRgb(r = r, g = g, b = b)
 
     fun crearTransicionesExplosion(
         destino: ObservableList<Node>,
         random: Random
-    ): List<Animation> = ConstructorExplosionSubmarino.crear(destino, random)
+    ): List<Animation> = FabricaVisualSupportDelegate.crearTransicionesExplosion(
+        destino = destino,
+        random = random
+    )
 }

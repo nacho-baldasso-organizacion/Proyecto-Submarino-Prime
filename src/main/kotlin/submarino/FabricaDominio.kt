@@ -24,7 +24,7 @@ object FabricaDominio {
         integridad: Double = 100.0,
         factorAbsorcion: Double = 0.5,
         notificador: Notificador = NotificadorConsola
-    ): CascoReforzado = CascoReforzado(
+    ): CascoReforzado = FabricaSubmarinoDelegate.crearCascoReforzado(
         presionMaximaPa = presionMaximaPa,
         integridad = integridad,
         factorAbsorcion = factorAbsorcion,
@@ -35,7 +35,7 @@ object FabricaDominio {
         presionMaximaPa: Double,
         integridad: Double = 100.0,
         notificador: Notificador = NotificadorConsola
-    ): ModuloCasco = ModuloCasco(
+    ): ModuloCasco = FabricaSubmarinoDelegate.crearModuloCasco(
         presionMaximaPa = presionMaximaPa,
         integridad = integridad,
         notificador = notificador
@@ -55,7 +55,7 @@ object FabricaDominio {
         billetera: Billetera? = null,
         notificador: Notificador = NotificadorConsola,
         factoria: FabricaSubsistemasSubmarino = FabricaSubsistemasEstandar
-    ): Submarino = Submarino(
+    ): Submarino = FabricaSubmarinoDelegate.crearSubmarino(
         posX = posX,
         posY = posY,
         velocidad = velocidad,
@@ -70,13 +70,17 @@ object FabricaDominio {
         factoria = factoria
     )
 
-    fun crearReporteSimulacionSubmarino(): ReporteSimulacionSubmarino = ReporteSimulacionSubmarino()
+    fun crearReporteSimulacionSubmarino(): ReporteSimulacionSubmarino =
+        FabricaReportesDelegate.crearReporteSimulacionSubmarino()
 
-    fun crearReporteNavegacionSimulacion(): ReporteNavegacionSimulacion = ReporteNavegacionSimulacion()
+    fun crearReporteNavegacionSimulacion(): ReporteNavegacionSimulacion =
+        FabricaReportesDelegate.crearReporteNavegacionSimulacion()
 
-    fun crearReporteInmersionSimulacion(): ReporteInmersionSimulacion = ReporteInmersionSimulacion()
+    fun crearReporteInmersionSimulacion(): ReporteInmersionSimulacion =
+        FabricaReportesDelegate.crearReporteInmersionSimulacion()
 
-    fun crearReporteSolidSimulacion(): ReporteSolidSimulacion = ReporteSolidSimulacion()
+    fun crearReporteSolidSimulacion(): ReporteSolidSimulacion =
+        FabricaReportesDelegate.crearReporteSolidSimulacion()
 
     fun crearFabricaNavesSimulacion(): FabricaNavesSimulacion = FabricaNavesSimulacion()
 
@@ -97,7 +101,8 @@ object FabricaDominio {
         fabrica: FabricaNavesSimulacion = FabricaDominio.crearFabricaNavesSimulacion()
     ): SimuladorSubmarino = SimuladorSubmarino(reporte = reporte, fabrica = fabrica)
 
-    fun crearBodega(capacidadMaxima: Double): Bodega = Bodega(capacidadMaxima = capacidadMaxima)
+    fun crearBodega(capacidadMaxima: Double): Bodega =
+        FabricaSubmarinoDelegate.crearBodega(capacidadMaxima = capacidadMaxima)
 
     fun crearCatalogoMejorasSesion(): CatalogoMejorasSesion = CatalogoMejorasSesion()
 
@@ -110,7 +115,7 @@ object FabricaDominio {
         submarino: Submarino,
         servicioComercio: ServicioComercioContrato,
         tienda: TiendaMejoras
-    ): EconomiaEstacion = EconomiaEstacion(
+    ): EconomiaEstacion = FabricaEconomíaYServiciosDelegate.crearEconomiaEstacion(
         billetera = billetera,
         casco = casco,
         submarino = submarino,
@@ -119,10 +124,10 @@ object FabricaDominio {
     )
 
     fun crearZonaSuperficie(profundidadMaxima: Double = 0.0): ZonaSuperficie =
-        ZonaSuperficie(profundidadMaxima = profundidadMaxima)
+        FabricaSubmarinoDelegate.crearZonaSuperficie(profundidadMaxima = profundidadMaxima)
 
     fun crearEstacionAcople(
-        zonaAcople: ZonaAcople = FabricaDominio.crearZonaSuperficie()
+        zonaAcople: ZonaAcople = FabricaSubmarinoDelegate.crearZonaSuperficie()
     ): EstacionAcople = EstacionAcople(zonaAcople = zonaAcople)
 
     fun crearEstadoJuego(
@@ -145,7 +150,7 @@ object FabricaDominio {
         causaDestruccion: String = "",
         presionActual: Double = 0.0,
         presionMaxima: Double = 1.0
-    ): EstadoJuego = EstadoJuego(
+    ): EstadoJuego = FabricaEconomíaYServiciosDelegate.crearEstadoJuego(
         posicionX = posicionX,
         profundidad = profundidad,
         oxigeno = oxigeno,
@@ -172,7 +177,7 @@ object FabricaDominio {
         altoMapa: Double,
         gestorDanio: GestorDanioSubmarino,
         casco: ModuloCasco
-    ): EstadoPartida = EstadoPartida(
+    ): EstadoPartida = FabricaEconomíaYServiciosDelegate.crearEstadoPartida(
         anchoMapa = anchoMapa,
         altoMapa = altoMapa,
         gestorDanio = gestorDanio,
@@ -184,7 +189,7 @@ object FabricaDominio {
         anchoMapa: Double,
         altoMapa: Double,
         semilla: Long
-    ): GeneradorNodosMinerales = GeneradorNodosMinerales(
+    ): GeneradorNodosMinerales = FabricaEconomíaYServiciosDelegate.crearGeneradorNodosMinerales(
         terreno = terreno,
         anchoMapa = anchoMapa,
         altoMapa = altoMapa,
@@ -192,32 +197,34 @@ object FabricaDominio {
     )
 
     fun crearGestorDanioSubmarino(casco: Casco): GestorDanioSubmarino =
-        GestorDanioSubmarino(casco = casco)
+        FabricaSubmarinoDelegate.crearGestorDanioSubmarino(casco = casco)
 
-    fun crearMonedero(saldoInicial: Int = 0): Monedero = Monedero(saldoInicial = saldoInicial)
+    fun crearMonedero(saldoInicial: Int = 0): Monedero =
+        FabricaEconomíaYServiciosDelegate.crearMonedero(saldoInicial = saldoInicial)
 
     fun crearPosicion(posX: Int, posY: Int): Posicion = Posicion(posX = posX, posY = posY)
 
-    fun crearServicioComercio(): ServicioComercio = ServicioComercio()
+    fun crearServicioComercio(): ServicioComercio =
+        FabricaEconomíaYServiciosDelegate.crearServicioComercio()
 
     fun crearServicioComercio(calculadoraPrecios: CalculadoraPrecios): ServicioComercio =
-        ServicioComercio(calculadoraPrecios = calculadoraPrecios)
+        FabricaEconomíaYServiciosDelegate.crearServicioComercio(calculadoraPrecios = calculadoraPrecios)
 
     fun crearServicioRecoleccion(
         almacenamiento: Almacenamiento,
         detectorColisiones: DetectorColisiones
-    ): ServicioRecoleccion = ServicioRecoleccion(
+    ): ServicioRecoleccion = FabricaEconomíaYServiciosDelegate.crearServicioRecoleccion(
         almacenamiento = almacenamiento,
         detectorColisiones = detectorColisiones
     )
 
     fun crearServicioUpgrades(catalogo: ConsultableCatalogo): ServicioUpgrades =
-        ServicioUpgrades(catalogo = catalogo)
+        FabricaEconomíaYServiciosDelegate.crearServicioUpgrades(catalogo = catalogo)
 
     fun crearTiendaMejoras(
         catalogo: ConsultableCatalogo,
         procesadorCompras: ProcesadorCompras
-    ): TiendaMejoras = TiendaMejoras(
+    ): TiendaMejoras = FabricaEconomíaYServiciosDelegate.crearTiendaMejoras(
         catalogo = catalogo,
         procesadorCompras = procesadorCompras
     )
@@ -239,7 +246,7 @@ object FabricaDominio {
         consumoMovimientoPorSegundo: Double,
         maximoAbsoluto: Double = Double.MAX_VALUE,
         minimo: Double = 0.0
-    ): SistemaOxigeno = SistemaOxigeno(
+    ): SistemaOxigeno = FabricaEconomíaYServiciosDelegate.crearSistemaOxigeno(
         oxigenoInicial = oxigenoInicial,
         maximoInicial = maximoInicial,
         consumoBasePorSegundo = consumoBasePorSegundo,
@@ -299,35 +306,38 @@ object FabricaDominio {
     )
 
     fun crearFabricaRecolectablesMineral(): FabricaRecolectablesMineral =
-        FabricaRecolectablesMineral()
+        FabricaEconomíaYServiciosDelegate.crearFabricaRecolectablesMineral()
 
     fun crearFormacionRocosa(
         id: String,
         puntos: List<PuntoCresta>,
         baseY: Double
-    ): FormacionRocosa = FormacionRocosa(
+    ): FormacionRocosa = FabricaEconomíaYServiciosDelegate.crearFormacionRocosa(
         id = id,
         puntos = puntos,
         baseY = baseY
     )
 
-    fun crearPuntoCresta(x: Double, y: Double): PuntoCresta = PuntoCresta(x = x, y = y)
+    fun crearPuntoCresta(x: Double, y: Double): PuntoCresta =
+        FabricaEconomíaYServiciosDelegate.crearPuntoCresta(x = x, y = y)
 
     fun crearTerrenoSubmarino(
         formaciones: List<FormacionRocosa>,
         sueloMarino: FormacionRocosa
-    ): TerrenoSubmarino = TerrenoSubmarino(
+    ): TerrenoSubmarino = FabricaEconomíaYServiciosDelegate.crearTerrenoSubmarino(
         formaciones = formaciones,
         sueloMarino = sueloMarino
     )
 
     fun crearClasificacionRecurso(tipo: TipoMineral): ClasificacionRecurso =
-        ClasificacionRecurso(tipo = tipo)
+        FabricaEconomíaYServiciosDelegate.crearClasificacionRecurso(tipo = tipo)
 
     fun crearEstadoRecoleccionMineral(
         inicialmenteRecolectado: Boolean = false
     ): EstadoRecoleccionMineral =
-        EstadoRecoleccionMineral(inicialmenteRecolectado = inicialmenteRecolectado)
+        FabricaEconomíaYServiciosDelegate.crearEstadoRecoleccionMineral(
+            inicialmenteRecolectado = inicialmenteRecolectado
+        )
 
     fun crearEfectoOxigeno(
         incremento: Double,
@@ -359,16 +369,17 @@ object FabricaDominio {
     fun crearEstrategiaCostoLineal(
         costoBase: Int,
         incrementoPorNivel: Int
-    ): EstrategiaCostoLineal = EstrategiaCostoLineal(
+    ): EstrategiaCostoLineal = FabricaEconomíaYServiciosDelegate.crearEstrategiaCostoLineal(
         costoBase = costoBase,
         incrementoPorNivel = incrementoPorNivel
     )
 
     fun crearControladorMovimientoTeclado(): ControladorMovimientoTeclado =
-        ControladorMovimientoTeclado()
+        FabricaEconomíaYServiciosDelegate.crearControladorMovimientoTeclado()
 
     fun crearControladorAccionesTeclado(): ControladorAccionesTeclado =
-        ControladorAccionesTeclado()
+        FabricaEconomíaYServiciosDelegate.crearControladorAccionesTeclado()
 
-    fun crearColorRgb(r: Int, g: Int, b: Int): ColorRgb = ColorRgb(r = r, g = g, b = b)
+    fun crearColorRgb(r: Int, g: Int, b: Int): ColorRgb =
+        FabricaEconomíaYServiciosDelegate.crearColorRgb(r = r, g = g, b = b)
 }
