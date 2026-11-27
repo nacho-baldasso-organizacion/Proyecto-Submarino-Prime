@@ -5,7 +5,7 @@ import java.util.Locale
 /**
  * Constants for HUD rendering formatting and thresholds.
  */
-private object HUDFormatting {
+internal object HUDFormatting {
     val usLocale: Locale = Locale.US
 
     // Pressure bar thresholds

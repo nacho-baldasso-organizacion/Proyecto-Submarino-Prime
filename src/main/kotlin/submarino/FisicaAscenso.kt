@@ -21,13 +21,29 @@ class EstadoAscenso(
     val velocidadNominal: Double,
     val velocidadAscensoEfectiva: Double
 ) {
+
+    internal data class EstadoInterno(
+        val pesoBase: Double,
+        val pesoCarga: Double,
+        val pesoTotal: Double,
+        val capacidadMaximaBodega: Double,
+        val factorVelocidad: Double,
+        val velocidadNominal: Double,
+        val velocidadAscensoEfectiva: Double
+    )
+
+    private val interno = EstadoInterno(
+        pesoBase, pesoCarga, pesoTotal,
+        capacidadMaximaBodega, factorVelocidad, velocidadNominal, velocidadAscensoEfectiva
+    )
+
     /**
      * Calcula la relación normalizada entre la carga transportada y la capacidad máxima
      * de la bodega (0.0 a 1.0). Si no existe capacidad configurada, retorna 0.0.
      */
     fun ratioCarga(): Double {
-        if (capacidadMaximaBodega <= 0.0) return 0.0
-        return (pesoCarga / capacidadMaximaBodega).coerceIn(0.0, 1.0)
+        if (interno.capacidadMaximaBodega <= 0.0) return 0.0
+        return (interno.pesoCarga / interno.capacidadMaximaBodega).coerceIn(0.0, 1.0)
     }
 
     /**

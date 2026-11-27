@@ -33,13 +33,15 @@ class ClasificacionRecurso(
      */
     fun estaEnRangoProfundidad(profundidad: Double): Boolean = tipo.estaEnRango(profundidad)
 
-    fun esPesado(): Boolean = peso >= UMBRAL_PESO_PESADO
+    /**
+     * Determina si el mineral es pesado.
+     */
+    fun esPesado(): Boolean = peso >= 3.0
 
+    /**
+     * Determina si el mineral es rentable según el umbral de ratio indicado.
+     */
     fun esRentable(umbralRatio: Double = 20.0): Boolean = valorPorKilogramo() >= umbralRatio
-
-    companion object {
-        const val UMBRAL_PESO_PESADO: Double = 3.0
-    }
 }
 
 /**
@@ -64,9 +66,7 @@ class EstadoRecoleccionMineral(
 }
 
 /**
- * Representa una veta física o ejemplar de mineral colocado en una coordenada del mapa.
- * Compone [ClasificacionRecurso] y [EstadoRecoleccionMineral] cumpliendo con SRP.
- * Implementa [Recolectable] con encapsulación estricta de estado (campos con `private set`).
+ * Clase principal de mineral.
  */
 class Mineral(
     id: String,
@@ -76,19 +76,23 @@ class Mineral(
     recolectado: Boolean = false
 ) : Recolectable {
 
-    override val id: String = id
-
-    override val posX: Int = posX
-
-    override val posY: Int = posY
+    internal data class Estado(
+        val clasificacion: ClasificacionRecurso,
+        val estadoRecoleccion: EstadoRecoleccionMineral
+    )
 
     private val clasificacion: ClasificacionRecurso =
         FabricaDominio.crearClasificacionRecurso(tipo)
     private val estadoRecoleccion: EstadoRecoleccionMineral =
         FabricaDominio.crearEstadoRecoleccionMineral(recolectado)
 
-    val tipo: TipoMineral
-        get() = clasificacion.tipo
+    private val estado = Estado(clasificacion, estadoRecoleccion)
+
+    override val id: String = id
+
+    override val posX: Int = posX
+
+    override val posY: Int = posY
 
     override var recolectado: Boolean
         get() = estadoRecoleccion.estaRecolectado
@@ -98,17 +102,20 @@ class Mineral(
             }
         }
 
+    val tipo: TipoMineral
+        get() = estado.clasificacion.tipo
+
     override val nombre: String
-        get() = clasificacion.nombre
+        get() = estado.clasificacion.nombre
 
     override val peso: Double
-        get() = clasificacion.peso
+        get() = estado.clasificacion.peso
 
     override val valor: Int
-        get() = clasificacion.valor
+        get() = estado.clasificacion.valor
 
     val zona: String
-        get() = clasificacion.zona
+        get() = estado.clasificacion.zona
 
     /**
      * Marca el ejemplar como recolectado modificando su estado interno.
@@ -120,12 +127,12 @@ class Mineral(
     /**
      * Evalúa si el mineral corresponde a una clase pesada (>= 3.0 kg).
      */
-    fun esPesado(): Boolean = clasificacion.esPesado()
+    fun esPesado(): Boolean = estado.clasificacion.esPesado()
 
     /**
      * Indica si el mineral aún no ha sido recolectado.
      */
-    fun estaDisponibleParaRecoleccion(): Boolean = estadoRecoleccion.estaDisponible()
+    fun estaDisponibleParaRecoleccion(): Boolean = estado.estadoRecoleccion.estaDisponible()
 
     /**
      * Indica si el mineral ocupa exactamente las coordenadas indicadas.
@@ -141,23 +148,23 @@ class Mineral(
     /**
      * Valor comercial obtenido por cada kilogramo de este mineral.
      */
-    fun ratioValorPeso(): Double = clasificacion.valorPorKilogramo()
+    fun ratioValorPeso(): Double = estado.clasificacion.valorPorKilogramo()
 
     /**
-     * Determina si el mineral es rentable según el umbral de valor por kilogramo indicado.
+     * Determina si el mineral es rentable según el umbral de ratio indicado.
      */
-    fun esRentable(umbralRatio: Double = 20.0): Boolean = clasificacion.esRentable(umbralRatio)
+    fun esRentable(umbralRatio: Double = 20.0): Boolean = estado.clasificacion.esRentable(umbralRatio)
 
     /**
      * Determina si el mineral supera el umbral de valor económico indicado.
      */
-    fun esValioso(umbral: Int = 100): Boolean = clasificacion.esValioso(umbral)
+    fun esValioso(umbral: Int = 100): Boolean = estado.clasificacion.esValioso(umbral)
 
     /**
      * Indica si la profundidad dada corresponde a la franja natural de este mineral.
      */
     fun estaEnRangoProfundidad(profundidad: Double): Boolean =
-        clasificacion.estaEnRangoProfundidad(profundidad)
+        estado.clasificacion.estaEnRangoProfundidad(profundidad)
 
     fun obtenerPosicion(): Posicion = FabricaDominio.crearPosicion(posX, posY)
 

@@ -2,6 +2,7 @@ package submarino
 
 import javafx.animation.AnimationTimer
 import javafx.scene.canvas.Canvas
+import javafx.scene.canvas.GraphicsContext
 import kotlin.random.Random
 
 /**
@@ -14,42 +15,66 @@ import kotlin.random.Random
 class ParticulasMarinas(
     private val ancho: Double,
     private val alto: Double,
-    semilla: Long = SEMILLA_DEFAULT
+    semilla: Long = 33L
 ) {
 
-    val nodo: Canvas = Canvas(ancho, alto).apply {
+    internal val nodo: Canvas = Canvas(ancho, alto).apply {
         isMouseTransparent = true
     }
 
-    private val gc = nodo.graphicsContext2D
-    private val random = Random(semilla)
-    private val fabrica = FabricaParticulasMarinas(random, ancho, alto)
-    private val particulas: List<ParticulaMarina> = List(CANTIDAD) { fabrica.crear() }
-    private val actualizador = ActualizadorParticulasMarinas(ancho, alto, random)
-    private val pintor = PintorParticulasMarinas(gc)
+    private val gc: GraphicsContext = nodo.graphicsContext2D
+    private val random: Random = Random(semilla)
+    private val fabrica: FabricaParticulasMarinas = FabricaParticulasMarinas(random, ancho, alto)
+    private val particulas: List<ParticulaMarina> = List(110) { fabrica.crear() }
+    private val actualizador: ActualizadorParticulasMarinas = ActualizadorParticulasMarinas(ancho, alto, random)
+    private val pintor: PintorParticulasMarinas = PintorParticulasMarinas(gc)
     private var animacion: AnimationTimer? = null
     private var ultimoInstante: Long = 0L
 
-    init {
-        dibujar()
-    }
+    internal data class Estado(
+        val ancho: Double,
+        val alto: Double,
+        val nodo: Canvas,
+        val gc: GraphicsContext,
+        val random: Random,
+        val fabrica: FabricaParticulasMarinas,
+        val particulas: List<ParticulaMarina>,
+        val actualizador: ActualizadorParticulasMarinas,
+        val pintor: PintorParticulasMarinas,
+        val animacion: AnimationTimer?,
+        val ultimoInstante: Long
+    )
+
+    private val state = Estado(
+        ancho = ancho,
+        alto = alto,
+        nodo = nodo,
+        gc = gc,
+        random = random,
+        fabrica = fabrica,
+        particulas = particulas,
+        actualizador = actualizador,
+        pintor = pintor,
+        animacion = animacion,
+        ultimoInstante = ultimoInstante
+    )
 
     /**
      * Inicia el movimiento continuo de las partículas.
      */
     fun iniciar() {
-        if (animacion != null) {
+        if (state.animacion != null) {
             return
         }
         val timer = object : AnimationTimer() {
             override fun handle(ahora: Long) {
-                if (ultimoInstante == 0L) {
+                if (state.ultimoInstante == 0L) {
                     ultimoInstante = ahora
                     dibujar()
                     return
                 }
-                val delta = ((ahora - ultimoInstante) / NANOSEGUNDOS_POR_SEGUNDO)
-                    .coerceIn(0.0, DELTA_MAXIMO)
+                val delta = ((ahora - ultimoInstante) / 1_000_000_000.0)
+                    .coerceIn(0.0, 0.05)
                 ultimoInstante = ahora
                 actualizar(delta)
                 dibujar()
@@ -69,18 +94,11 @@ class ParticulasMarinas(
     }
 
     private fun actualizar(delta: Double) {
-        actualizador.actualizar(particulas, delta)
+        actualizador.actualizar(state.particulas, delta)
     }
 
     private fun dibujar() {
-        gc.clearRect(0.0, 0.0, ancho, alto)
-        pintor.dibujar(particulas)
-    }
-
-    companion object {
-        private const val SEMILLA_DEFAULT = 33L
-        private const val CANTIDAD = 110
-        private const val NANOSEGUNDOS_POR_SEGUNDO = 1_000_000_000.0
-        private const val DELTA_MAXIMO = 0.05
+        state.gc.clearRect(0.0, 0.0, state.ancho, state.alto)
+        state.pintor.dibujar(state.particulas)
     }
 }

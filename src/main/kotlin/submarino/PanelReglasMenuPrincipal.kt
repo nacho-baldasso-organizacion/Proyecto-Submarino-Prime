@@ -16,20 +16,30 @@ class PanelReglasMenuPrincipal(
     private val botones: BotonesMenuPrincipal
 ) {
 
-    private val overlay: StackPane = crearOverlayReglas()
+    internal data class Estado(
+        val overlay: StackPane,
+        val raiz: StackPane,
+        val botones: BotonesMenuPrincipal
+    )
 
-    fun obtenerNodo(): StackPane = overlay
+    private val state = Estado(
+        overlay = crearOverlayRegulas(),
+        raiz = raiz,
+        botones = botones
+    )
+
+    fun obtenerNodo(): StackPane = state.overlay
 
     fun mostrar(mostrar: Boolean) {
-        overlay.isVisible = mostrar
-        overlay.isMouseTransparent = !mostrar
+        state.overlay.isVisible = mostrar
+        state.overlay.isMouseTransparent = !mostrar
     }
 
-    private fun crearOverlayReglas(): StackPane {
+    private fun crearOverlayRegulas(): StackPane {
         val fondoModal = Rectangle().apply {
             fill = Color.rgb(0, 0, 0, 0.72)
-            widthProperty().bind(raiz.widthProperty())
-            heightProperty().bind(raiz.heightProperty())
+            widthProperty().bind(state.raiz.widthProperty())
+            heightProperty().bind(state.raiz.heightProperty())
         }
 
         val titulo = Label("REGLAS DE EXPLORACIÓN").apply {

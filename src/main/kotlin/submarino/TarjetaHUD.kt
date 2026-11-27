@@ -17,8 +17,22 @@ class TarjetaHUD(
     barra: ProgressBar? = null
 ) {
 
+    internal data class Estado(
+        val titulo: String,
+        val estiloTitulo: String,
+        val estiloValorBase: String,
+        val barra: ProgressBar?
+    )
+
+    private val state = Estado(
+        titulo = titulo,
+        estiloTitulo = estiloTitulo,
+        estiloValorBase = estiloValorBase,
+        barra = barra
+    )
+
     val valor: Label = Label("--").apply {
-        style = estiloValorBase
+        style = state.estiloValorBase
     }
 
     private val tarjeta: VBox = VBox(2.0).apply {
@@ -34,7 +48,7 @@ class TarjetaHUD(
 
     fun actualizar(texto: String, estiloTexto: String) {
         valor.text = texto
-        valor.style = estiloValorBase + estiloTexto
+        valor.style = state.estiloValorBase + estiloTexto
     }
 
     private fun crearContenido(barra: ProgressBar?): Node {
@@ -49,6 +63,6 @@ class TarjetaHUD(
     }
 
     private fun crearTitulo(texto: String): Label = Label(texto).apply {
-        style = estiloTitulo
+        style = state.estiloTitulo
     }
 }
