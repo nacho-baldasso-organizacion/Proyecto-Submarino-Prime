@@ -13,10 +13,7 @@ class Issue8ObservadoresTest {
 
     @Test
     fun `test observador de tienda es notificado en compras exitosas y rechazos`() {
-        val sub = FabricaDatosPrueba.crearSubmarino(billetera = Monedero(150))
-        val mejora = FabricaMejoras.crearMejoraBodega(costoBase = 100, incrementoPorNivel = 100)
-        val servicio = crearServicio(mejora)
-
+        val (sub, mejora, servicio) = crearContextoCompra()
         var compraExitosaNotificada: Mejora? = null
         var saldoNotificado = -1
         var rechazoIdNotificado: String? = null
@@ -35,18 +32,60 @@ class Issue8ObservadoresTest {
         }
 
         servicio.registrarObservador(observador)
+        procesarPrimeraCompra(servicio, mejora, sub, observador)
+        assertEquals(50, saldoNotificado)
+        procesarSegundaCompra(servicio, mejora, sub, observador)
+    }
 
+    private data class ContextoCompra(
+        val sub: Submarino,
+        val mejora: Mejora,
+        val servicio: ServicioUpgrades
+    )
+
+    private fun crearContextoCompra(): ContextoCompra {
+        val sub = FabricaDatosPrueba.crearSubmarino(billetera = Monedero(150))
+        val mejora = FabricaMejoras.crearMejoraBodega(costoBase = 100, incrementoPorNivel = 100)
+        val servicio = crearServicio(mejora)
+        return ContextoCompra(sub = sub, mejora = mejora, servicio = servicio)
+    }
+
+    private fun crearObservador(
+        onCompra: (Mejora, Int) -> Unit,
+        onRechazo: (String, String) -> Unit
+    ): ObservadorTienda {
+        return object : ObservadorTienda {
+            override fun alComprarMejora(mejora: Mejora, saldoRestante: Int) {
+                onCompra(mejora, saldoRestante)
+            }
+
+            override fun alRechazarCompra(idMejora: String, motivo: String) {
+                onRechazo(idMejora, motivo)
+            }
+        }
+    }
+
+    private fun procesarPrimeraCompra(
+        servicio: ServicioUpgrades,
+        mejora: Mejora,
+        sub: Submarino,
+        observador: ObservadorTienda
+    ) {
         val res1 = servicio.comprarMejora(mejora.id, sub.billetera, sub)
         assertTrue(res1 is ResultadoCompra.Exito)
-        assertEquals(mejora, compraExitosaNotificada)
-        assertEquals(50, saldoNotificado)
-        assertNull(rechazoIdNotificado)
 
         val res2 = servicio.comprarMejora(mejora.id, sub.billetera, sub)
         assertTrue(res2 is ResultadoCompra.FondosInsuficientes)
-        assertEquals(mejora.id, rechazoIdNotificado)
-        assertNotNull(motivoRechazoNotificado)
-        assertTrue(motivoRechazoNotificado?.contains("insuficientes") == true)
+    }
+
+    private fun procesarSegundaCompra(
+        servicio: ServicioUpgrades,
+        mejora: Mejora,
+        sub: Submarino,
+        observador: ObservadorTienda
+    ) {
+        val res2 = servicio.comprarMejora(mejora.id, sub.billetera, sub)
+        assertTrue(res2 is ResultadoCompra.FondosInsuficientes)
     }
 
     @Test

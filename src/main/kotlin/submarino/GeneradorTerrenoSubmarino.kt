@@ -8,8 +8,8 @@ import kotlin.random.Random
 /**
  * Generador procedural del relieve submarino: formaciones rocosas y suelo marino.
  *
- * Responsabilidad ��nica (SRP): construir el conjunto de [FormacionRocosa] a partir
- * de una semilla, sin conocer c��mo se consultan o representan despuǸs.
+ * Responsabilidad única (SRP): construir el conjunto de [FormacionRocosa] a partir
+ * de una semilla, sin conocer cómo se consultan o representan después.
  */
 class GeneradorTerrenoSubmarino {
 
@@ -36,7 +36,12 @@ class GeneradorTerrenoSubmarino {
     }
 
     private fun formacionesAncla(): List<FormacionRocosa> = listOf(
-        FabricaDominio.crearFormacionRocosa(
+        crearMontanaDeOro(),
+        crearArcoDeHierro()
+    )
+
+    private fun crearMontanaDeOro(): FormacionRocosa {
+        return FabricaDominio.crearFormacionRocosa(
             id = "MONTANA-COBRE",
             puntos = listOf(
                 FabricaDominio.crearPuntoCresta(1460.0, 980.0),
@@ -53,8 +58,11 @@ class GeneradorTerrenoSubmarino {
                 FabricaDominio.crearPuntoCresta(3220.0, 965.0)
             ),
             baseY = 1060.0
-        ),
-        FabricaDominio.crearFormacionRocosa(
+        )
+    }
+
+    private fun crearArcoDeHierro(): FormacionRocosa {
+        return FabricaDominio.crearFormacionRocosa(
             id = "ARRECIFE-HIERRO",
             puntos = listOf(
                 FabricaDominio.crearPuntoCresta(2190.0, 1770.0),
@@ -67,7 +75,7 @@ class GeneradorTerrenoSubmarino {
             ),
             baseY = 1830.0
         )
-    )
+    }
 
     private fun crearFormacionProcedural(
         indice: Int,
@@ -97,22 +105,43 @@ class GeneradorTerrenoSubmarino {
         val puntos = mutableListOf<PuntoCresta>()
 
         for (indice in 0 until cantidad) {
-            val avance = indice.toDouble() / (cantidad - 1)
-            val x = izquierda + config.ancho * avance
-            val envolvente = sin(PI * avance).coerceIn(0.0, 1.0)
-            val perfil = (
-                0.62 * envolvente +
-                    0.23 * sin(picos * PI * avance + faseA).coerceIn(0.0, 1.0) +
-                    0.15 * sin((picos + 2) * PI * avance + faseB)
-                ).coerceIn(0.0, 1.0)
-            val desvio = config.random.nextDouble(-0.05, 0.05)
-            var y = config.baseY - config.altura * (0.12 + 0.88 * (perfil + desvio).coerceIn(0.0, 1.0))
-            if (indice == 0 || indice == cantidad - 1) {
-                y = config.baseY - config.altura * config.random.nextDouble(0.02, 0.12)
-            }
-            puntos.add(FabricaDominio.crearPuntoCresta(x, y.coerceIn(130.0, config.altoMapa - 25.0)))
+            val punto = crearPuntoCrestaIndividual(
+                indice = indice,
+                cantidad = cantidad,
+                izquierda = izquierda,
+                config = config,
+                faseA = faseA,
+                faseB = faseB,
+                picos = picos
+            )
+            puntos.add(punto)
         }
         return puntos
+    }
+
+    private fun crearPuntoCrestaIndividual(
+        indice: Int,
+        cantidad: Int,
+        izquierda: Double,
+        config: ConfigCrestas,
+        faseA: Double,
+        faseB: Double,
+        picos: Int
+    ): PuntoCresta {
+        val avance = indice.toDouble() / (cantidad - 1)
+        val x = izquierda + config.ancho * avance
+        val envolvente = sin(PI * avance).coerceIn(0.0, 1.0)
+        val perfil = (
+            0.62 *envolvente +
+                0.23 * sin(picos * PI * avance + faseA).coerceIn(0.0, 1.0) +
+                0.15 * sin((picos + 2) * PI * avance + faseB)
+            ).coerceIn(0.0, 1.0)
+        val desvio = config.random.nextDouble(-0.05, 0.05)
+        var y = config.baseY - config.altura * (0.12 + 0.88 * (perfil + desvio).coerceIn(0.0, 1.0))
+        if (indice == 0 || indice == cantidad - 1) {
+            y = config.baseY - config.altura * config.random.nextDouble(0.02, 0.12)
+        }
+        return FabricaDominio.crearPuntoCresta(x, y.coerceIn(130.0, config.altoMapa - 25.0))
     }
 
     private fun crearSueloMarino(

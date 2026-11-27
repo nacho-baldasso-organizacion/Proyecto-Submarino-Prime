@@ -1,6 +1,7 @@
 package submarino
 
 import kotlin.math.roundToInt
+import submarino.EstadoPartida.EntradaActualizacionPartida
 
 /**
  * Modelo de la partida, completamente independiente de JavaFX.
@@ -65,6 +66,12 @@ val esAcoplado: Boolean
  */
 val velocidadNave: Double
     get() = submarino.velocidad
+
+    /**
+     * Indica si la partida ha sido destruida.
+     */
+    val estaDestruida: Boolean
+        get() = partida.estaDestruida()
 
     /**
      * Actualiza la navegación, el oxígeno y el desgaste del casco.

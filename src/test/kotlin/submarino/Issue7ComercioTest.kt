@@ -30,7 +30,7 @@ class Issue7ComercioTest {
 
         val resultado = ServicioComercio().venderBodegaSubmarino(sub)
 
-        verificarVentaExitosa(resultado, EsperadoVenta(total = 255, cantidad = 2, saldo = 305))
+        verificarVentaExitosa(resultado, EsperadoVenta(total = 255, cantidad = 2, saldo = 305), bodega)
         assertEquals(305, sub.billetera.saldo)
         assertEquals(sub.pesoBase, sub.pesoTotal, 0.001)
         assertEquals(1.0, sub.factorAscenso, 0.001)
@@ -110,7 +110,8 @@ class Issue7ComercioTest {
 
     private fun verificarVentaExitosa(
         resultado: ResultadoComercio,
-        esperado: EsperadoVenta
+        esperado: EsperadoVenta,
+        bodega: Bodega
     ) {
         val exito = assertIs<ResultadoComercio.Exito>(resultado)
         assertEquals(esperado.total, exito.transaccion.totalCreditos)

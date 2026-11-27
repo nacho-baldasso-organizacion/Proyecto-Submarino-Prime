@@ -36,15 +36,32 @@ class PanelReglasMenuPrincipal(
     }
 
     private fun crearOverlayRegulas(): StackPane {
+        val fondoModal = crearFondoModal()
+        val titulo = crearTitulo()
+        val reglas = crearReglas()
+        val cerrar = crearBotonCerrar()
+        val panel = crearPanel(titulo, reglas, cerrar)
+
+        return crearStackPane(fondoModal, panel)
+    }
+
+    private fun crearFondoModal(): Rectangle {
         val fondoModal = Rectangle().apply {
             fill = Color.rgb(0, 0, 0, 0.72)
-            widthProperty().bind(state.raiz.widthProperty())
-            heightProperty().bind(state.raiz.heightProperty())
+            widthProperty().bind(raiz.widthProperty())
+            heightProperty().bind(raiz.heightProperty())
         }
+        return fondoModal
+    }
 
+    private fun crearTitulo(): Label {
         val titulo = Label("REGLAS DE EXPLORACIÓN").apply {
             style = ESTILO_TITULO_MODAL
         }
+        return titulo
+    }
+
+    private fun crearReglas(): VBox {
         val reglas = VBox(10.0).apply {
             children.addAll(
                 crearRegla("WASD / FLECHAS", "Mover el submarino en los ejes X e Y."),
@@ -53,23 +70,7 @@ class PanelReglasMenuPrincipal(
                 crearRegla("OBJETIVO", "Recolecta Cobre, Hierro y Oro; vende en superficie y mejora tu nave.")
             )
         }
-        val cerrar = botones.crearBoton("VOLVER AL MENÚ", true).apply {
-            setOnAction { mostrar(false) }
-        }
-
-        val panel = VBox(16.0).apply {
-            alignment = Pos.CENTER_LEFT
-            style = ESTILO_PANEL_MODAL
-            maxWidth = 620.0
-            children.addAll(titulo, reglas, cerrar)
-        }
-
-        return StackPane().apply {
-            children.addAll(fondoModal, panel)
-            StackPane.setAlignment(panel, Pos.CENTER)
-            isVisible = false
-            isMouseTransparent = true
-        }
+        return reglas
     }
 
     private fun crearRegla(tecla: String, texto: String): HBox {
@@ -86,6 +87,33 @@ class PanelReglasMenuPrincipal(
             alignment = Pos.CENTER_LEFT
             children.addAll(etiquetaTecla, etiquetaTexto)
         }
+    }
+
+    private fun crearBotonCerrar(): javafx.scene.control.Button {
+        val cerrar = botones.crearBoton("VOLVER AL MENÚ", true).apply {
+            setOnAction { mostrar(false) }
+        }
+        return cerrar
+    }
+
+    private fun crearPanel(titulo: Label, reglas: VBox, cerrar: javafx.scene.control.Button): VBox {
+        val panel = VBox(16.0).apply {
+            alignment = Pos.CENTER_LEFT
+            style = ESTILO_PANEL_MODAL
+            maxWidth = 620.0
+            children.addAll(titulo, reglas, cerrar)
+        }
+        return panel
+    }
+
+    private fun crearStackPane(fondoModal: Rectangle, panel: VBox): StackPane {
+        val stack = StackPane().apply {
+            children.addAll(fondoModal, panel)
+            StackPane.setAlignment(panel, Pos.CENTER)
+            isVisible = false
+            isMouseTransparent = true
+        }
+        return stack
     }
 
     companion object {

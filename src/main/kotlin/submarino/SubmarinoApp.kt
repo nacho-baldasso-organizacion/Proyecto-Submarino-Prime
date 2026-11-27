@@ -54,35 +54,54 @@ class SubmarinoApp : Application() {
     private fun iniciarJuego() {
         detenerJuego()
 
-        val sesion = FabricaVisual.crearSesionJuego()
-        val vista = FabricaVisual.crearVistaJuego(
-            anchoEscena = ANCHO_ESCENA,
-            altoEscena = ALTO_ESCENA,
-            sesion = sesion,
-            alReintentar = { iniciarJuego() },
-            alVolverAlMenu = { mostrarMenu() }
-        )
-        val controlador = FabricaVisual.crearControladorTeclado()
-        val escena = Scene(
-            vista.obtenerRaiz(),
-            ANCHO_ESCENA,
-            ALTO_ESCENA,
-            Color.web(COLOR_FONDO)
-        )
+        val sesion = crearSesion()
+        val vista = crearVista(sesion)
+        val controlador = crearControlador()
+        val escena = crearEscena(vista)
         controlador.conectar(escena)
 
-        val bucle = FabricaVisual.crearBucleJuego(
-            sesion = sesion,
-            vista = vista,
-            controlador = controlador
-        )
+        val bucle = crearBucle(sesion, vista, controlador)
         vista.actualizar(sesion.estado())
         bucle.start()
 
-        escenaActual = escena
+        actualizarReferencias(bucle, controlador, vista, escena)
+    }
+
+    private fun crearSesion(): SesionJuego = FabricaVisual.crearSesionJuego()
+
+    private fun crearVista(sesion: SesionJuego): VistaJuego = FabricaVisual.crearVistaJuego(
+        anchoEscena = ANCHO_ESCENA,
+        altoEscena = ALTO_ESCENA,
+        sesion = sesion,
+        alReintentar = { iniciarJuego() },
+        alVolverAlMenu = { mostrarMenu() }
+    )
+
+    private fun crearControlador(): ControladorTeclado = FabricaVisual.crearControladorTeclado()
+
+    private fun crearEscena(vista: VistaJuego): Scene = Scene(
+        vista.obtenerRaiz(),
+        ANCHO_ESCENA,
+        ALTO_ESCENA,
+        Color.web(COLOR_FONDO)
+    )
+
+    private fun crearBucle(sesion: SesionJuego, vista: VistaJuego, controlador: ControladorTeclado): BucleJuego = FabricaVisual.crearBucleJuego(
+        sesion = sesion,
+        vista = vista,
+        controlador = controlador
+    )
+
+    private fun actualizarReferencias(
+        bucle: BucleJuego,
+        controlador: ControladorTeclado,
+        vista: VistaJuego,
+        escena: Scene
+    ) {
+        vistaActual = vista
         controladorTeclado = controlador
         bucleJuego = bucle
-        vistaActual = vista
+        escenaActual = escena
         escenario?.scene = escena
     }
 

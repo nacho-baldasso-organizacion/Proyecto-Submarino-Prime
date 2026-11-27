@@ -28,23 +28,58 @@ class ConstructorFilasMejoraTienda(
     }
 
     private fun crearFilaMejora(mejora: Mejora): HBox {
-        val nombre = Label("${mejora.nombre}  ·  Nv. ${mejora.nivel}/${mejora.nivelMaximo()}").apply {
+        return HBox(12.0).apply {
+            alignment = Pos.CENTER_LEFT
+            style = EstilosTienda.ESTILO_FILA_MEJORA
+            children.addAll(
+                crearInfoVBox(mejora),
+                crearEspacio(),
+                crearCostoLabel(mejora),
+                crearBoton(mejora)
+            )
+        }
+    }
+
+    private fun crearInfoVBox(mejora: Mejora): VBox {
+        val nombre = crearNombreLabel(mejora)
+        val descripcion = crearDescripcionLabel(mejora)
+        val info = VBox(2.0).apply {
+            children.addAll(nombre, descripcion)
+        }
+        return info
+    }
+
+    private fun crearNombreLabel(mejora: Mejora): Label {
+        val label = Label("${mejora.nombre}  ·  Nv. ${mejora.nivel}/${mejora.nivelMaximo()}").apply {
             style = EstilosTienda.ESTILO_MEJORA_NOMBRE
         }
-        val descripcion = Label(mejora.descripcion()).apply {
+        return label
+    }
+
+    private fun crearDescripcionLabel(mejora: Mejora): Label {
+        val label = Label(mejora.descripcion()).apply {
             style = EstilosTienda.ESTILO_MEJORA_DESCRIPCION
             isWrapText = true
             maxWidth = 520.0
         }
-        val info = VBox(2.0).apply {
-            children.addAll(nombre, descripcion)
-        }
-        val espacio = Region().apply {
+        return label
+    }
+
+    private fun crearEspacio(): Region {
+        val region = Region().apply {
             HBox.setHgrow(this, Priority.ALWAYS)
         }
-        val costo = Label(if (mejora.esNivelMaximo) "MÁXIMO" else "$ ${mejora.costo}").apply {
+        return region
+    }
+
+    private fun crearCostoLabel(mejora: Mejora): Label {
+        val label = Label(if (mejora.esNivelMaximo) "MÁXIMO" else "$ ${mejora.costo}").apply {
             style = EstilosTienda.ESTILO_COSTO
         }
+        return label
+    }
+
+    private fun crearBoton(mejora: Mejora): javafx.scene.control.Button {
         val boton = ControlesTienda.crearBoton(
             if (mejora.esNivelMaximo) "MÁX" else "COMPRAR",
             if (mejora.esNivelMaximo) "#475569" else "#34D399"
@@ -56,11 +91,6 @@ class ConstructorFilasMejoraTienda(
                 alRefrescar()
             }
         }
-
-        return HBox(12.0).apply {
-            alignment = Pos.CENTER_LEFT
-            style = EstilosTienda.ESTILO_FILA_MEJORA
-            children.addAll(info, espacio, costo, boton)
-        }
+        return boton
     }
 }

@@ -21,10 +21,31 @@ class CapaFondoParallax(
 
     fun crear(): Pane {
         val capa = crearCapaMundo()
+        agregarBase(capa)
+        agregarGradiente(capa)
+        agregarRayos(capa)
+        agregarBurbujas(capa)
+        return capa
+    }
 
+    private fun crearCapaMundo(): Pane = Pane().apply {
+        prefWidth = anchoMundo
+        prefHeight = altoMundo
+        minWidth = anchoMundo
+        minHeight = altoMundo
+        maxWidth = anchoMundo
+        maxHeight = altoMundo
+        isPickOnBounds = false
+    }
+
+    private fun agregarBase(capa: Pane) {
         val base = Rectangle(0.0, 0.0, anchoMundo, altoMundo).apply {
             fill = Color.web(COLOR_FONDO)
         }
+        capa.children.add(base)
+    }
+
+    private fun agregarGradiente(capa: Pane) {
         val gradiente = Rectangle(0.0, 0.0, anchoMundo, altoMundo).apply {
             fill = LinearGradient(
                 0.0,
@@ -38,8 +59,10 @@ class CapaFondoParallax(
                 Stop(1.0, Color.web("#010D13", 0.85))
             )
         }
-        capa.children.addAll(base, gradiente)
+        capa.children.add(gradiente)
+    }
 
+    private fun agregarRayos(capa: Pane) {
         for (i in 0 until RAYOS) {
             val x = (i + 0.5) * anchoMundo / RAYOS
             val anchoRayo = 80.0 + (i % 3) * 40.0
@@ -53,7 +76,9 @@ class CapaFondoParallax(
             }
             capa.children.add(rayo)
         }
+    }
 
+    private fun agregarBurbujas(capa: Pane) {
         for (i in 0 until BURBUJAS_FONDO) {
             val x = (i * 197.0) % anchoMundo
             val y = (i * 131.0) % altoMundo
@@ -64,18 +89,6 @@ class CapaFondoParallax(
                 }
             )
         }
-
-        return capa
-    }
-
-    private fun crearCapaMundo(): Pane = Pane().apply {
-        prefWidth = anchoMundo
-        prefHeight = altoMundo
-        minWidth = anchoMundo
-        minHeight = altoMundo
-        maxWidth = anchoMundo
-        maxHeight = altoMundo
-        isPickOnBounds = false
     }
 
     companion object {

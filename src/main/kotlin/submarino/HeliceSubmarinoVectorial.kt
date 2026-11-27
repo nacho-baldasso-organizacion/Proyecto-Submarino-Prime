@@ -10,7 +10,15 @@ internal object HeliceSubmarinoVectorial {
     private val COLOR_CONTORNO = Color.web("#08232E")
 
     fun crear(): Group {
-        val palaSuperior = Polygon(
+        val group = Group().apply {
+            translateX = -68.0
+            children.addAll(crearPalaSuperior(), crearPalaInferior(), crearEje())
+        }
+        return group
+    }
+
+    private fun crearPalaSuperior(): Polygon {
+        val polygon = Polygon(
             0.0, 0.0,
             -8.0, -20.0,
             5.0, -20.0,
@@ -20,7 +28,11 @@ internal object HeliceSubmarinoVectorial {
             stroke = COLOR_CONTORNO
             strokeWidth = 1.5
         }
-        val palaInferior = Polygon(
+        return polygon
+    }
+
+    private fun crearPalaInferior(): Polygon {
+        val polygon = Polygon(
             0.0, 0.0,
             -8.0, 20.0,
             5.0, 20.0,
@@ -30,15 +42,15 @@ internal object HeliceSubmarinoVectorial {
             stroke = COLOR_CONTORNO
             strokeWidth = 1.5
         }
-        val eje = Circle(0.0, 0.0, 5.0).apply {
+        return polygon
+    }
+
+    private fun crearEje(): Circle {
+        val circle = Circle(0.0, 0.0, 5.0).apply {
             fill = Color.web("#6F4510")
             stroke = COLOR_CONTORNO
             strokeWidth = 1.5
         }
-
-        return Group().apply {
-            translateX = -68.0
-            children.addAll(palaSuperior, palaInferior, eje)
-        }
+        return circle
     }
 }
