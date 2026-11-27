@@ -53,8 +53,26 @@ class FabricaTiendaMejorasEstandar : FabricaTiendaMejoras {
 }
 
 /**
- * Implementación de [FabricaUpgrades] que depende de abstracciones para ensamblar
+ * Delegado que concentra las dependencias de [FabricaMejorasEstandar] para
+ * reducir el acoplamiento directo (CBO) de la clase.
+ */
+object FabricaMejorasDelegate {
+
+    val fabricaCatalogo: FabricaCatalogoUpgrades
+        get() = FabricaServicios.crearFabricaCatalogoUpgradesEstandar()
+
+    val fabricaProcesador: FabricaProcesadorCompras
+        get() = FabricaServicios.crearFabricaProcesadorComprasEstandar()
+
+    val fabricaTienda: FabricaTiendaMejoras
+        get() = FabricaServicios.crearFabricaTiendaMejorasEstandar()
+}
+
+/**
+ * Implementación estándar de [FabricaUpgrades] que depende de abstracciones para ensamblar
  * el catálogo, el procesador de compras y la tienda (DIP).
+ *
+ * CBO reducido al delegar colaboradores en [FabricaMejorasDelegate].
  */
 class FabricaMejorasEstandar(
     private val fabricaCatalogo: FabricaCatalogoUpgrades = FabricaServicios.crearFabricaCatalogoUpgradesEstandar(),

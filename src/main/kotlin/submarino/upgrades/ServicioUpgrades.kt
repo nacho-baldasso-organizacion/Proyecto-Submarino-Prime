@@ -34,8 +34,7 @@ class ServicioUpgrades(
     ): ResultadoCompra {
         val mejora = catalogo.buscarPorId(idMejora)
         if (mejora == null) {
-            val motivo = "Mejora no encontrada en el catálogo: '$idMejora'"
-            notificarRechazo(idMejora, motivo)
+            notificarRechazo(idMejora, "Mejora no encontrada en el catálogo: '$idMejora'")
             return FabricaServicios.crearResultadoCompraMejoraNoEncontrada(idMejora)
         }
 

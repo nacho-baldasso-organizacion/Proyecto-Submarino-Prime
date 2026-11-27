@@ -14,7 +14,7 @@ import javafx.scene.layout.StackPane
  * 0. fondo lejano (0.2x), 1. parallax intermedio (0.5x),
  * 2. entidades (1.0x) y 3. HUD fijo.
  *
- * Los nodos y colaboradores se mantienen privados; la escena solo expone
+ * Los nodos y colaboradores se mantienen privados; la vista solo expone
  * [obtenerRaiz] y el punto de refresco [actualizar].
  *
  * Responsabilidad única (SRP): orquestar capas; la geometría se delega en
@@ -31,10 +31,10 @@ class VistaSubmarino(
     private val anchoMundo: Double = anchoEscena * ESCALA_MUNDO
     private val altoMundo: Double = altoEscena * ESCALA_MUNDO
     private val raiz: StackPane = StackPane()
-    private val avatar: Group = FabricaVisual.crearAvatarSubmarino().crear()
-    private val capaFondo: Pane = FabricaVisual.crearCapaFondoParallax(anchoMundo, altoMundo).crear()
+    private val avatar: Group = AvatarSubmarinoFactory.crear()
+    private val capaFondo: Pane = FondoFactory.crear(anchoMundo, altoMundo)
     private val capaIntermedia: Pane =
-        FabricaVisual.crearCapaIntermediaParallax(anchoMundo, altoMundo).crear()
+        IntermediaFactory.crear(anchoMundo, altoMundo)
     private val capaEntidades: Pane = crearCapaEntidades()
     private val parallaxFondo: CapaParallaxVisual
     private val parallaxIntermedio: CapaParallaxVisual
@@ -92,4 +92,18 @@ class VistaSubmarino(
         private const val FACTOR_FONDO = 0.2
         private const val FACTOR_INTERMEDIO = 0.5
     }
+}
+
+object AvatarSubmarinoFactory {
+    fun crear(): Group = FabricaVisual.crearAvatarSubmarino().crear()
+}
+
+object FondoFactory {
+    fun crear(anchoMundo: Double, altoMundo: Double): Pane =
+        FabricaVisual.crearCapaFondoParallax(anchoMundo, altoMundo).crear()
+}
+
+object IntermediaFactory {
+    fun crear(anchoMundo: Double, altoMundo: Double): Pane =
+        FabricaVisual.crearCapaIntermediaParallax(anchoMundo, altoMundo).crear()
 }
