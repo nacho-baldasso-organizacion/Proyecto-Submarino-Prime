@@ -34,9 +34,13 @@ class BucleJuego(
 
         procesarAcciones()
         sesion.actualizar(
-            deltaSegundos = deltaSegundos,
-            direccionX = controlador.direccionX(),
-            direccionY = controlador.direccionY()
+            EntradaActualizacionPartida(
+                deltaSegundos = deltaSegundos,
+                direccionX = controlador.direccionX(),
+                direccionY = controlador.direccionY(),
+                estaAcoplado = sesion.esAcoplado,
+                velocidadNave = sesion.velocidadNave
+            )
         )
         vista.actualizar(sesion.estado())
     }

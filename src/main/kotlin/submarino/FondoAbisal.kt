@@ -58,12 +58,12 @@ class FondoAbisal(
         particulas.dibujarSuperficie()
         particulas.dibujarRayos()
 
-        val cordillera = FabricaVisual.crearPincelCordillera(gc, random, anchoMundo)
-        cordillera.dibujar(altoMundo * 0.46, altoMundo * 0.20, Color.web("#0B4C60", 0.62), 9, 0.16)
-        cordillera.dibujar(altoMundo * 0.56, altoMundo * 0.24, Color.web("#083A4B", 0.74), 12, 0.14)
-        cordillera.dibujar(altoMundo * 0.68, altoMundo * 0.22, Color.web("#052B39", 0.84), 16, 0.12)
-        cordillera.dibujar(altoMundo * 0.81, altoMundo * 0.19, Color.web("#031E28", 0.90), 21, 0.10)
-        cordillera.dibujar(altoMundo * 0.93, altoMundo * 0.16, Color.web("#02121A", 0.95), 27, 0.08)
+val cordillera = FabricaVisual.crearPincelCordillera(gc, random, anchoMundo)
+        cordillera.dibujar(PincelCordillera.ParametrosCordillera(altoMundo * 0.46, altoMundo * 0.20, Color.web("#0B4C60", 0.62), 9, 0.16, random))
+        cordillera.dibujar(PincelCordillera.ParametrosCordillera(altoMundo * 0.56, altoMundo * 0.24, Color.web("#083A4B", 0.74), 12, 0.14, random))
+        cordillera.dibujar(PincelCordillera.ParametrosCordillera(altoMundo * 0.68, altoMundo * 0.22, Color.web("#052B39", 0.84), 16, 0.12, random))
+        cordillera.dibujar(PincelCordillera.ParametrosCordillera(altoMundo * 0.81, altoMundo * 0.19, Color.web("#031E28", 0.90), 21, 0.10, random))
+        cordillera.dibujar(PincelCordillera.ParametrosCordillera(altoMundo * 0.93, altoMundo * 0.16, Color.web("#02121A", 0.95), 27, 0.08, random))
 
         particulas.dibujarBurbujas(90, 1.0, 3.2, 0.10)
     }

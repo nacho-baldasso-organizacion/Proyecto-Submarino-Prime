@@ -23,14 +23,17 @@ class PincelCordillera(
     private val anchoMundo: Double
 ) {
 
-    fun dibujar(
-        baseY: Double,
-        amplitud: Double,
-        color: Color,
-        picos: Int,
-        brillo: Double = 0.12
-    ) {
-        val cantidad = picos.coerceAtLeast(3)
+    data class ParametrosCordillera(
+        val baseY: Double,
+        val amplitud: Double,
+        val color: Color,
+        val picos: Int,
+        val brillo: Double = 0.12,
+        val random: Random
+    )
+
+    fun dibujar(parametros: ParametrosCordillera) {
+        val cantidad = parametros.picos.coerceAtLeast(3)
         val controles = (0..cantidad).map { indice ->
             val x = anchoMundo * indice / cantidad
             val factor = if (indice == 0 || indice == cantidad) {
@@ -38,11 +41,11 @@ class PincelCordillera(
             } else {
                 0.26 + random.nextDouble() * 0.74
             }
-            x to (baseY - amplitud * factor)
+            x to (parametros.baseY - parametros.amplitud * factor)
         }
 
         val muestras = cantidad * 42
-        val detalle = Random(random.nextLong())
+        val detalle = Random(parametros.random.nextLong())
         val xs = DoubleArray(muestras)
         val ys = DoubleArray(muestras)
         val fase = entre(detalle, 0.0, PI * 2.0)
@@ -56,49 +59,49 @@ class PincelCordillera(
             val inicio = controles[indice].second
             val fin = controles[indice + 1].second
             val base = inicio + (fin - inicio) * suave
-            val rugosidad = sin(avance * PI * cantidad * 7.0 + fase) * amplitud * 0.035 +
-                entre(detalle, -1.0, 1.0) * amplitud * 0.018
+            val rugosidad = sin(avance * PI * cantidad * 7.0 + fase) * parametros.amplitud * 0.035 +
+                entre(detalle, -1.0, 1.0) * parametros.amplitud * 0.018
             xs[muestra] = anchoMundo * avance
-            ys[muestra] = (base + rugosidad).coerceIn(baseY - amplitud * 1.08, baseY)
+            ys[muestra] = (base + rugosidad).coerceIn(parametros.baseY - parametros.amplitud * 1.08, parametros.baseY)
         }
 
-        val colorLuz = color.interpolate(Color.web("#C8FBEF"), brillo)
-        val colorSombra = color.interpolate(Color.web("#00060A"), 0.36)
+        val colorLuz = parametros.color.interpolate(Color.web("#C8FBEF"), parametros.brillo)
+        val colorSombra = parametros.color.interpolate(Color.web("#00060A"), 0.36)
         gc.fill = LinearGradient(
-            0.0, baseY - amplitud, 0.0, baseY,
+            0.0, parametros.baseY - parametros.amplitud, 0.0, parametros.baseY,
             false,
             CycleMethod.NO_CYCLE,
             Stop(0.0, colorLuz),
-            Stop(0.34, color),
+            Stop(0.34, parametros.color),
             Stop(1.0, colorSombra)
         )
         gc.beginPath()
-        gc.moveTo(xs[0], baseY)
+        gc.moveTo(xs[0], parametros.baseY)
         for (muestra in 0 until muestras) {
             gc.lineTo(xs[muestra], ys[muestra])
         }
-        gc.lineTo(xs[muestras - 1], baseY)
+        gc.lineTo(xs[muestras - 1], parametros.baseY)
         gc.closePath()
         gc.fill()
 
         val detalles = DetallesCordillera(gc, random, anchoMundo, PerfilCordillera(xs, ys))
         gc.save()
         gc.beginPath()
-        gc.moveTo(xs[0], baseY)
+        gc.moveTo(xs[0], parametros.baseY)
         for (muestra in 0 until muestras) {
             gc.lineTo(xs[muestra], ys[muestra])
         }
-        gc.lineTo(xs[muestras - 1], baseY)
+        gc.lineTo(xs[muestras - 1], parametros.baseY)
         gc.closePath()
         gc.clip()
 
-        detalles.dibujarEstratos(baseY)
-        detalles.dibujarRocas(baseY, colorLuz, colorSombra)
-        detalles.dibujarGrietas(baseY)
-        detalles.dibujarSedimento(baseY)
+        detalles.dibujarEstratos(parametros.baseY)
+        detalles.dibujarRocas(parametros.baseY, colorLuz, colorSombra)
+        detalles.dibujarGrietas(parametros.baseY)
+        detalles.dibujarSedimento(parametros.baseY)
         gc.restore()
 
-        gc.stroke = Color.web("#D6FFF6", (brillo * 1.35).coerceIn(0.05, 0.32))
+        gc.stroke = Color.web("#D6FFF6", (parametros.brillo * 1.35).coerceIn(0.05, 0.32))
         gc.lineWidth = 1.6
         gc.beginPath()
         gc.moveTo(xs[0], ys[0])
@@ -107,7 +110,7 @@ class PincelCordillera(
         }
         gc.stroke()
 
-        detalles.dibujarRocasSueltas(baseY)
+        detalles.dibujarRocasSueltas(parametros.baseY)
     }
 
     private fun entre(random: Random, desde: Double, hasta: Double): Double {

@@ -16,6 +16,14 @@ class EstadoPartida(
     private val casco: ModuloCasco
 ) {
 
+    data class EntradaActualizacionPartida(
+        val deltaSegundos: Double,
+        val direccionX: Double,
+        val direccionY: Double,
+        val estaAcoplado: Boolean,
+        val velocidadNave: Double
+    )
+
     var posicionX: Double = ConfiguracionSesion.ESTACION_X
         private set
     var posicionY: Double = ConfiguracionSesion.PROFUNDIDAD_INICIAL
@@ -46,45 +54,39 @@ class EstadoPartida(
      * Avanza la nave y consume oxígeno; aplica daño por asfixia o presión y
      * marca la partida como destruida cuando corresponde.
      */
-    fun actualizar(
-        deltaSegundos: Double,
-        direccionX: Double,
-        direccionY: Double,
-        estaAcoplado: Boolean,
-        velocidadNave: Double
-    ) {
+    fun actualizar(entrada: EntradaActualizacionPartida) {
         if (destruido) {
             return
         }
-        if (!deltaSegundos.isFinite() || deltaSegundos <= 0.0) {
+        if (!entrada.deltaSegundos.isFinite() || entrada.deltaSegundos <= 0.0) {
             return
         }
-        if (estaAcoplado) {
+        if (entrada.estaAcoplado) {
             return
         }
 
-        val dx = direccionX.coerceIn(-1.0, 1.0)
-        val dy = direccionY.coerceIn(-1.0, 1.0)
+        val dx = entrada.direccionX.coerceIn(-1.0, 1.0)
+        val dy = entrada.direccionY.coerceIn(-1.0, 1.0)
         if (dx != 0.0) {
             direccionHorizontal = if (dx < 0.0) -1.0 else 1.0
         }
 
-        val velocidad = velocidadNave.coerceAtLeast(ConfiguracionSesion.VELOCIDAD_MINIMA)
-        posicionX = (posicionX + dx * velocidad * deltaSegundos)
+        val velocidad = entrada.velocidadNave.coerceAtLeast(ConfiguracionSesion.VELOCIDAD_MINIMA)
+        posicionX = (posicionX + dx * velocidad * entrada.deltaSegundos)
             .coerceIn(0.0, anchoMapa)
-        posicionY = (posicionY + dy * velocidad * deltaSegundos)
+        posicionY = (posicionY + dy * velocidad * entrada.deltaSegundos)
             .coerceIn(0.0, altoMapa)
 
         val intensidadMovimiento = abs(dx) + abs(dy)
-        sistemaOxigeno.consumir(deltaSegundos, intensidadMovimiento)
+        sistemaOxigeno.consumir(entrada.deltaSegundos, intensidadMovimiento)
 
         if (sistemaOxigeno.estaAgotado) {
-            gestorDanio.aplicarDanioAsfixia(deltaSegundos)
+            gestorDanio.aplicarDanioAsfixia(entrada.deltaSegundos)
             registrarDestruccion("Oxígeno agotado")
             return
         }
 
-        gestorDanio.aplicarDanioProfundidad(posicionY, deltaSegundos)
+        gestorDanio.aplicarDanioProfundidad(posicionY, entrada.deltaSegundos)
         if (casco.integridad <= ConfiguracionSesion.INTEGRIDAD_MINIMA) {
             registrarDestruccion("Casco colapsado por sobrepresión")
         }

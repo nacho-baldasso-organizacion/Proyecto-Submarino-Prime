@@ -13,6 +13,15 @@ import kotlin.random.Random
  */
 class GeneradorTerrenoSubmarino {
 
+    private data class ConfigCrestas(
+        val random: Random,
+        val centroX: Double,
+        val ancho: Double,
+        val baseY: Double,
+        val altura: Double,
+        val altoMapa: Double
+    )
+
     fun crear(semilla: Long, anchoMapa: Double, altoMapa: Double): TerrenoSubmarino {
         val random = Random(semilla * 31L + 17L)
         val formaciones = mutableListOf<FormacionRocosa>()
@@ -74,41 +83,34 @@ class GeneradorTerrenoSubmarino {
         val altura = min(random.nextDouble(240.0, 640.0), baseY - 150.0)
         return FabricaDominio.crearFormacionRocosa(
             id = "FORMACION-$indice",
-            puntos = crearCrestas(random, centroX, ancho, baseY, altura, altoMapa),
+            puntos = crearCrestas(ConfigCrestas(random, centroX, ancho, baseY, altura, altoMapa)),
             baseY = baseY
         )
     }
 
-    private fun crearCrestas(
-        random: Random,
-        centroX: Double,
-        ancho: Double,
-        baseY: Double,
-        altura: Double,
-        altoMapa: Double
-    ): List<PuntoCresta> {
-        val cantidad = random.nextInt(8, 13)
-        val izquierda = centroX - ancho / 2.0
-        val faseA = random.nextDouble(0.0, PI * 2.0)
-        val faseB = random.nextDouble(0.0, PI * 2.0)
-        val picos = random.nextInt(2, 5)
+    private fun crearCrestas(config: ConfigCrestas): List<PuntoCresta> {
+        val cantidad = config.random.nextInt(8, 13)
+        val izquierda = config.centroX - config.ancho / 2.0
+        val faseA = config.random.nextDouble(0.0, PI * 2.0)
+        val faseB = config.random.nextDouble(0.0, PI * 2.0)
+        val picos = config.random.nextInt(2, 5)
         val puntos = mutableListOf<PuntoCresta>()
 
         for (indice in 0 until cantidad) {
             val avance = indice.toDouble() / (cantidad - 1)
-            val x = izquierda + ancho * avance
+            val x = izquierda + config.ancho * avance
             val envolvente = sin(PI * avance).coerceIn(0.0, 1.0)
             val perfil = (
                 0.62 * envolvente +
                     0.23 * sin(picos * PI * avance + faseA).coerceIn(0.0, 1.0) +
                     0.15 * sin((picos + 2) * PI * avance + faseB)
                 ).coerceIn(0.0, 1.0)
-            val desvio = random.nextDouble(-0.05, 0.05)
-            var y = baseY - altura * (0.12 + 0.88 * (perfil + desvio).coerceIn(0.0, 1.0))
+            val desvio = config.random.nextDouble(-0.05, 0.05)
+            var y = config.baseY - config.altura * (0.12 + 0.88 * (perfil + desvio).coerceIn(0.0, 1.0))
             if (indice == 0 || indice == cantidad - 1) {
-                y = baseY - altura * random.nextDouble(0.02, 0.12)
+                y = config.baseY - config.altura * config.random.nextDouble(0.02, 0.12)
             }
-            puntos.add(FabricaDominio.crearPuntoCresta(x, y.coerceIn(130.0, altoMapa - 25.0)))
+            puntos.add(FabricaDominio.crearPuntoCresta(x, y.coerceIn(130.0, config.altoMapa - 25.0)))
         }
         return puntos
     }

@@ -12,12 +12,12 @@ class Issue5Test {
 
     @Test
     fun testCatalogoDeMineralesCumpleConTablaDeEspecificacion() {
-        verificarMineral(TipoMineral.ARENA_DE_CUARZO, "Arena de Cuarzo", "Superficie (0-50m)", 1.0, 10)
-        verificarMineral(TipoMineral.COBRE_MARINO, "Cobre Marino", "Zona Fótica (50-150m)", 2.5, 35)
-        verificarMineral(TipoMineral.NODULO_DE_MANGANESO, "Nódulo de Manganeso", "Zona Mesopelágica (150-400m)", 4.0, 90)
-        verificarMineral(TipoMineral.TITANIO_CRISTALINO, "Titanio Cristalino", "Fosa Abisal (400-800m)", 5.0, 220)
-        verificarMineral(TipoMineral.GEMA_DE_SALMUERA, "Gema de Salmuera", "Pozos de Alta Densidad (>800m)", 1.5, 500)
-        verificarMineral(TipoMineral.ARTEFACTO_HUNDIDO, "Artefacto Hundido", "Cavernas Ocultas", 8.0, 1200)
+        verificarMineral(TipoMineral.ARENA_DE_CUARZO, EsperadoMineral("Arena de Cuarzo", "Superficie (0-50m)", 1.0, 10))
+        verificarMineral(TipoMineral.COBRE_MARINO, EsperadoMineral("Cobre Marino", "Zona Fótica (50-150m)", 2.5, 35))
+        verificarMineral(TipoMineral.NODULO_DE_MANGANESO, EsperadoMineral("Nódulo de Manganeso", "Zona Mesopelágica (150-400m)", 4.0, 90))
+        verificarMineral(TipoMineral.TITANIO_CRISTALINO, EsperadoMineral("Titanio Cristalino", "Fosa Abisal (400-800m)", 5.0, 220))
+        verificarMineral(TipoMineral.GEMA_DE_SALMUERA, EsperadoMineral("Gema de Salmuera", "Pozos de Alta Densidad (>800m)", 1.5, 500))
+        verificarMineral(TipoMineral.ARTEFACTO_HUNDIDO, EsperadoMineral("Artefacto Hundido", "Cavernas Ocultas", 8.0, 1200))
     }
 
     @Test
@@ -123,16 +123,20 @@ class Issue5Test {
 
     private fun verificarMineral(
         tipo: TipoMineral,
-        nombre: String,
-        zona: String,
-        peso: Double,
-        valor: Int
+        esperado: EsperadoMineral
     ) {
-        assertEquals(nombre, tipo.nombreMineral)
-        assertEquals(zona, tipo.zona)
-        assertEquals(peso, tipo.peso)
-        assertEquals(valor, tipo.valor)
+        assertEquals(esperado.nombre, tipo.nombreMineral)
+        assertEquals(esperado.zona, tipo.zona)
+        assertEquals(esperado.peso, tipo.peso)
+        assertEquals(esperado.valor, tipo.valor)
     }
+
+    private data class EsperadoMineral(
+        val nombre: String,
+        val zona: String,
+        val peso: Double,
+        val valor: Int
+    )
 
     private fun verificarProfundidad(
         profundidad: Double,

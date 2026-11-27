@@ -3,24 +3,26 @@ package submarino
 /**
  * Simula las maniobras de navegación y los intentos de recolección de minerales.
  */
+data class ContextoDemostracion(
+    val ancho: Int,
+    val alto: Int,
+    val minerales: MutableList<Recolectable>,
+    val bodega: Bodega,
+    val servicio: ServicioRecoleccionContrato
+)
+
 class DemostradorNavegacionRecoleccion {
 
-    fun demostrar(
-        ancho: Int,
-        alto: Int,
-        minerales: MutableList<Recolectable>,
-        bodega: Bodega,
-        servicio: ServicioRecoleccionContrato
-    ) {
+    fun demostrar(contexto: ContextoDemostracion) {
         println("4. INICIALIZACIÓN DE LA BODEGA Y SERVICIO DE RECOLECCIÓN:")
-        println("   Capacidad Máxima de Bodega: ${bodega.capacidadMaxima} kg")
-        println("   Peso inicial: ${bodega.pesoActual} kg\n")
+        println("   Capacidad Máxima de Bodega: ${contexto.bodega.capacidadMaxima} kg")
+        println("   Peso inicial: ${contexto.bodega.pesoActual} kg\n")
 
         println("5. SIMULACIÓN DE NAVEGACIÓN Y RECOLECCIÓN:")
-        probarCentroMapa(ancho, alto, minerales, servicio)
-        probarParedConMineral(minerales, servicio)
-        probarReintentoMismaCoordenada(minerales, servicio)
-        probarDesbordamientoBodega(minerales, bodega, servicio)
+        probarCentroMapa(contexto.ancho, contexto.alto, contexto.minerales, contexto.servicio)
+        probarParedConMineral(contexto.minerales, contexto.servicio)
+        probarReintentoMismaCoordenada(contexto.minerales, contexto.servicio)
+        probarDesbordamientoBodega(contexto.minerales, contexto.bodega, contexto.servicio)
     }
 
     private fun probarCentroMapa(ancho: Int, alto: Int, minerales: List<Recolectable>, servicio: ServicioRecoleccionContrato) {

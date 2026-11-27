@@ -54,21 +54,24 @@ class SesionJuego(
     private val nodos: List<NodoMineral> = generadorNodos.generar()
     private val minerales: List<Recolectable> = nodos.map { it.mineral }
 
-    /**
-     * Indica si la partida terminó por asfixia o por colapso del casco.
-     */
-    fun estaDestruida(): Boolean = partida.destruido
+/**
+ * Indica si la nave está acoplada a la estación.
+ */
+val esAcoplado: Boolean
+    get() = submarino.estaAcoplado
+
+/**
+ * Velocidad actual de la nave.
+ */
+val velocidadNave: Double
+    get() = submarino.velocidad
 
     /**
      * Actualiza la navegación, el oxígeno y el desgaste del casco.
      */
-    fun actualizar(deltaSegundos: Double, direccionX: Double, direccionY: Double) {
+    fun actualizar(entrada: EntradaActualizacionPartida) {
         partida.actualizar(
-            deltaSegundos = deltaSegundos,
-            direccionX = direccionX,
-            direccionY = direccionY,
-            estaAcoplado = submarino.estaAcoplado,
-            velocidadNave = submarino.velocidad
+            entrada = entrada
         )
     }
 
