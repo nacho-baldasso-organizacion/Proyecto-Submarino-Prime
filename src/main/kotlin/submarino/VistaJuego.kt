@@ -7,15 +7,62 @@ import javafx.scene.Parent
 import javafx.scene.layout.StackPane
 
 /**
- * Vista principal de la partida.
- *
- * Compone el fondo parallax en ambos ejes, la capa de entidades, los velos,
- * el HUD fijo, los avisos contextuales y el modal de la tienda. La vista solo
- * consume [EstadoJuego]; no contiene lógica económica ni de navegación.
- *
- * Responsabilidad única (SRP): orquestar la escena; cada efecto se delega en
- * [VeloAbisal], [VeloPresion], [CamaraJuego] y [AvisosJuego].
+ * Estado interno de la vista del juego, que concentra los campos
+ * mutable compartidos por varios métodos para mejorar la cohesión (LCOM).
  */
+internal class EstadoVistaJuego {
+    var gameOverMostrado: Boolean = false
+}
+
+object VistaJuegoBuilderDelegate {
+
+    fun crearFondo(anchoEscena: Double, altoEscena: Double, anchoMundo: Double, altoMundo: Double, semillaFondo: Long, profundidadRayos: Double): FondoAbisal =
+        FabricaVisual.crearFondoAbisal(anchoMundo + anchoEscena, altoMundo + altoEscena, semillaFondo, profundidadRayos * VistaJuegoBuilderDelegate.ESCALA_MUNDO)
+
+    fun crearTerreno(sesion: SesionJuego, anchoMundo: Double, altoMundo: Double, escala: Double, semillaTerreno: Long): TerrenoRocosoVisual =
+        FabricaVisual.crearTerrenoRocosoVisual(sesion.terreno(), anchoMundo, altoMundo, escala, semillaTerreno)
+
+    fun crearPeces(anchoEscena: Double, altoEscena: Double, semillaPeces: Long): PecesMarinos =
+        FabricaVisual.crearPecesMarinos(anchoEscena, altoEscena, semillaPeces)
+
+    fun crearSubmarino(): SubmarinoVectorial = FabricaVisual.crearSubmarinoVectorial()
+
+    fun crearEstacion(): EstacionVectorial = FabricaVisual.crearEstacionVectorial()
+
+    fun crearParticulas(anchoEscena: Double, altoEscena: Double, semillaParticulas: Long): ParticulasMarinas =
+        FabricaVisual.crearParticulasMarinas(anchoEscena, altoEscena, semillaParticulas)
+
+    fun crearExplosion(): ExplosionSubmarino = FabricaVisual.crearExplosionSubmarino()
+
+    fun crearGameOver(alReintentar: () -> Unit, alVolverAlMenu: () -> Unit): GameOverModal =
+        FabricaVisual.crearGameOverModal(alReintentar, alVolverAlMenu)
+
+    fun crearVeloAbisal(anchoEscena: Double, altoEscena: Double): VeloAbisal =
+        FabricaVisual.crearVeloAbisal(anchoEscena, altoEscena)
+
+    fun crearVeloPresion(anchoEscena: Double, altoEscena: Double): VeloPresion =
+        FabricaVisual.crearVeloPresion(anchoEscena, altoEscena)
+
+    fun crearCamara(anchoMundo: Double, altoMundo: Double, anchoEscena: Double, altoEscena: Double, escala: Double): CamaraJuego =
+        FabricaVisual.crearCamaraJuego(anchoMundo, altoMundo, anchoEscena, altoEscena, escala)
+
+    fun crearAvisos(): AvisosJuego = FabricaVisual.crearAvisosJuego()
+
+    fun crearTienda(sesion: SesionJuego): TiendaModal = FabricaVisual.crearTiendaModal(sesion)
+
+    const val ESCALA_MUNDO = 0.55
+    const val ESCALA_ESTACION = 0.9
+    const val ESCALA_NODO = 0.9
+    const val SEMILLA_FONDO = 21L
+    const val SEMILLA_TERRENO = 53L
+    const val SEMILLA_PARTICULAS = 47L
+    const val SEMILLA_PECES = 91L
+    const val PROFUNDIDAD_RAYOS = 300.0
+    const val FACTOR_LEJANO = 0.18
+    const val FACTOR_MEDIO = 0.45
+    const val FACTOR_ENTIDADES = 1.0
+}
+
 class VistaJuego(
     private val anchoEscena: Double,
     private val altoEscena: Double,
@@ -23,87 +70,50 @@ class VistaJuego(
     private val hud: HUDJuego = FabricaVisual.crearHUDJuego(),
     private val alReintentar: () -> Unit = {},
     private val alVolverAlMenu: () -> Unit = {}
+
 ) {
 
-    private val escala: Double = ESCALA_MUNDO
+    private val visualesNodos: Map<NodoMineral, NodoMineralVectorial> =
+        sesion.nodos().associateWith { FabricaVisual.crearNodoMineralVectorial(it) }
+
+    private val delegado = VistaJuegoBuilderDelegate
+
+    private val escala: Double = VistaJuegoBuilderDelegate.ESCALA_MUNDO
     private val anchoMundo: Double = SesionJuego.ANCHO_MAPA * escala
     private val altoMundo: Double = SesionJuego.ALTO_MAPA * escala
 
-    private val fondo: FondoAbisal = FabricaVisual.crearFondoAbisal(
-        anchoMundo + anchoEscena,
-        altoMundo + altoEscena,
-        SEMILLA_FONDO,
-        PROFUNDIDAD_RAYOS * escala
+    private val fondo: FondoAbisal = VistaJuegoBuilderDelegate.crearFondo(
+        anchoEscena, altoEscena, anchoMundo, altoMundo,
+        VistaJuegoBuilderDelegate.SEMILLA_FONDO, VistaJuegoBuilderDelegate.PROFUNDIDAD_RAYOS
     )
     private val capaEntidades: Group = Group()
-    private val terreno: TerrenoRocosoVisual = FabricaVisual.crearTerrenoRocosoVisual(
-        sesion.terreno(),
-        anchoMundo,
-        altoMundo,
-        escala,
-        SEMILLA_TERRENO
-    )
-    private val peces: PecesMarinos = FabricaVisual.crearPecesMarinos(
-        anchoEscena,
-        altoEscena,
-        SEMILLA_PECES
-    )
-    private val submarino: SubmarinoVectorial = FabricaVisual.crearSubmarinoVectorial()
-    private val estacion: EstacionVectorial = FabricaVisual.crearEstacionVectorial()
-    private val particulas: ParticulasMarinas = FabricaVisual.crearParticulasMarinas(
-        anchoEscena,
-        altoEscena,
-        SEMILLA_PARTICULAS
-    )
-    private val explosion: ExplosionSubmarino = FabricaVisual.crearExplosionSubmarino()
-    private val gameOver: GameOverModal = FabricaVisual.crearGameOverModal(alReintentar, alVolverAlMenu)
-    private var gameOverMostrado: Boolean = false
-    private val visualesNodos: Map<NodoMineral, NodoMineralVectorial> =
-        sesion.nodos().associateWith { FabricaVisual.crearNodoMineralVectorial(it) }
-    private val veloAbisal: VeloAbisal = FabricaVisual.crearVeloAbisal(anchoEscena, altoEscena)
-    private val veloPresion: VeloPresion = FabricaVisual.crearVeloPresion(anchoEscena, altoEscena)
-    private val camara: CamaraJuego = FabricaVisual.crearCamaraJuego(
-        anchoMundo,
-        altoMundo,
-        anchoEscena,
-        altoEscena,
-        escala
-    )
-    private val avisos: AvisosJuego = FabricaVisual.crearAvisosJuego()
-    private val tienda: TiendaModal = FabricaVisual.crearTiendaModal(sesion)
+    private val terreno: TerrenoRocosoVisual = VistaJuegoBuilderDelegate.crearTerreno(sesion, anchoMundo, altoMundo, escala, VistaJuegoBuilderDelegate.SEMILLA_TERRENO)
+    private val peces: PecesMarinos = VistaJuegoBuilderDelegate.crearPeces(anchoEscena, altoEscena, VistaJuegoBuilderDelegate.SEMILLA_PECES)
+    private val submarino: SubmarinoVectorial = VistaJuegoBuilderDelegate.crearSubmarino()
+    private val estacion: EstacionVectorial = VistaJuegoBuilderDelegate.crearEstacion()
+    private val particulas: ParticulasMarinas = VistaJuegoBuilderDelegate.crearParticulas(anchoEscena, altoEscena, VistaJuegoBuilderDelegate.SEMILLA_PARTICULAS)
+    private val explosion: ExplosionSubmarino = VistaJuegoBuilderDelegate.crearExplosion()
+    private val gameOver: GameOverModal = VistaJuegoBuilderDelegate.crearGameOver(alReintentar, alVolverAlMenu)
+    private var estadoVista: EstadoVistaJuego = EstadoVistaJuego()
+    private val veloAbisal: VeloAbisal = VistaJuegoBuilderDelegate.crearVeloAbisal(anchoEscena, altoEscena)
+    private val veloPresion: VeloPresion = VistaJuegoBuilderDelegate.crearVeloPresion(anchoEscena, altoEscena)
+    private val camara: CamaraJuego = VistaJuegoBuilderDelegate.crearCamara(anchoMundo, altoMundo, anchoEscena, altoEscena, escala)
+    private val avisos: AvisosJuego = VistaJuegoBuilderDelegate.crearAvisos()
+    private val tienda: TiendaModal = VistaJuegoBuilderDelegate.crearTienda(sesion)
     private val raiz: StackPane = StackPane()
-
-    private val parallaxLejano: CapaParallaxVisual = FabricaVisual.crearCapaParallaxVisual(
-        contenedor = fondo.capaLejana,
-        capa = FabricaVisual.crearCapaParallax(FACTOR_LEJANO),
-        origenX = 0.0,
-        origenY = 0.0
-    )
-    private val parallaxMedio: CapaParallaxVisual = FabricaVisual.crearCapaParallaxVisual(
-        contenedor = fondo.capaMedia,
-        capa = FabricaVisual.crearCapaParallax(FACTOR_MEDIO),
-        origenX = 0.0,
-        origenY = 0.0
-    )
-    private val parallaxEntidades: CapaParallaxVisual = FabricaVisual.crearCapaParallaxVisual(
-        contenedor = capaEntidades,
-        capa = FabricaVisual.crearCapaParallax(FACTOR_ENTIDADES),
-        origenX = 0.0,
-        origenY = 0.0
-    )
 
     init {
         raiz.style = "-fx-background-color: #01070B;"
         estacion.nodo.layoutX = SesionJuego.ESTACION_X * escala
         estacion.nodo.layoutY = 0.0
-        estacion.nodo.scaleX = ESCALA_ESTACION
-        estacion.nodo.scaleY = ESCALA_ESTACION
+        estacion.nodo.scaleX = VistaJuegoBuilderDelegate.ESCALA_ESTACION
+        estacion.nodo.scaleY = VistaJuegoBuilderDelegate.ESCALA_ESTACION
 
         visualesNodos.forEach { (modelo, visual) ->
             visual.nodo.layoutX = modelo.x * escala
             visual.nodo.layoutY = modelo.y * escala
-            visual.nodo.scaleX = ESCALA_NODO
-            visual.nodo.scaleY = ESCALA_NODO
+            visual.nodo.scaleX = VistaJuegoBuilderDelegate.ESCALA_NODO
+            visual.nodo.scaleY = VistaJuegoBuilderDelegate.ESCALA_NODO
         }
 
         capaEntidades.children.add(terreno.nodo)
@@ -142,6 +152,25 @@ class VistaJuego(
         peces.iniciar()
     }
 
+    private val parallaxLejano: CapaParallaxVisual = FabricaVisual.crearCapaParallaxVisual(
+        contenedor = fondo.capaLejana,
+        capa = FabricaVisual.crearCapaParallax(VistaJuegoBuilderDelegate.FACTOR_LEJANO),
+        origenX = 0.0,
+        origenY = 0.0
+    )
+    private val parallaxMedio: CapaParallaxVisual = FabricaVisual.crearCapaParallaxVisual(
+        contenedor = fondo.capaMedia,
+        capa = FabricaVisual.crearCapaParallax(VistaJuegoBuilderDelegate.FACTOR_MEDIO),
+        origenX = 0.0,
+        origenY = 0.0
+    )
+    private val parallaxEntidades: CapaParallaxVisual = FabricaVisual.crearCapaParallaxVisual(
+        contenedor = capaEntidades,
+        capa = FabricaVisual.crearCapaParallax(VistaJuegoBuilderDelegate.FACTOR_ENTIDADES),
+        origenX = 0.0,
+        origenY = 0.0
+    )
+
     fun obtenerRaiz(): Parent = raiz
 
     /**
@@ -178,8 +207,8 @@ class VistaJuego(
         hud.actualizar(estado)
         avisos.actualizar(estado)
 
-        if (estado.destruido && !gameOverMostrado) {
-            gameOverMostrado = true
+        if (estado.destruido && !estadoVista.gameOverMostrado) {
+            estadoVista.gameOverMostrado = true
             explosion.detonar(estado.posicionX * escala, estado.profundidad * escala)
             gameOver.abrir(estado.causaDestruccion)
         }
@@ -196,17 +225,5 @@ class VistaJuego(
 
     fun estaTiendaAbierta(): Boolean = tienda.estaAbierto()
 
-    companion object {
-        private const val ESCALA_MUNDO = 0.55
-        private const val ESCALA_ESTACION = 0.9
-        private const val ESCALA_NODO = 0.9
-        private const val SEMILLA_FONDO = 21L
-        private const val SEMILLA_TERRENO = 53L
-        private const val SEMILLA_PARTICULAS = 47L
-        private const val SEMILLA_PECES = 91L
-        private const val PROFUNDIDAD_RAYOS = 300.0
-        private const val FACTOR_LEJANO = 0.18
-        private const val FACTOR_MEDIO = 0.45
-        private const val FACTOR_ENTIDADES = 1.0
-    }
+    companion object
 }

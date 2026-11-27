@@ -1,6 +1,7 @@
 package submarino
 
 import javafx.animation.AnimationTimer
+import submarino.EstadoPartida.EntradaActualizacionPartida
 
 /**
  * Bucle de juego basado en [AnimationTimer].
@@ -27,16 +28,20 @@ class BucleJuego(
             .coerceIn(0.0, DELTA_MAXIMO_SEGUNDOS)
         ultimoInstante = ahora
 
-        if (sesion.estaDestruida()) {
+        if (sesion.estaDestruida) {
             vista.actualizar(sesion.estado())
             return
         }
 
         procesarAcciones()
         sesion.actualizar(
-            deltaSegundos = deltaSegundos,
-            direccionX = controlador.direccionX(),
-            direccionY = controlador.direccionY()
+            EntradaActualizacionPartida(
+                deltaSegundos = deltaSegundos,
+                direccionX = controlador.direccionX(),
+                direccionY = controlador.direccionY(),
+                estaAcoplado = sesion.esAcoplado,
+                velocidadNave = sesion.velocidadNave
+            )
         )
         vista.actualizar(sesion.estado())
     }

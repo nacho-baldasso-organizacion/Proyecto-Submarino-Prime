@@ -177,3 +177,8 @@ class EstacionAcople(
 
     fun cantidadObservadores(): Int = observadores.size
 }
+internal data class EstadoZonaAcople(
+    val zonaAcople: ZonaAcople,
+    val observadores: MutableList<ObservadorAcople>,
+    val naveAcoplada: Acoplable?
+)

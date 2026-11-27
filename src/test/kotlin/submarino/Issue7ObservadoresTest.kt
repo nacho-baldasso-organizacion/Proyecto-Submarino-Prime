@@ -66,12 +66,21 @@ class Issue7ObservadoresTest {
         val res = servicio.venderBodegaSubmarino(sub)
         assertTrue(res is ResultadoComercio.Exito)
 
-        assertNotNull(reciboRecibido)
-        assertEquals(720, reciboRecibido?.totalCreditos)
-        assertEquals(2, reciboRecibido?.cantidadItems)
-        assertEquals(2, reciboRecibido?.itemsVendidos?.size)
-        assertTrue(reciboRecibido?.itemsVendidos?.contains(min1) == true)
-        assertTrue(reciboRecibido?.itemsVendidos?.contains(min2) == true)
+        verificarReciboTransaccionalCompleto(reciboRecibido, bodega, min1, min2)
+    }
+
+    private fun verificarReciboTransaccionalCompleto(
+        recibo: TransaccionComercial?,
+        bodega: Bodega,
+        min1: Mineral,
+        min2: Mineral
+    ) {
+        assertNotNull(recibo)
+        assertEquals(720, recibo.totalCreditos)
+        assertEquals(2, recibo.cantidadItems)
+        assertEquals(2, recibo.itemsVendidos.size)
+        assertTrue(recibo.itemsVendidos.contains(min1) == true)
+        assertTrue(recibo.itemsVendidos.contains(min2) == true)
     }
 
     @Test

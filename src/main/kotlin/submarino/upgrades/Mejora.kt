@@ -121,6 +121,18 @@ open class Mejora(
     }
 
     override fun hashCode(): Int = id.hashCode()
+
+    internal data class Estado(
+        val gestorNivel: ControladorNivelMejora,
+        val efectoMejora: EfectoMejora,
+        val estrategiaCostoMejora: EstrategiaCosto
+    )
+
+    private val estado = Estado(
+        gestorNivel = gestorNivel,
+        efectoMejora = efectoMejora,
+        estrategiaCostoMejora = estrategiaCostoMejora
+    )
 }
 
 /**

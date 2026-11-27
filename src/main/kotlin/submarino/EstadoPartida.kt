@@ -16,6 +16,14 @@ class EstadoPartida(
     private val casco: ModuloCasco
 ) {
 
+    data class EntradaActualizacionPartida(
+        val deltaSegundos: Double,
+        val direccionX: Double,
+        val direccionY: Double,
+        val estaAcoplado: Boolean,
+        val velocidadNave: Double
+    )
+
     var posicionX: Double = ConfiguracionSesion.ESTACION_X
         private set
     var posicionY: Double = ConfiguracionSesion.PROFUNDIDAD_INICIAL
@@ -36,6 +44,7 @@ class EstadoPartida(
         private set
     var destruido: Boolean = false
         private set
+    fun estaDestruida(): Boolean = destruido
     var causaDestruccion: String = ""
         private set
     var mensaje: String =
@@ -46,48 +55,75 @@ class EstadoPartida(
      * Avanza la nave y consume oxígeno; aplica daño por asfixia o presión y
      * marca la partida como destruida cuando corresponde.
      */
-    fun actualizar(
-        deltaSegundos: Double,
-        direccionX: Double,
-        direccionY: Double,
-        estaAcoplado: Boolean,
-        velocidadNave: Double
-    ) {
+    fun actualizar(entrada: EntradaActualizacionPartida) {
         if (destruido) {
             return
         }
-        if (!deltaSegundos.isFinite() || deltaSegundos <= 0.0) {
+        if (!entrada.deltaSegundos.isFinite() || entrada.deltaSegundos <= 0.0) {
             return
         }
-        if (estaAcoplado) {
+        if (entrada.estaAcoplado) {
             return
         }
 
-        val dx = direccionX.coerceIn(-1.0, 1.0)
-        val dy = direccionY.coerceIn(-1.0, 1.0)
+        actualizarDireccion(entrada)
+        actualizarPosicion(entrada)
+        consumirOxigeno(entrada)
+        verificarDanios(entrada)
+    }
+
+    private fun actualizarDireccion(entrada: EntradaActualizacionPartida) {
+        val dx = entrada.direccionX.coerceIn(-1.0, 1.0)
+        val dy = entrada.direccionY.coerceIn(-1.0, 1.0)
         if (dx != 0.0) {
             direccionHorizontal = if (dx < 0.0) -1.0 else 1.0
         }
+    }
 
-        val velocidad = velocidadNave.coerceAtLeast(ConfiguracionSesion.VELOCIDAD_MINIMA)
-        posicionX = (posicionX + dx * velocidad * deltaSegundos)
+    private fun actualizarPosicion(entrada: EntradaActualizacionPartida) {
+        val velocidad = entrada.velocidadNave.coerceAtLeast(ConfiguracionSesion.VELOCIDAD_MINIMA)
+        posicionX = (posicionX + dx(entrada.direccionX) * velocidad * entrada.deltaSegundos)
             .coerceIn(0.0, anchoMapa)
-        posicionY = (posicionY + dy * velocidad * deltaSegundos)
+        posicionY = (posicionY + dy(entrada.direccionY) * velocidad * entrada.deltaSegundos)
             .coerceIn(0.0, altoMapa)
+    }
 
-        val intensidadMovimiento = abs(dx) + abs(dy)
-        sistemaOxigeno.consumir(deltaSegundos, intensidadMovimiento)
+    private fun dx(direccionX: Double): Double {
+        return direccionX.coerceIn(-1.0, 1.0)
+    }
+
+    private fun dy(direccionY: Double): Double {
+        return direccionY.coerceIn(-1.0, 1.0)
+    }
+
+    private fun consumirOxigeno(entrada: EntradaActualizacionPartida) {
+        val intensidadMovimiento = abs(entrada.direccionX) + abs(entrada.direccionY)
+        sistemaOxigeno.consumir(entrada.deltaSegundos, intensidadMovimiento)
 
         if (sistemaOxigeno.estaAgotado) {
-            gestorDanio.aplicarDanioAsfixia(deltaSegundos)
+            gestorDanio.aplicarDanioAsfixia(entrada.deltaSegundos)
             registrarDestruccion("Oxígeno agotado")
-            return
         }
+    }
 
-        gestorDanio.aplicarDanioProfundidad(posicionY, deltaSegundos)
-        if (casco.integridad <= ConfiguracionSesion.INTEGRIDAD_MINIMA) {
+    private fun verificarDanios(entrada: EntradaActualizacionPartida) {
+        gestorDanio.aplicarDanioProfundidad(posicionY, entrada.deltaSegundos)
+        if (!casoIntegridadSuficiente()) {
             registrarDestruccion("Casco colapsado por sobrepresión")
         }
+    }
+
+    private fun casoIntegridadSuficiente(): Boolean {
+        return casco.integridad > ConfiguracionSesion.INTEGRIDAD_MINIMA
+    }
+
+    private fun registrarDestruccion(causa: String) {
+        if (destruido) {
+            return
+        }
+        destruido = true
+        causaDestruccion = causa
+        mensaje = "GAME OVER · $causa. El submarino ha sido destruido."
     }
 
     fun actualizarMensaje(texto: String) {
@@ -100,14 +136,5 @@ class EstadoPartida(
 
     fun aumentarOxigenoMaximo(incremento: Double) {
         sistemaOxigeno.aumentarMaximo(incremento)
-    }
-
-    private fun registrarDestruccion(causa: String) {
-        if (destruido) {
-            return
-        }
-        destruido = true
-        causaDestruccion = causa
-        mensaje = "GAME OVER · $causa. El submarino ha sido destruido."
     }
 }

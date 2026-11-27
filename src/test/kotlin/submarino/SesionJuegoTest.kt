@@ -5,6 +5,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
+import submarino.EstadoPartida.EntradaActualizacionPartida
 
 class SesionJuegoTest {
 
@@ -38,7 +39,13 @@ class SesionJuegoTest {
         assertFalse(sesion.estado().enZonaAcople)
         assertFalse(sesion.acoplar())
 
-        sesion.actualizar(1.0, 0.0, -1.0)
+        sesion.actualizar(EntradaActualizacionPartida(
+                deltaSegundos = 1.0,
+                direccionX = 0.0,
+                direccionY = -1.0,
+                estaAcoplado = sesion.esAcoplado,
+                velocidadNave = sesion.velocidadNave
+            ))
 
         val estado = sesion.estado()
         assertTrue(estado.enZonaAcople)
@@ -52,12 +59,30 @@ class SesionJuegoTest {
     fun `ciclo completo minar acoplar vender y comprar oxigeno`() {
         val sesion = SesionJuego()
 
-        sesion.actualizar(5.2, 0.0, 1.0)
-        sesion.actualizar(0.7, 1.0, 0.0)
+        sesion.actualizar(EntradaActualizacionPartida(
+                deltaSegundos = 5.2,
+                direccionX = 0.0,
+                direccionY = 1.0,
+                estaAcoplado = sesion.esAcoplado,
+                velocidadNave = sesion.velocidadNave
+            ))
+        sesion.actualizar(EntradaActualizacionPartida(
+                deltaSegundos = 0.7,
+                direccionX = 1.0,
+                direccionY = 0.0,
+                estaAcoplado = sesion.esAcoplado,
+                velocidadNave = sesion.velocidadNave
+            ))
         assertTrue(sesion.minar().esExito)
         assertEquals(1, sesion.estado().cantidadItems)
 
-        sesion.actualizar(6.2, 0.0, -1.0)
+        sesion.actualizar(EntradaActualizacionPartida(
+                deltaSegundos = 6.2,
+                direccionX = 0.0,
+                direccionY = -1.0,
+                estaAcoplado = sesion.esAcoplado,
+                velocidadNave = sesion.velocidadNave
+            ))
         assertTrue(sesion.acoplar())
         assertTrue(sesion.venderMinerales().esExitoso)
         assertEquals(90, sesion.estado().monedas)
@@ -74,8 +99,14 @@ class SesionJuegoTest {
         val sesion = SesionJuego()
 
         var frames = 0
-        while (!sesion.estaDestruida() && frames < 600) {
-            sesion.actualizar(1.0, 1.0, 0.0)
+        while (!sesion.estaDestruida && frames < 600) {
+            sesion.actualizar(EntradaActualizacionPartida(
+                deltaSegundos = 1.0,
+                direccionX = 1.0,
+                direccionY = 0.0,
+                estaAcoplado = sesion.esAcoplado,
+                velocidadNave = sesion.velocidadNave
+            ))
             frames++
         }
 
@@ -87,7 +118,13 @@ class SesionJuegoTest {
         assertFalse(sesion.acoplar(), "Una nave destruida no puede acoplarse")
         assertFalse(sesion.minar().esExito, "Una nave destruida no puede minar")
         val posicionAntes = estado.posicionX to estado.profundidad
-        sesion.actualizar(1.0, 1.0, 1.0)
+        sesion.actualizar(EntradaActualizacionPartida(
+                deltaSegundos = 1.0,
+                direccionX = 1.0,
+                direccionY = 1.0,
+                estaAcoplado = sesion.esAcoplado,
+                velocidadNave = sesion.velocidadNave
+            ))
         assertEquals(posicionAntes, sesion.estado().posicionX to sesion.estado().profundidad)
     }
 
@@ -96,12 +133,18 @@ class SesionJuegoTest {
         val sesion = SesionJuego()
 
         var frames = 0
-        while (!sesion.estaDestruida() && frames < 600) {
-            sesion.actualizar(1.0, 0.0, 1.0)
+        while (!sesion.estaDestruida && frames < 600) {
+            sesion.actualizar(EntradaActualizacionPartida(
+                deltaSegundos = 1.0,
+                direccionX = 0.0,
+                direccionY = 1.0,
+                estaAcoplado = sesion.esAcoplado,
+                velocidadNave = sesion.velocidadNave
+            ))
             frames++
         }
 
-        assertTrue(sesion.estaDestruida(), "El descenso al fondo debe destruir la nave")
+        assertTrue(sesion.estaDestruida, "El descenso al fondo debe destruir la nave")
         val estado = sesion.estado()
         assertTrue(estado.destruido)
         assertTrue(

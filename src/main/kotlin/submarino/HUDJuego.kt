@@ -6,15 +6,52 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.Region
 import javafx.scene.layout.VBox
 
-/**
- * HUD fijo de la partida.
- *
- * Muestra profundidad, posición horizontal, oxígeno, casco, bodega, monedas,
- * nodos restantes y estado de acople. Todos los nodos quedan encapsulados.
- */
-class HUDJuego {
+/***********************/
+/* Top-level constants */
+/***********************/
+private const val ESPACIADO = 14.0
+private const val ANCHO_BARRA = 92.0
 
-    private val contenedor: VBox = VBox(8.0)
+private const val ESTILO_CONTENEDOR =
+    "-fx-background-color: rgba(2, 20, 28, 0.86);" +
+        "-fx-background-radius: 14;" +
+        "-fx-border-color: rgba(127, 227, 240, 0.32);" +
+        "-fx-border-radius: 14;" +
+        "-fx-padding: 12 18 12 18;" +
+        "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 18, 0.25, 0, 6);"
+
+private const val ESTILO_TITULO =
+    "-fx-font-family: 'Segoe UI';" +
+        "-fx-font-size: 9px;" +
+        "-fx-font-weight: bold;" +
+        "-fx-text-fill: #7FA8B5;"
+
+private const val ESTILO_VALOR_BASE =
+    "-fx-font-family: 'Segoe UI';" +
+        "-fx-font-size: 15px;" +
+        "-fx-font-weight: bold;" +
+        "-fx-text-fill: #E6F7FA;"
+
+private const val ESTILO_SEPARADOR =
+    "-fx-background-color: rgba(127, 227, 240, 0.24);" +
+        "-fx-background-radius: 1;"
+
+private const val ESTILO_AYUDA =
+    "-fx-font-family: 'Segoe UI';" +
+        "-fx-font-size: 10px;" +
+        "-fx-font-weight: bold;" +
+        "-fx-text-fill: #5E8896;"
+
+private const val ESTILO_BARRA_ESTABLE = "-fx-accent: #34D399;"
+private const val ESTILO_BARRA_PRECAUCION = "-fx-accent: #FBBF24;"
+private const val ESTILO_BARRA_CRITICO = "-fx-accent: #FB7185;"
+
+/***********************/
+/* ComponentesHUD class */
+/***********************/
+internal class ComponentesHUD {
+
+    private val contenedor: VBox = VBox(ESPACIADO)
     private val indicadorProfundidad: IndicadorMetrosHUD =
         FabricaHUD.crearIndicadorMetrosHUD("PROFUNDIDAD", ESTILO_TITULO, ESTILO_VALOR_BASE, "%.0f m")
     private val indicadorPosicionX: IndicadorMetrosHUD =
@@ -105,43 +142,19 @@ class HUDJuego {
         indicadorNodos.actualizar(estado.nodosDisponibles)
         indicadorEstado.actualizar(estado.acoplado)
     }
+}
 
-    companion object {
-        private const val ESPACIADO = 14.0
-        private const val ANCHO_BARRA = 92.0
+/***********************/
+/* HUDJuego class */
+/***********************/
+class HUDJuego {
 
-        private const val ESTILO_CONTENEDOR =
-            "-fx-background-color: rgba(2, 20, 28, 0.86);" +
-                "-fx-background-radius: 14;" +
-                "-fx-border-color: rgba(127, 227, 240, 0.32);" +
-                "-fx-border-radius: 14;" +
-                "-fx-padding: 12 18 12 18;" +
-                "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 18, 0.25, 0, 6);"
+    private val componentesHUD: ComponentesHUD = ComponentesHUD()
 
-        private const val ESTILO_TITULO =
-            "-fx-font-family: 'Segoe UI';" +
-                "-fx-font-size: 9px;" +
-                "-fx-font-weight: bold;" +
-                "-fx-text-fill: #7FA8B5;"
-
-        private const val ESTILO_VALOR_BASE =
-            "-fx-font-family: 'Segoe UI';" +
-                "-fx-font-size: 15px;" +
-                "-fx-font-weight: bold;" +
-                "-fx-text-fill: #E6F7FA;"
-
-        private const val ESTILO_SEPARADOR =
-            "-fx-background-color: rgba(127, 227, 240, 0.24);" +
-                "-fx-background-radius: 1;"
-
-        private const val ESTILO_AYUDA =
-            "-fx-font-family: 'Segoe UI';" +
-                "-fx-font-size: 10px;" +
-                "-fx-font-weight: bold;" +
-                "-fx-text-fill: #5E8896;"
-
-        private const val ESTILO_BARRA_ESTABLE = "-fx-accent: #34D399;"
-        private const val ESTILO_BARRA_PRECAUCION = "-fx-accent: #FBBF24;"
-        private const val ESTILO_BARRA_CRITICO = "-fx-accent: #FB7185;"
+    init {
     }
+
+    fun obtenerNodo(): Parent = componentesHUD.obtenerNodo()
+
+    fun actualizar(estado: EstadoJuego) = componentesHUD.actualizar(estado)
 }

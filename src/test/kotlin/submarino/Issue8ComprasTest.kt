@@ -31,7 +31,7 @@ class Issue8ComprasTest {
 
         val resultado = servicio.comprarMejora(mejora.id, sub.billetera, sub)
 
-        verificarCompraExitosa(resultado, nivelAnterior = 1, nuevoNivel = 2, costo = 100, saldo = 100)
+        verificarCompraExitosa(resultado, EsperadoCompra(nivelAnterior = 1, nuevoNivel = 2, costo = 100, saldo = 100))
         assertEquals(100, monedero.saldo)
         assertEquals(35.0, bodega.capacidadMaxima)
         assertEquals(2, mejora.nivel)
@@ -151,15 +151,19 @@ class Issue8ComprasTest {
 
     private fun verificarCompraExitosa(
         resultado: ResultadoCompra,
-        nivelAnterior: Int,
-        nuevoNivel: Int,
-        costo: Int,
-        saldo: Int
+        esperado: EsperadoCompra
     ) {
         val exito = assertIs<ResultadoCompra.Exito>(resultado)
-        assertEquals(nivelAnterior, exito.nivelAnterior)
-        assertEquals(nuevoNivel, exito.nuevoNivel)
-        assertEquals(costo, exito.costoPagado)
-        assertEquals(saldo, exito.saldoRestante)
+        assertEquals(esperado.nivelAnterior, exito.nivelAnterior)
+        assertEquals(esperado.nuevoNivel, exito.nuevoNivel)
+        assertEquals(esperado.costo, exito.costoPagado)
+        assertEquals(esperado.saldo, exito.saldoRestante)
     }
+
+    private data class EsperadoCompra(
+        val nivelAnterior: Int,
+        val nuevoNivel: Int,
+        val costo: Int,
+        val saldo: Int
+    )
 }

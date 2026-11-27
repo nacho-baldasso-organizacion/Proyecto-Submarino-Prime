@@ -9,18 +9,26 @@ object FabricaServicios {
     fun crearResultadoRecoleccionExito(
         item: Recolectable,
         pesoAcumulado: Double
-    ): ResultadoRecoleccion.Exito = ResultadoRecoleccion.Exito(item, pesoAcumulado)
+    ): ResultadoRecoleccion.Exito = FabricaServiciosComercioYResultadosDelegate.crearResultadoRecoleccionExito(
+        item = item,
+        pesoAcumulado = pesoAcumulado
+    )
 
     fun crearResultadoRecoleccionBodegaLlena(
         item: Recolectable,
         excesoPeso: Double,
         capacidadMaxima: Double
     ): ResultadoRecoleccion.BodegaLlena =
-        ResultadoRecoleccion.BodegaLlena(item, excesoPeso, capacidadMaxima)
+        FabricaServiciosComercioYResultadosDelegate.crearResultadoRecoleccionBodegaLlena(
+            item = item,
+            excesoPeso = excesoPeso,
+            capacidadMaxima = capacidadMaxima
+        )
 
     fun crearResultadoRecoleccionYaRecolectado(
         item: Recolectable
-    ): ResultadoRecoleccion.YaRecolectado = ResultadoRecoleccion.YaRecolectado(item)
+    ): ResultadoRecoleccion.YaRecolectado =
+        FabricaServiciosComercioYResultadosDelegate.crearResultadoRecoleccionYaRecolectado(item = item)
 
     fun crearTransaccionComercial(
         itemsVendidos: List<Vendible>,
@@ -28,21 +36,32 @@ object FabricaServicios {
         cantidadItems: Int,
         timestamp: Long = System.currentTimeMillis()
     ): TransaccionComercial =
-        TransaccionComercial(itemsVendidos, totalCreditos, cantidadItems, timestamp)
+        FabricaServiciosComercioYResultadosDelegate.crearTransaccionComercial(
+            itemsVendidos = itemsVendidos,
+            totalCreditos = totalCreditos,
+            cantidadItems = cantidadItems,
+            timestamp = timestamp
+        )
 
     fun crearResultadoComercioExito(
         transaccion: TransaccionComercial,
         saldoActualizado: Int
-    ): ResultadoComercio.Exito = ResultadoComercio.Exito(transaccion, saldoActualizado)
+    ): ResultadoComercio.Exito =
+        FabricaServiciosComercioYResultadosDelegate.crearResultadoComercioExito(
+            transaccion = transaccion,
+            saldoActualizado = saldoActualizado
+        )
 
-    fun crearEstrategiaPreciosBase(): EstrategiaPreciosBase = EstrategiaPreciosBase()
+    fun crearEstrategiaPreciosBase(): EstrategiaPreciosBase =
+        FabricaServiciosMejoraYEstrategiasDelegate.crearEstrategiaPreciosBase()
 
     fun crearCalculadoraPreciosEstandar(
         estrategia: EstrategiaPrecios = crearEstrategiaPreciosBase()
-    ): CalculadoraPreciosEstandar = CalculadoraPreciosEstandar(estrategia)
+    ): CalculadoraPreciosEstandar =
+        FabricaServiciosMejoraYEstrategiasDelegate.crearCalculadoraPreciosEstandar(estrategia = estrategia)
 
     fun crearZonaSuperficie(profundidadMaxima: Double = 0.0): ZonaSuperficie =
-        ZonaSuperficie(profundidadMaxima)
+        FabricaServiciosMejoraYEstrategiasDelegate.crearZonaSuperficie(profundidadMaxima = profundidadMaxima)
 
     fun crearResultadoCompraExito(
         mejora: Mejora,
@@ -51,25 +70,40 @@ object FabricaServicios {
         costoPagado: Int,
         saldoRestante: Int
     ): ResultadoCompra.Exito =
-        ResultadoCompra.Exito(mejora, nivelAnterior, nuevoNivel, costoPagado, saldoRestante)
+        FabricaServiciosComercioYResultadosDelegate.crearResultadoCompraExito(
+            mejora = mejora,
+            nivelAnterior = nivelAnterior,
+            nuevoNivel = nuevoNivel,
+            costoPagado = costoPagado,
+            saldoRestante = saldoRestante
+        )
 
     fun crearResultadoCompraFondosInsuficientes(
         mejoraId: String,
         costoRequerido: Int,
         saldoDisponible: Int
     ): ResultadoCompra.FondosInsuficientes =
-        ResultadoCompra.FondosInsuficientes(mejoraId, costoRequerido, saldoDisponible)
+        FabricaServiciosComercioYResultadosDelegate.crearResultadoCompraFondosInsuficientes(
+            mejoraId = mejoraId,
+            costoRequerido = costoRequerido,
+            saldoDisponible = saldoDisponible
+        )
 
     fun crearResultadoCompraNivelMaximoAlcanzado(
         mejoraId: String,
         nivelActual: Int,
         nivelMaximo: Int
     ): ResultadoCompra.NivelMaximoAlcanzado =
-        ResultadoCompra.NivelMaximoAlcanzado(mejoraId, nivelActual, nivelMaximo)
+        FabricaServiciosComercioYResultadosDelegate.crearResultadoCompraNivelMaximoAlcanzado(
+            mejoraId = mejoraId,
+            nivelActual = nivelActual,
+            nivelMaximo = nivelMaximo
+        )
 
     fun crearResultadoCompraMejoraNoEncontrada(
         mejoraId: String
-    ): ResultadoCompra.MejoraNoEncontrada = ResultadoCompra.MejoraNoEncontrada(mejoraId)
+    ): ResultadoCompra.MejoraNoEncontrada =
+        FabricaServiciosComercioYResultadosDelegate.crearResultadoCompraMejoraNoEncontrada(mejoraId = mejoraId)
 
     fun crearControladorNivelMejora(
         nivelInicial: Int = 1,
@@ -84,49 +118,70 @@ object FabricaServicios {
         nivelMaximo: Int = 5,
         efecto: EfectoMejora,
         estrategiaCosto: EstrategiaCosto
-    ): Mejora = Mejora(id, nombre, descripcion, nivelInicial, nivelMaximo, efecto, estrategiaCosto)
+    ): Mejora = FabricaServiciosMejoraYEstrategiasDelegate.crearMejora(
+        id = id,
+        nombre = nombre,
+        descripcion = descripcion,
+        nivelInicial = nivelInicial,
+        nivelMaximo = nivelMaximo,
+        efecto = efecto,
+        estrategiaCosto = estrategiaCosto
+    )
 
     fun crearCatalogoUpgrades(
         mejorasIniciales: Collection<Mejora> = emptyList()
-    ): CatalogoUpgrades = CatalogoUpgrades(mejorasIniciales)
+    ): CatalogoUpgrades =
+        FabricaServiciosMejoraYEstrategiasDelegate.crearCatalogoUpgrades(mejorasIniciales = mejorasIniciales)
 
     fun crearEfectoCapacidadBodega(magnitud: Double): EfectoCapacidadBodega =
-        EfectoCapacidadBodega(magnitud)
+        FabricaServiciosMejoraYEstrategiasDelegate.crearEfectoCapacidadBodega(magnitud = magnitud)
 
     fun crearEfectoResistenciaCasco(magnitud: Double): EfectoResistenciaCasco =
-        EfectoResistenciaCasco(magnitud)
+        FabricaServiciosMejoraYEstrategiasDelegate.crearEfectoResistenciaCasco(magnitud = magnitud)
 
     fun crearEfectoVelocidadAscenso(magnitud: Double): EfectoVelocidadAscenso =
-        EfectoVelocidadAscenso(magnitud)
+        FabricaServiciosMejoraYEstrategiasDelegate.crearEfectoVelocidadAscenso(magnitud = magnitud)
 
     fun crearEfectoVelocidadPropulsion(magnitud: Double): EfectoVelocidadPropulsion =
-        EfectoVelocidadPropulsion(magnitud)
+        FabricaServiciosMejoraYEstrategiasDelegate.crearEfectoVelocidadPropulsion(magnitud = magnitud)
 
     fun crearEstrategiaCostoExponencial(
         costoBase: Int,
         factorMultiplicador: Double = 1.5
-    ): EstrategiaCostoExponencial = EstrategiaCostoExponencial(costoBase, factorMultiplicador)
+    ): EstrategiaCostoExponencial =
+        FabricaServiciosMejoraYEstrategiasDelegate.crearEstrategiaCostoExponencial(
+            costoBase = costoBase,
+            factorMultiplicador = factorMultiplicador
+        )
 
     fun crearEstrategiaCostoLineal(
         costoBase: Int,
         incrementoPorNivel: Int
-    ): EstrategiaCostoLineal = EstrategiaCostoLineal(costoBase, incrementoPorNivel)
+    ): EstrategiaCostoLineal =
+        FabricaServiciosMejoraYEstrategiasDelegate.crearEstrategiaCostoLineal(
+            costoBase = costoBase,
+            incrementoPorNivel = incrementoPorNivel
+        )
 
     fun crearFabricaCatalogoUpgradesEstandar(): FabricaCatalogoUpgradesEstandar =
-        FabricaCatalogoUpgradesEstandar()
+        FabricaServiciosMejoraYEstrategiasDelegate.crearFabricaCatalogoUpgradesEstandar()
 
     fun crearFabricaProcesadorComprasEstandar(): FabricaProcesadorComprasEstandar =
-        FabricaProcesadorComprasEstandar()
+        FabricaServiciosMejoraYEstrategiasDelegate.crearFabricaProcesadorComprasEstandar()
 
     fun crearFabricaTiendaMejorasEstandar(): FabricaTiendaMejorasEstandar =
-        FabricaTiendaMejorasEstandar()
+        FabricaServiciosMejoraYEstrategiasDelegate.crearFabricaTiendaMejorasEstandar()
 
     fun crearFabricaMejorasEstandar(
         fabricaCatalogo: FabricaCatalogoUpgrades = crearFabricaCatalogoUpgradesEstandar(),
         fabricaProcesador: FabricaProcesadorCompras = crearFabricaProcesadorComprasEstandar(),
         fabricaTienda: FabricaTiendaMejoras = crearFabricaTiendaMejorasEstandar()
     ): FabricaMejorasEstandar =
-        FabricaMejorasEstandar(fabricaCatalogo, fabricaProcesador, fabricaTienda)
+        FabricaServiciosMejoraYEstrategiasDelegate.crearFabricaMejorasEstandar(
+            fabricaCatalogo = fabricaCatalogo,
+            fabricaProcesador = fabricaProcesador,
+            fabricaTienda = fabricaTienda
+        )
 
     fun crearMejoraCapacidadBodega(
         id: String,
@@ -137,7 +192,15 @@ object FabricaServicios {
         efecto: EfectoMejora,
         estrategiaCosto: EstrategiaCosto
     ): MejoraCapacidadBodega =
-        MejoraCapacidadBodega(id, nombre, descripcion, nivelInicial, nivelMaximo, efecto, estrategiaCosto)
+        FabricaServiciosMejoraYEstrategiasDelegate.crearMejoraCapacidadBodega(
+            id = id,
+            nombre = nombre,
+            descripcion = descripcion,
+            nivelInicial = nivelInicial,
+            nivelMaximo = nivelMaximo,
+            efecto = efecto,
+            estrategiaCosto = estrategiaCosto
+        )
 
     fun crearMejoraResistenciaCasco(
         id: String,
@@ -148,7 +211,15 @@ object FabricaServicios {
         efecto: EfectoMejora,
         estrategiaCosto: EstrategiaCosto
     ): MejoraResistenciaCasco =
-        MejoraResistenciaCasco(id, nombre, descripcion, nivelInicial, nivelMaximo, efecto, estrategiaCosto)
+        FabricaServiciosMejoraYEstrategiasDelegate.crearMejoraResistenciaCasco(
+            id = id,
+            nombre = nombre,
+            descripcion = descripcion,
+            nivelInicial = nivelInicial,
+            nivelMaximo = nivelMaximo,
+            efecto = efecto,
+            estrategiaCosto = estrategiaCosto
+        )
 
     fun crearMejoraVelocidadAscenso(
         id: String,
@@ -159,7 +230,15 @@ object FabricaServicios {
         efecto: EfectoMejora,
         estrategiaCosto: EstrategiaCosto
     ): MejoraVelocidadAscenso =
-        MejoraVelocidadAscenso(id, nombre, descripcion, nivelInicial, nivelMaximo, efecto, estrategiaCosto)
+        FabricaServiciosMejoraYEstrategiasDelegate.crearMejoraVelocidadAscenso(
+            id = id,
+            nombre = nombre,
+            descripcion = descripcion,
+            nivelInicial = nivelInicial,
+            nivelMaximo = nivelMaximo,
+            efecto = efecto,
+            estrategiaCosto = estrategiaCosto
+        )
 
     fun crearMejoraVelocidadPropulsion(
         id: String,
@@ -170,13 +249,24 @@ object FabricaServicios {
         efecto: EfectoMejora,
         estrategiaCosto: EstrategiaCosto
     ): MejoraVelocidadPropulsion =
-        MejoraVelocidadPropulsion(id, nombre, descripcion, nivelInicial, nivelMaximo, efecto, estrategiaCosto)
+        FabricaServiciosMejoraYEstrategiasDelegate.crearMejoraVelocidadPropulsion(
+            id = id,
+            nombre = nombre,
+            descripcion = descripcion,
+            nivelInicial = nivelInicial,
+            nivelMaximo = nivelMaximo,
+            efecto = efecto,
+            estrategiaCosto = estrategiaCosto
+        )
 
     fun crearServicioUpgrades(catalogo: ConsultableCatalogo): ServicioUpgrades =
-        ServicioUpgrades(catalogo)
+        FabricaServiciosMejoraYEstrategiasDelegate.crearServicioUpgrades(catalogo = catalogo)
 
     fun crearTiendaMejoras(
         catalogo: ConsultableCatalogo,
         procesadorCompras: ProcesadorCompras
-    ): TiendaMejoras = TiendaMejoras(catalogo, procesadorCompras)
+    ): TiendaMejoras = FabricaServiciosMejoraYEstrategiasDelegate.crearTiendaMejoras(
+        catalogo = catalogo,
+        procesadorCompras = procesadorCompras
+    )
 }

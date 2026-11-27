@@ -1,17 +1,54 @@
 package submarino
 
 /**
+ * Mixin para el identificador de la mejora.
+ * Por defecto String vacío.
+ */
+interface ConIdMejora {
+    fun obtenerIdMejora(): String = ""
+}
+
+/**
+ * Mixin para el saldo final.
+ * Por defecto -1.
+ */
+interface ConSaldoFinal {
+    fun saldoFinal(): Int = -1
+}
+
+/**
+ * Métricas específicas a una compra exitosa de mejora.
+ */
+interface MétricasCompra {
+    fun incrementoNivel(): Int
+    fun esNivelMaximo(): Boolean
+}
+
+/**
+ * Detalle de error para compras con fondos insuficientes.
+ */
+interface DetalleErrorCompra {
+    fun deficit(): Int
+}
+
+/**
+ * Núcleo mínimo de la jerarquía sellada.
+ * Los clientes dependiendo solo de esta interfaz no se ven obligados a
+ * depender de métricas de compra o detalles de error que no usan.
+ */
+interface ResultadoCompraBase {
+    val esExitosa: Boolean
+    fun obtenerMensaje(): String
+}
+
+/**
  * Jerarquía sellada exhaustiva que modela los resultados posibles de una compra de mejora.
  * Garantiza cumplimiento con Liskov Substitution Principle (LSP) y provee métodos de dominio polimórficos.
  * Elimina clases anémicas dotando de comportamiento de cálculo a los resultados.
+ * Ahora segregado en interfaces más pequeñas y cohesivas (Principio ISP).
  */
-sealed interface ResultadoCompra {
-
-    val esExitosa: Boolean
-    fun obtenerMensaje(): String
-
-    fun obtenerIdMejora(): String = ""
-    fun saldoFinal(): Int = -1
+public sealed interface ResultadoCompra : ResultadoCompraBase, ConIdMejora, ConSaldoFinal {
+    /** Métodos abstractos: esExitosa y obtenerMensaje implementados por las subclases */
 
     /**
      * Transacción de compra concretada exitosamente.
@@ -22,7 +59,7 @@ sealed interface ResultadoCompra {
         nuevoNivel: Int,
         costoPagado: Int,
         saldoRestante: Int
-    ) : ResultadoCompra {
+    ) : ResultadoCompra, MétricasCompra {
         var mejora: Mejora = mejora
             private set
 
@@ -47,9 +84,9 @@ sealed interface ResultadoCompra {
         override fun obtenerMensaje(): String =
             "Mejora '${mejora.nombre}' adquirida exitosamente: nivel $nivelAnterior -> $nuevoNivel por $$costoPagado. Saldo restante: $$saldoRestante."
 
-        fun incrementoNivel(): Int = nuevoNivel - nivelAnterior
+override fun incrementoNivel(): Int = nuevoNivel - nivelAnterior
 
-        fun esNivelMaximo(): Boolean = nuevoNivel >= mejora.nivelMaximo()
+    override fun esNivelMaximo(): Boolean = nuevoNivel >= mejora.nivelMaximo()
 
         override fun toString(): String =
             "Exito(mejora=$mejora, nivelAnterior=$nivelAnterior, nuevoNivel=$nuevoNivel, costoPagado=$costoPagado, saldoRestante=$saldoRestante)"

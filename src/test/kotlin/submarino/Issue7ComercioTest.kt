@@ -30,7 +30,7 @@ class Issue7ComercioTest {
 
         val resultado = ServicioComercio().venderBodegaSubmarino(sub)
 
-        verificarVentaExitosa(resultado, total = 255, cantidad = 2, saldo = 305, bodega = bodega)
+        verificarVentaExitosa(resultado, EsperadoVenta(total = 255, cantidad = 2, saldo = 305), bodega)
         assertEquals(305, sub.billetera.saldo)
         assertEquals(sub.pesoBase, sub.pesoTotal, 0.001)
         assertEquals(1.0, sub.factorAscenso, 0.001)
@@ -110,18 +110,22 @@ class Issue7ComercioTest {
 
     private fun verificarVentaExitosa(
         resultado: ResultadoComercio,
-        total: Int,
-        cantidad: Int,
-        saldo: Int,
+        esperado: EsperadoVenta,
         bodega: Bodega
     ) {
         val exito = assertIs<ResultadoComercio.Exito>(resultado)
-        assertEquals(total, exito.transaccion.totalCreditos)
-        assertEquals(cantidad, exito.transaccion.cantidadItems)
-        assertEquals(saldo, exito.saldoActualizado)
+        assertEquals(esperado.total, exito.transaccion.totalCreditos)
+        assertEquals(esperado.cantidad, exito.transaccion.cantidadItems)
+        assertEquals(esperado.saldo, exito.saldoActualizado)
         assertEquals(0.0, bodega.pesoActual, 0.001)
         assertEquals(0, bodega.cantidadItems)
         assertEquals(0, bodega.valorTotal)
         assertTrue(bodega.obtenerElementos().isEmpty())
     }
+
+    private data class EsperadoVenta(
+        val total: Int,
+        val cantidad: Int,
+        val saldo: Int
+    )
 }

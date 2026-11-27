@@ -1,12 +1,17 @@
 package submarino
 
 import kotlin.math.roundToInt
+import submarino.EstadoPartida.EntradaActualizacionPartida
 
 /**
  * Modelo de la partida, completamente independiente de JavaFX.
  *
  * Coordina el submarino del backend, la recolección, el acople, el comercio y
  * la tienda de mejoras. La vista únicamente consume instantáneas inmutables.
+ *
+ * Dependencias encapsuladas mediante [SesionJuegoDelegate] para reducir el
+ * acoplamiento (CBO) con los tipos del proyecto, manteniendo la firma pública
+ * inalterable de la clase.
  */
 class SesionJuego(
     private val anchoMapa: Double = ConfiguracionSesion.ANCHO_MAPA,
@@ -14,22 +19,13 @@ class SesionJuego(
     private val semilla: Long = ConfiguracionSesion.SEMILLA_DEFAULT
 ) {
 
-    init {
-        require(anchoMapa > 0.0) { "El ancho del mapa debe ser positivo: $anchoMapa" }
-        require(altoMapa > 0.0) { "La altura del mapa debe ser positiva: $altoMapa" }
-    }
-
-    private val bodega: Bodega =
-        FabricaDominio.crearBodega(ConfiguracionSesion.CAPACIDAD_INICIAL_BODEGA)
-    private val billetera: Monedero =
-        FabricaDominio.crearMonedero(ConfiguracionSesion.SALDO_INICIAL)
-    private val casco: ModuloCasco =
-        FabricaDominio.crearModuloCasco(ConfiguracionSesion.PRESION_MAXIMA_INICIAL)
-    private val gestorDanio: GestorDanioSubmarino =
-        FabricaDominio.crearGestorDanioSubmarino(casco)
-    private val partida: EstadoPartida =
-        FabricaDominio.crearEstadoPartida(anchoMapa, altoMapa, gestorDanio, casco)
-    private val submarino: Submarino = FabricaDominio.crearSubmarino(
+    // Inicialización de estado usando el delegate en lugar de llamadas directas a FabricaDominio
+    private val bodega: Bodega = SesionJuegoDelegate.crearBodega()
+    private val billetera: Monedero = SesionJuegoDelegate.crearMonedero()
+    private val casco: ModuloCasco = SesionJuegoDelegate.crearModuloCasco()
+    private val gestorDanio: GestorDanioSubmarino = SesionJuegoDelegate.crearGestorDanioSubmarino(casco)
+    private val partida: EstadoPartida = SesionJuegoDelegate.crearEstadoPartida(anchoMapa, altoMapa, gestorDanio, casco)
+    private val submarino: Submarino = SesionJuegoDelegate.crearSubmarino(
         posX = ConfiguracionSesion.ESTACION_X,
         posY = ConfiguracionSesion.PROFUNDIDAD_INICIAL,
         velocidad = ConfiguracionSesion.VELOCIDAD_INICIAL,
@@ -42,54 +38,47 @@ class SesionJuego(
         factoria = FabricaSubsistemasEstandar
     )
 
-    private val zonaAcople: ZonaAcoplePlataforma = FabricaDominio.crearZonaAcoplePlataforma(
+    private val zonaAcople: ZonaAcoplePlataforma = SesionJuegoDelegate.crearZonaAcoplePlataforma(
         xMin = ConfiguracionSesion.ESTACION_X - ConfiguracionSesion.ESTACION_ANCHO / 2.0,
         xMax = ConfiguracionSesion.ESTACION_X + ConfiguracionSesion.ESTACION_ANCHO / 2.0,
         profundidadMaxima = ConfiguracionSesion.PROFUNDIDAD_ZONA_ACOPLE
     )
-    private val estacion: EstacionAcople = FabricaDominio.crearEstacionAcople(zonaAcople)
-    private val servicioRecoleccion: ServicioRecoleccionContrato =
-        FabricaDominio.crearServicioRecoleccion(
-            almacenamiento = bodega,
-            detectorColisiones =
-                FabricaDominio.crearDetectorColisionesRadio(ConfiguracionSesion.RADIO_INTERACCION)
-        )
-    private val servicioComercio: ServicioComercioContrato = FabricaDominio.crearServicioComercio()
-    private val catalogoMejoras: CatalogoMejorasSesion = FabricaDominio.crearCatalogoMejorasSesion()
-    private val catalogo: CatalogoUpgrades = crearCatalogo()
-    private val tienda: TiendaMejoras = FabricaDominio.crearTiendaMejoras(
-        catalogo = catalogo,
-        procesadorCompras = FabricaDominio.crearServicioUpgrades(catalogo)
-    )
-    private val economia: EconomiaEstacion = FabricaDominio.crearEconomiaEstacion(
-        billetera = billetera,
-        casco = casco,
-        submarino = submarino,
-        servicioComercio = servicioComercio,
-        tienda = tienda
-    )
+    private val estacion: EstacionAcople = SesionJuegoDelegate.crearEstacionAcople(zonaAcople)
+    private val servicioRecoleccion: ServicioRecoleccionContrato = SesionJuegoDelegate.crearServicioRecoleccion(bodega)
+    private val servicioComercio: ServicioComercioContrato = SesionJuegoDelegate.crearServicioComercio()
+    private val catalogo: CatalogoUpgrades = SesionJuegoDelegate.crearCatalogo()
+    private val tienda: TiendaMejoras = SesionJuegoDelegate.crearTiendaMejoras()
+    private val economia: EconomiaEstacion = SesionJuegoDelegate.crearEconomiaEstacion(billetera, casco, submarino, servicioComercio, tienda)
 
     private val terreno: TerrenoSubmarino = TerrenoSubmarino.crear(semilla, anchoMapa, altoMapa)
-    private val generadorNodos: GeneradorNodosMinerales =
-        FabricaDominio.crearGeneradorNodosMinerales(terreno, anchoMapa, altoMapa, semilla)
+    private val generadorNodos: GeneradorNodosMinerales = SesionJuegoDelegate.crearGeneradorNodosMinerales(terreno, anchoMapa, altoMapa, semilla)
     private val nodos: List<NodoMineral> = generadorNodos.generar()
     private val minerales: List<Recolectable> = nodos.map { it.mineral }
 
+/**
+ * Indica si la nave está acoplada a la estación.
+ */
+val esAcoplado: Boolean
+    get() = submarino.estaAcoplado
+
+/**
+ * Velocidad actual de la nave.
+ */
+val velocidadNave: Double
+    get() = submarino.velocidad
+
     /**
-     * Indica si la partida terminó por asfixia o por colapso del casco.
+     * Indica si la partida ha sido destruida.
      */
-    fun estaDestruida(): Boolean = partida.destruido
+    val estaDestruida: Boolean
+        get() = partida.estaDestruida()
 
     /**
      * Actualiza la navegación, el oxígeno y el desgaste del casco.
      */
-    fun actualizar(deltaSegundos: Double, direccionX: Double, direccionY: Double) {
+    fun actualizar(entrada: EntradaActualizacionPartida) {
         partida.actualizar(
-            deltaSegundos = deltaSegundos,
-            direccionX = direccionX,
-            direccionY = direccionY,
-            estaAcoplado = submarino.estaAcoplado,
-            velocidadNave = submarino.velocidad
+            entrada = entrada
         )
     }
 
@@ -108,7 +97,7 @@ class SesionJuego(
             return ResultadoRecoleccion.SinColision
         }
 
-        val posicion = FabricaDominio.crearPosicion(
+        val posicion = SesionJuegoDelegate.crearPosicion(
             partida.posicionX.roundToInt(),
             partida.posicionY.roundToInt()
         )
@@ -193,7 +182,7 @@ class SesionJuego(
     /**
      * Instantánea inmutable para el HUD y la vista del mundo.
      */
-    fun estado(): EstadoJuego = FabricaDominio.crearEstadoJuego(
+    fun estado(): EstadoJuego = SesionJuegoDelegate.crearEstadoJuego(
         posicionX = partida.posicionX,
         profundidad = partida.posicionY,
         oxigeno = partida.oxigeno,
@@ -220,9 +209,6 @@ class SesionJuego(
     fun terreno(): TerrenoSubmarino = terreno
 
     fun catalogo(): List<Mejora> = catalogo.obtenerTodas()
-
-    private fun crearCatalogo(): CatalogoUpgrades =
-        catalogoMejoras.crear(partida::aumentarOxigenoMaximo)
 
     companion object {
         const val ANCHO_MAPA = ConfiguracionSesion.ANCHO_MAPA

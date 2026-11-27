@@ -2,6 +2,7 @@ package submarino
 
 import javafx.animation.AnimationTimer
 import javafx.scene.canvas.Canvas
+import javafx.scene.canvas.GraphicsContext
 import kotlin.random.Random
 
 /**
@@ -14,43 +15,67 @@ import kotlin.random.Random
 class PecesMarinos(
     private val ancho: Double,
     private val alto: Double,
-    semilla: Long = SEMILLA_DEFAULT,
-    cantidad: Int = CANTIDAD_PECES
+    semilla: Long = 91L,
+    cantidad: Int = 14
 ) {
 
-    val nodo: Canvas = Canvas(ancho, alto).apply {
+    internal val nodo: Canvas = Canvas(ancho, alto).apply {
         isMouseTransparent = true
     }
 
-    private val gc = nodo.graphicsContext2D
-    private val random = Random(semilla)
-    private val fabrica = FabricaPecesMarinos(random, ancho, alto)
+    private val gc: GraphicsContext = nodo.graphicsContext2D
+    private val random: Random = Random(semilla)
+    private val fabrica: FabricaPecesMarinos = FabricaPecesMarinos(random, ancho, alto)
     private val peces: List<PezMarino> = List(cantidad) { fabrica.crear(it) }
-    private val actualizador = ActualizadorPecesMarinos()
-    private val pintor = PintorPecesMarinos(gc)
+    private val actualizador: ActualizadorPecesMarinos = ActualizadorPecesMarinos()
+    private val pintor: PintorPecesMarinos = PintorPecesMarinos(gc)
     private var animacion: AnimationTimer? = null
     private var ultimoInstante: Long = 0L
 
-    init {
-        dibujar()
-    }
+    internal data class Estado(
+        val ancho: Double,
+        val alto: Double,
+        val nodo: Canvas,
+        val gc: GraphicsContext,
+        val random: Random,
+        val fabrica: FabricaPecesMarinos,
+        val peces: List<PezMarino>,
+        val actualizador: ActualizadorPecesMarinos,
+        val pintor: PintorPecesMarinos,
+        val animacion: AnimationTimer?,
+        val ultimoInstante: Long
+    )
+
+    private val state = Estado(
+        ancho = ancho,
+        alto = alto,
+        nodo = nodo,
+        gc = gc,
+        random = random,
+        fabrica = fabrica,
+        peces = peces,
+        actualizador = actualizador,
+        pintor = pintor,
+        animacion = animacion,
+        ultimoInstante = ultimoInstante
+    )
 
     /**
      * Inicia el nado continuo de los peces.
      */
     fun iniciar() {
-        if (animacion != null) {
+        if (state.animacion != null) {
             return
         }
         val timer = object : AnimationTimer() {
             override fun handle(ahora: Long) {
-                if (ultimoInstante == 0L) {
+                if (state.ultimoInstante == 0L) {
                     ultimoInstante = ahora
                     dibujar()
                     return
                 }
-                val delta = ((ahora - ultimoInstante) / NANOSEGUNDOS_POR_SEGUNDO)
-                    .coerceIn(0.0, DELTA_MAXIMO)
+                val delta = ((ahora - ultimoInstante) / 1_000_000_000.0)
+                    .coerceIn(0.0, 0.05)
                 ultimoInstante = ahora
                 actualizar(delta)
                 dibujar()
@@ -76,12 +101,5 @@ class PecesMarinos(
     private fun dibujar() {
         gc.clearRect(0.0, 0.0, ancho, alto)
         pintor.dibujar(peces, actualizador.tiempo)
-    }
-
-    companion object {
-        private const val SEMILLA_DEFAULT = 91L
-        private const val CANTIDAD_PECES = 14
-        private const val NANOSEGUNDOS_POR_SEGUNDO = 1_000_000_000.0
-        private const val DELTA_MAXIMO = 0.05
     }
 }

@@ -27,6 +27,24 @@ enum class EstadoOxigeno(val etiqueta: String) {
     fun requiereRecarga(): Boolean = !esEstable()
 }
 
+internal data class ModeloNavegacionDatos(
+    val anchoEscena: Double,
+    val altoEscena: Double,
+    val margenHorizontal: Double,
+    val margenVertical: Double,
+    val velocidadPixelesPorSegundo: Double,
+    val metrosPorPixel: Double,
+    val consumoOxigenoPorSegundo: Double,
+    val consumoOxigenoPorMovimiento: Double,
+    var posicionX: Double,
+    var posicionY: Double,
+    val sistemaOxigeno: SistemaOxigeno,
+    val umbralCritico: Double,
+    val umbralPrecaucion: Double,
+    val oxigenoMinimo: Double,
+    val oxigenoMaximo: Double
+)
+
 /**
  * Instantánea inmutable del estado de navegación que consume la vista.
  */
@@ -98,11 +116,37 @@ class ModeloNavegacion(
         minimo = OXIGENO_MINIMO
     )
 
+    private val modeloDatos = ModeloNavegacionDatos(
+        anchoEscena, altoEscena, margenHorizontal, margenVertical,
+        velocidadPixelesPorSegundo, metrosPorPixel, consumoOxigenoPorSegundo, consumoOxigenoPorMovimiento,
+        posicionX, posicionY, sistemaOxigeno,
+        umbralCritico = UMBRAL_CRITICO,
+        umbralPrecaucion = UMBRAL_PRECAUCION,
+        oxigenoMinimo = OXIGENO_MINIMO,
+        oxigenoMaximo = OXIGENO_MAXIMO
+    )
+
     init {
         require(anchoEscena > 0.0) { "El ancho de la escena debe ser positivo: $anchoEscena" }
         require(altoEscena > 0.0) { "El alto de la escena debe ser positivo: $altoEscena" }
         require(margenHorizontal >= 0.0) { "El margen horizontal no puede ser negativo" }
         require(margenVertical >= 0.0) { "El margen vertical no puede ser negativo" }
+    }
+
+    companion object {
+        const val OXIGENO_INICIAL = 100.0
+        const val OXIGENO_MINIMO = 0.0
+        const val OXIGENO_MAXIMO = 100.0
+
+        const val UMBRAL_CRITICO = 25.0
+        const val UMBRAL_PRECAUCION = 55.0
+
+        private const val MARGEN_HORIZONTAL_DEFAULT = 70.0
+        private const val MARGEN_VERTICAL_DEFAULT = 60.0
+        private const val VELOCIDAD_DEFAULT = 260.0
+        private const val METROS_POR_PIXEL_DEFAULT = 0.1
+        private const val CONSUMO_BASE_DEFAULT = 0.8
+        private const val CONSUMO_MOVIMIENTO_DEFAULT = 0.4
     }
 
     /**
@@ -119,51 +163,36 @@ class ModeloNavegacion(
 
         val dx = direccionX.coerceIn(-1.0, 1.0)
         val dy = direccionY.coerceIn(-1.0, 1.0)
-        val desplazamiento = velocidadPixelesPorSegundo * deltaSegundos
+        val desplazamiento = modeloDatos.velocidadPixelesPorSegundo * deltaSegundos
 
-        posicionX = (posicionX + dx * desplazamiento)
-            .coerceIn(margenHorizontal, anchoEscena - margenHorizontal)
-        posicionY = (posicionY + dy * desplazamiento)
-            .coerceIn(margenVertical, altoEscena - margenVertical)
+        modeloDatos.posicionX = (modeloDatos.posicionX + dx * desplazamiento)
+            .coerceIn(modeloDatos.margenHorizontal, modeloDatos.anchoEscena - modeloDatos.margenHorizontal)
+        modeloDatos.posicionY = (modeloDatos.posicionY + dy * desplazamiento)
+            .coerceIn(modeloDatos.margenVertical, modeloDatos.altoEscena - modeloDatos.margenVertical)
 
         val intensidadMovimiento = abs(dx) + abs(dy)
-        sistemaOxigeno.consumir(deltaSegundos, intensidadMovimiento)
+        modeloDatos.sistemaOxigeno.consumir(deltaSegundos, intensidadMovimiento)
     }
 
     /**
      * Genera una instantánea inmutable del estado actual.
      */
     fun estado(): EstadoNavegacion = FabricaDominio.crearEstadoNavegacion(
-        posicionX = posicionX,
-        posicionY = posicionY,
-        coordenadaX = posicionX * metrosPorPixel,
-        profundidad = posicionY * metrosPorPixel,
-        oxigeno = sistemaOxigeno.oxigeno,
-        estadoOxigeno = clasificarOxigeno(sistemaOxigeno.oxigeno)
+        posicionX = modeloDatos.posicionX,
+        posicionY = modeloDatos.posicionY,
+        coordenadaX = modeloDatos.posicionX * modeloDatos.metrosPorPixel,
+        profundidad = modeloDatos.posicionY * modeloDatos.metrosPorPixel,
+        oxigeno = modeloDatos.sistemaOxigeno.oxigeno,
+        estadoOxigeno = clasificarOxigeno(modeloDatos.sistemaOxigeno.oxigeno)
     )
 
-    private fun clasificarOxigeno(nivel: Double): EstadoOxigeno = if (nivel <= OXIGENO_MINIMO) {
+    private fun clasificarOxigeno(nivel: Double): EstadoOxigeno = if (nivel <= modeloDatos.oxigenoMinimo) {
         EstadoOxigeno.AGOTADO
-    } else if (nivel < UMBRAL_CRITICO) {
+    } else if (nivel < modeloDatos.umbralCritico) {
         EstadoOxigeno.CRITICO
-    } else if (nivel < UMBRAL_PRECAUCION) {
+    } else if (nivel < modeloDatos.umbralPrecaucion) {
         EstadoOxigeno.PRECAUCION
     } else {
         EstadoOxigeno.ESTABLE
-    }
-
-    companion object {
-        const val OXIGENO_INICIAL = 100.0
-        const val OXIGENO_MINIMO = 0.0
-        const val OXIGENO_MAXIMO = 100.0
-
-        private const val MARGEN_HORIZONTAL_DEFAULT = 70.0
-        private const val MARGEN_VERTICAL_DEFAULT = 60.0
-        private const val VELOCIDAD_DEFAULT = 260.0
-        private const val METROS_POR_PIXEL_DEFAULT = 0.1
-        private const val CONSUMO_BASE_DEFAULT = 0.8
-        private const val CONSUMO_MOVIMIENTO_DEFAULT = 0.4
-        private const val UMBRAL_CRITICO = 25.0
-        private const val UMBRAL_PRECAUCION = 55.0
     }
 }

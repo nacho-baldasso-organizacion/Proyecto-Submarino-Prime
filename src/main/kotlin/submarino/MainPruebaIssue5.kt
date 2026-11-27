@@ -33,7 +33,7 @@ object MainPruebaIssue5 {
         val detectorColisiones: DetectorColisiones = FabricaDominio.crearDetectorColisionesRadio(ConfiguracionSesion.RADIO_INTERACCION)
         val servicio: ServicioRecoleccionContrato = ServicioRecoleccion(bodega, detectorColisiones)
 
-        DemostradorNavegacionRecoleccion().demostrar(ANCHO_MAPA, ALTO_MAPA, minerales, bodega, servicio)
+        DemostradorNavegacionRecoleccion().demostrar(ContextoDemostracion(ANCHO_MAPA, ALTO_MAPA, minerales, bodega, servicio))
         DemostradorReporteBodega().demostrar(bodega)
         VisualizadorConsola.imprimirCierre("PRUEBA ISSUE #5 COMPLETADA")
     }

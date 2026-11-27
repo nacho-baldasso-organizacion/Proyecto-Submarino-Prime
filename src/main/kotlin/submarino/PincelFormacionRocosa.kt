@@ -19,29 +19,47 @@ class PincelFormacionRocosa(
     private val paleta: PaletaTerrenoRocoso = PaletaTerrenoRocoso()
 ) {
 
+    private val xs = mutableListOf<Double>()
+    private val ys = mutableListOf<Double>()
+
     fun dibujar(formacion: FormacionRocosa, esSuelo: Boolean) {
+        procesarCrestas(formacion)
+        val (colorBase, colorClaro, colorOscuro) = configurarColores(formacion, esSuelo)
+        val yCresta = formacion.crestas.minOf { it.y } * escala
+        val yBase = formacion.baseY * escala
+        dibujarBase(colorBase, yCresta, yBase, esSuelo)
+        aplicarClipYDetalles(formacion, esSuelo, colorBase, colorClaro, colorOscuro, yCresta, yBase)
+        dibujarExterior(formacion, esSuelo, colorClaro, colorOscuro, yCresta, yBase)
+    }
+
+    private fun procesarCrestas(formacion: FormacionRocosa) {
         val crestas = formacion.crestas
         if (crestas.size < 2) {
             return
         }
 
-        val xs = DoubleArray(crestas.size + 2)
-        val ys = DoubleArray(crestas.size + 2)
-        xs[0] = crestas.first().x * escala
-        ys[0] = formacion.baseY * escala
+        xs.clear()
+        ys.clear()
+        xs.add(crestas.first().x * escala)
+        ys.add(formacion.baseY * escala)
         crestas.forEachIndexed { indice, punto ->
-            xs[indice + 1] = punto.x * escala
-            ys[indice + 1] = punto.y * escala
+            xs.add(punto.x * escala)
+            ys.add(punto.y * escala)
         }
-        xs[xs.lastIndex] = crestas.last().x * escala
-        ys[ys.lastIndex] = formacion.baseY * escala
+        xs.add(crestas.last().x * escala)
+        ys.add(formacion.baseY * escala)
+    }
 
+    private fun configurarColores(formacion: FormacionRocosa, esSuelo: Boolean): Triple<Color, Color, Color> {
         val colorBase = paleta.colorBase(formacion.profundidadMinima, esSuelo)
         val colorClaro = colorBase.interpolate(Color.web("#9FE8DA"), if (esSuelo) 0.10 else 0.24)
         val colorOscuro = colorBase.interpolate(Color.web("#010A0E"), if (esSuelo) 0.55 else 0.42)
-        val yCresta = crestas.minOf { it.y } * escala
-        val yBase = formacion.baseY * escala
+        return Triple(colorBase, colorClaro, colorOscuro)
+    }
 
+    private fun dibujarBase(colorBase: Color, yCresta: Double, yBase: Double, esSuelo: Boolean) {
+        val colorClaro = colorBase.interpolate(Color.web("#9FE8DA"), if (esSuelo) 0.10 else 0.24)
+        val colorOscuro = colorBase.interpolate(Color.web("#010A0E"), if (esSuelo) 0.55 else 0.42)
         gc.fill = LinearGradient(
             0.0, yCresta, 0.0, yBase,
             false,
@@ -50,7 +68,7 @@ class PincelFormacionRocosa(
             Stop(0.38, colorBase),
             Stop(1.0, colorOscuro)
         )
-        gc.fillPolygon(xs, ys, xs.size)
+        gc.fillPolygon(xs.toDoubleArray(), ys.toDoubleArray(), xs.size)
 
         gc.save()
         gc.beginPath()
@@ -60,7 +78,9 @@ class PincelFormacionRocosa(
         }
         gc.closePath()
         gc.clip()
+    }
 
+    private fun aplicarClipYDetalles(formacion: FormacionRocosa, esSuelo: Boolean, colorBase: Color, colorClaro: Color, colorOscuro: Color, yCresta: Double, yBase: Double) {
         val detalles = DetallesRoca(gc, random, escala)
         detalles.dibujarEstratos(formacion, yCresta, yBase)
         detalles.dibujarRocasInteriores(formacion)
@@ -70,7 +90,9 @@ class PincelFormacionRocosa(
             detalles.dibujarDetallesSuelo(formacion)
         }
         gc.restore()
+    }
 
+    private fun dibujarExterior(formacion: FormacionRocosa, esSuelo: Boolean, colorClaro: Color, colorOscuro: Color, yCresta: Double, yBase: Double) {
         val exterior = PincelRocaExterior(gc, random, escala)
         if (!esSuelo) {
             exterior.dibujarCrestaSinuosa(formacion, colorClaro)

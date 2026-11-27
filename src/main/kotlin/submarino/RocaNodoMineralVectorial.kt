@@ -13,16 +13,32 @@ import javafx.scene.shape.Polygon
 internal object RocaNodoMineralVectorial {
 
     fun crear(paleta: PaletaNodoMineralVectorial): List<Node> {
-        val halo = Circle(0.0, 0.0, 26.0).apply {
+        return listOf(
+            crearHalo(paleta),
+            crearSombra(paleta),
+            crearRoca(paleta),
+            crearRocaIzquierda(paleta),
+            crearRocaDerecha(paleta),
+            crearVeta(paleta),
+            crearSedimento(paleta)
+        )
+    }
+
+    private fun crearHalo(paleta: PaletaNodoMineralVectorial): Circle {
+        return Circle(0.0, 0.0, 26.0).apply {
             fill = paleta.brillo.deriveColor(0.0, 1.0, 1.0, 0.18)
             effect = DropShadow(24.0, paleta.brillo.deriveColor(0.0, 1.0, 1.0, 0.55))
         }
+    }
 
-        val sombra = Ellipse(0.0, 21.0, 31.0, 7.0).apply {
+    private fun crearSombra(paleta: PaletaNodoMineralVectorial): Ellipse {
+        return Ellipse(0.0, 21.0, 31.0, 7.0).apply {
             fill = Color.web("#000000", 0.32)
         }
+    }
 
-        val roca = Polygon(
+    private fun crearRoca(paleta: PaletaNodoMineralVectorial): Polygon {
+        return Polygon(
             -24.0, 14.0,
             -14.0, 4.0,
             0.0, 8.0,
@@ -42,8 +58,10 @@ internal object RocaNodoMineralVectorial {
             stroke = Color.web("#355A66")
             strokeWidth = 1.5
         }
+    }
 
-        val rocaIzquierda = Polygon(
+    private fun crearRocaIzquierda(paleta: PaletaNodoMineralVectorial): Polygon {
+        return Polygon(
             -32.0, 19.0,
             -28.0, 8.0,
             -19.0, 12.0,
@@ -54,8 +72,10 @@ internal object RocaNodoMineralVectorial {
             stroke = Color.web("#2B4C56")
             strokeWidth = 1.0
         }
+    }
 
-        val rocaDerecha = Polygon(
+    private fun crearRocaDerecha(paleta: PaletaNodoMineralVectorial): Polygon {
+        return Polygon(
             31.0, 18.0,
             24.0, 6.0,
             17.0, 11.0,
@@ -66,8 +86,10 @@ internal object RocaNodoMineralVectorial {
             stroke = Color.web("#2B4C56")
             strokeWidth = 1.0
         }
+    }
 
-        val veta = Polygon(
+    private fun crearVeta(paleta: PaletaNodoMineralVectorial): Polygon {
+        return Polygon(
             -13.0, 15.0,
             -8.0, 7.0,
             -1.0, 12.0,
@@ -78,11 +100,11 @@ internal object RocaNodoMineralVectorial {
         ).apply {
             fill = paleta.base.deriveColor(0.0, 1.0, 1.0, 0.42)
         }
+    }
 
-        val sedimento = Ellipse(0.0, 20.0, 18.0, 3.5).apply {
+    private fun crearSedimento(paleta: PaletaNodoMineralVectorial): Ellipse {
+        return Ellipse(0.0, 20.0, 18.0, 3.5).apply {
             fill = Color.web("#3D3724", 0.45)
         }
-
-        return listOf(halo, sombra, rocaIzquierda, rocaDerecha, roca, veta, sedimento)
     }
 }

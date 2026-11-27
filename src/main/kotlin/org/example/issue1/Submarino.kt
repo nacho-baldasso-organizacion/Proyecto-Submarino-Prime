@@ -1,5 +1,16 @@
 package submarino
 
+internal data class SubmarinoEstado(
+    val posX: Double,
+    val posY: Double,
+    val velocidad: Double,
+    val bateria: Int,
+    val estaDestruido: Boolean,
+    val estaAcoplado: Boolean,
+    val saldo: Int,
+    val casco: Casco
+)
+
 /**
  * Clase orquestadora principal que representa al submarino.
  *
@@ -36,27 +47,10 @@ class Submarino(
     private val factoria: FabricaSubsistemasSubmarino = FabricaSubsistemasEstandar
 ) : EntidadFisica(posX, posY, velocidad), Navegable, Pesable, Acoplable, NaveComercial, SubmarinoMejorable {
 
-    companion object {
-        const val PESO_BASE_DEFAULT: Double = 1000.0
-        const val BODEGA_CAPACIDAD_DEFAULT: Double = 50.0
-        const val VELOCIDAD_ASCENSO_DEFAULT: Double = 5.0
-        const val CONSUMO_BATERIA_POR_METRO: Double = 0.5
+    init {
+        require(pesoBase >= 0.0) { "El peso base no puede ser negativo: $pesoBase" }
+        require(velocidadAscensoBase >= 0.0) { "La velocidad de ascenso base no puede ser negativa: $velocidadAscensoBase" }
     }
-
-    var casco: Casco = casco
-        private set
-
-    var pesoBase: Double = pesoBase
-        private set
-
-    override var bodega: Almacenamiento? = bodega
-        private set
-
-    override var billetera: Billetera = billetera ?: factoria.crearBilletera(0)
-        private set
-
-    // Dependency injection through abstractions - DIP
-    // All collaborator types are interfaces, concretions provided by caller
 
     private val energia: SistemaEnergia = factoria.crearEnergia(100.0, CONSUMO_BATERIA_POR_METRO)
     private val acople: ControladorAcople = factoria.crearAcople()
@@ -99,9 +93,17 @@ class Submarino(
     )
     private val formateadorEstado: FormateadorEstadoSubmarino = factoria.crearFormateadorEstado()
 
-    init {
-        require(pesoBase >= 0.0) { "El peso base no puede ser negativo: $pesoBase" }
-    }
+    var casco: Casco = casco
+        private set
+
+    var pesoBase: Double = pesoBase
+        private set
+
+    override var bodega: Almacenamiento? = bodega
+        private set
+
+    override var billetera: Billetera = billetera ?: factoria.crearBilletera(0)
+        private set
 
     val velocidadAscensoBase: Double
         get() = propulsion.velocidadAscensoBase
@@ -194,11 +196,18 @@ class Submarino(
         pesoTotal = pesoTotal,
         velocidadAscenso = velocidadAscenso,
         saldo = billetera.saldo,
-        estaAcoplado = estaAcoplado,
-        bateria = bateria,
-        estaDestruido = estaDestruido,
+        estaAcoplado = acople.estaAcoplado,
+        bateria = energia.bateria,
+        estaDestruido = sistemaCasco.estaDestruido,
         casco = casco
     )
 
     override fun toString(): String = formateadorEstado.formatear(estadoActual())
+
+    companion object {
+        const val PESO_BASE_DEFAULT: Double = 1000.0
+        const val BODEGA_CAPACIDAD_DEFAULT: Double = 50.0
+        const val VELOCIDAD_ASCENSO_DEFAULT: Double = 5.0
+        const val CONSUMO_BATERIA_POR_METRO: Double = 0.5
+    }
 }

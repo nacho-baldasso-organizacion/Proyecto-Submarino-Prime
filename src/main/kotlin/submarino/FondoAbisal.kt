@@ -32,20 +32,9 @@ class FondoAbisal(
         dibujarCapaMedia(Random(semilla + 1L))
     }
 
-    private fun dibujarCapaLejana(random: Random) {
+    private fun dibujarCapaLejana(random: Random): Unit {
         val gc = capaLejana.graphicsContext2D
-
-        gc.fill = LinearGradient(
-            0.0, 0.0, 0.0, 1.0,
-            true,
-            CycleMethod.NO_CYCLE,
-            Stop(0.0, Color.web("#57C7E3")),
-            Stop(0.10, Color.web("#2E9DBC")),
-            Stop(0.28, Color.web("#12667F")),
-            Stop(0.52, Color.web("#073A4E")),
-            Stop(0.76, Color.web("#031E2B")),
-            Stop(1.0, Color.web("#01070B"))
-        )
+        gc.fill = crearGradienteFondo
         gc.fillRect(0.0, 0.0, anchoMundo, altoMundo)
 
         val particulas = FabricaVisual.crearPincelParticulas(
@@ -57,16 +46,26 @@ class FondoAbisal(
         )
         particulas.dibujarSuperficie()
         particulas.dibujarRayos()
-
-        val cordillera = FabricaVisual.crearPincelCordillera(gc, random, anchoMundo)
-        cordillera.dibujar(altoMundo * 0.46, altoMundo * 0.20, Color.web("#0B4C60", 0.62), 9, 0.16)
-        cordillera.dibujar(altoMundo * 0.56, altoMundo * 0.24, Color.web("#083A4B", 0.74), 12, 0.14)
-        cordillera.dibujar(altoMundo * 0.68, altoMundo * 0.22, Color.web("#052B39", 0.84), 16, 0.12)
-        cordillera.dibujar(altoMundo * 0.81, altoMundo * 0.19, Color.web("#031E28", 0.90), 21, 0.10)
-        cordillera.dibujar(altoMundo * 0.93, altoMundo * 0.16, Color.web("#02121A", 0.95), 27, 0.08)
-
+        val cord = FabricaVisual.crearPincelCordillera(gc, random, anchoMundo)
+        cord.dibujar(PincelCordillera.ParametrosCordillera(altoMundo * 0.46, altoMundo * 0.20, Color.web("#0B4C60", 0.62), 9, 0.16, random))
+        cord.dibujar(PincelCordillera.ParametrosCordillera(altoMundo * 0.56, altoMundo * 0.24, Color.web("#083A4B", 0.74), 12, 0.14, random))
+        cord.dibujar(PincelCordillera.ParametrosCordillera(altoMundo * 0.68, altoMundo * 0.22, Color.web("#052B39", 0.84), 16, 0.12, random))
+        cord.dibujar(PincelCordillera.ParametrosCordillera(altoMundo * 0.81, altoMundo * 0.19, Color.web("#031E28", 0.90), 21, 0.10, random))
+        cord.dibujar(PincelCordillera.ParametrosCordillera(altoMundo * 0.93, altoMundo * 0.16, Color.web("#02121A", 0.95), 27, 0.08, random))
         particulas.dibujarBurbujas(90, 1.0, 3.2, 0.10)
     }
+
+    private val crearGradienteFondo: LinearGradient = LinearGradient(
+        0.0, 0.0, 0.0, 1.0,
+        true,
+        CycleMethod.NO_CYCLE,
+        Stop(0.0, Color.web("#57C7E3")),
+        Stop(0.10, Color.web("#2E9DBC")),
+        Stop(0.28, Color.web("#12667F")),
+        Stop(0.52, Color.web("#073A4E")),
+        Stop(0.76, Color.web("#031E2B")),
+        Stop(1.0, Color.web("#01070B"))
+    )
 
     private fun dibujarCapaMedia(random: Random) {
         val gc = capaMedia.graphicsContext2D

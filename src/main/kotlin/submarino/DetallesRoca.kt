@@ -100,6 +100,11 @@ class DetallesRoca(
     }
 
     fun dibujarSedimento(formacion: FormacionRocosa) {
+        dibujarParticulasSedimentoGruesas(formacion)
+        dibujarParticulasSedimentoFinas(formacion)
+    }
+
+    private fun dibujarParticulasSedimentoGruesas(formacion: FormacionRocosa) {
         repeat(18) {
             val x = numeroEntre(formacion.xMin, formacion.xMax)
             val superficie = formacion.superficieEn(x) ?: return@repeat
@@ -117,6 +122,9 @@ class DetallesRoca(
                 radio * 0.8 * escala
             )
         }
+    }
+
+    private fun dibujarParticulasSedimentoFinas(formacion: FormacionRocosa) {
         repeat(26) {
             val x = numeroEntre(formacion.xMin, formacion.xMax)
             val superficie = formacion.superficieEn(x) ?: return@repeat

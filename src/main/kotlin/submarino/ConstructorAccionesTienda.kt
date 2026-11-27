@@ -16,15 +16,27 @@ class ConstructorAccionesTienda(
 ) {
 
     fun crearFilaAcciones(): HBox {
-        val vender = ControlesTienda.crearBoton("VENDER MINERALES", "#34D399").apply {
+        val vender = crearBotonVender()
+        val oxigeno = crearBotonOxigeno()
+        val casco = crearBotonCasco()
+        val desacoplar = crearBotonDesacoplar()
+
+        return montarHBox(vender, oxigeno, casco, desacoplar)
+    }
+
+    private fun crearBotonVender(): javafx.scene.control.Button {
+        return ControlesTienda.crearBoton("VENDER MINERALES", "#34D399").apply {
             setOnAction {
                 val resultado = sesion.venderMinerales()
                 etiquetaMensaje.text = resultado.obtenerResumen()
                 alRefrescar()
             }
         }
-        val oxigeno = ControlesTienda.crearBoton(
-            "RECARGAR OXÍGENO · $${SesionJuego.COSTO_RECARGA_OXIGENO}",
+    }
+
+    private fun crearBotonOxigeno(): javafx.scene.control.Button {
+        return ControlesTienda.crearBoton(
+            "RECARGAR OXÍGENO · ${SesionJuego.COSTO_RECARGA_OXIGENO}",
             "#38BDF8"
         ).apply {
             setOnAction {
@@ -32,8 +44,11 @@ class ConstructorAccionesTienda(
                 alRefrescar()
             }
         }
-        val casco = ControlesTienda.crearBoton(
-            "REPARAR CASCO · $${SesionJuego.COSTO_REPARACION_CASCO}",
+    }
+
+    private fun crearBotonCasco(): javafx.scene.control.Button {
+        return ControlesTienda.crearBoton(
+            "REPARAR CASCO · ${SesionJuego.COSTO_REPARACION_CASCO}",
             "#FBBF24"
         ).apply {
             setOnAction {
@@ -41,13 +56,21 @@ class ConstructorAccionesTienda(
                 alRefrescar()
             }
         }
-        val desacoplar = ControlesTienda.crearBoton("DESACOPLAR", "#FB7185").apply {
+    }
+
+    private fun crearBotonDesacoplar(): javafx.scene.control.Button {
+        return ControlesTienda.crearBoton("DESACOPLAR", "#FB7185").apply {
             setOnAction {
                 sesion.desacoplar()
                 alDesacoplar()
             }
         }
+    }
 
+    private fun montarHBox(vender: javafx.scene.control.Button,
+                          oxigeno: javafx.scene.control.Button,
+                          casco: javafx.scene.control.Button,
+                          desacoplar: javafx.scene.control.Button): HBox {
         return HBox(10.0).apply {
             alignment = Pos.CENTER_LEFT
             children.addAll(vender, oxigeno, casco, desacoplar)

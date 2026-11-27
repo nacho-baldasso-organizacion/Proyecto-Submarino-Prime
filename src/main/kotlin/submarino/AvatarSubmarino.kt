@@ -18,8 +18,8 @@ import javafx.scene.shape.Rectangle
  */
 class AvatarSubmarino {
 
-    fun crear(): Group {
-        val haz = Polygon(
+    private fun crearHaz(): Polygon {
+        return Polygon(
             46.0, -8.0,
             190.0, -36.0,
             190.0, 36.0,
@@ -27,8 +27,10 @@ class AvatarSubmarino {
         ).apply {
             fill = Color.web("#7FE3F0", 0.09)
         }
+    }
 
-        val helice = Polygon(
+    private fun crearHelice(): Polygon {
+        return Polygon(
             -52.0, -9.0,
             -64.0, -20.0,
             -60.0, 0.0,
@@ -39,8 +41,10 @@ class AvatarSubmarino {
             stroke = Color.web("#092A36")
             strokeWidth = 2.0
         }
+    }
 
-        val aletaSuperior = Polygon(
+    private fun crearAletaSuperior(): Polygon {
+        return Polygon(
             -18.0, -18.0,
             -30.0, -36.0,
             -4.0, -18.0
@@ -49,8 +53,10 @@ class AvatarSubmarino {
             stroke = Color.web("#092A36")
             strokeWidth = 2.0
         }
+    }
 
-        val aletaInferior = Polygon(
+    private fun crearAletaInferior(): Polygon {
+        return Polygon(
             -18.0, 18.0,
             -30.0, 36.0,
             -4.0, 18.0
@@ -59,8 +65,10 @@ class AvatarSubmarino {
             stroke = Color.web("#092A36")
             strokeWidth = 2.0
         }
+    }
 
-        val casco = Ellipse(0.0, 0.0, 46.0, 20.0).apply {
+    private fun crearCasco(): Ellipse {
+        return Ellipse(0.0, 0.0, 46.0, 20.0).apply {
             fill = LinearGradient(
                 0.0,
                 0.0,
@@ -76,45 +84,55 @@ class AvatarSubmarino {
             strokeWidth = 3.0
             effect = DropShadow(16.0, Color.web("#7FE3F0", 0.45))
         }
+    }
 
-        val vela = Rectangle(-12.0, -36.0, 26.0, 18.0).apply {
+    private fun crearVela(): Rectangle {
+        return Rectangle(-12.0, -36.0, 26.0, 18.0).apply {
             arcWidth = 8.0
             arcHeight = 8.0
             fill = Color.web("#E0A92F")
             stroke = Color.web("#092A36")
             strokeWidth = 2.5
         }
+    }
 
-        val periscopio = Rectangle(-4.0, -54.0, 6.0, 18.0).apply {
+    private fun crearPeriscopio(): Rectangle {
+        return Rectangle(-4.0, -54.0, 6.0, 18.0).apply {
             fill = Color.web("#D99A25")
             stroke = Color.web("#092A36")
             strokeWidth = 2.0
         }
+    }
 
-        val ventana = Circle(18.0, 0.0, 8.0).apply {
+    private fun crearVentana(): Circle {
+        return Circle(18.0, 0.0, 8.0).apply {
             fill = Color.web("#9EF3FF")
             stroke = Color.web("#092A36")
             strokeWidth = 2.0
             effect = DropShadow(10.0, Color.web("#7FE3F0", 0.9))
         }
+    }
 
-        val ventanaSecundaria = Circle(-4.0, 0.0, 5.0).apply {
+    private fun crearVentanaSecundaria(): Circle {
+        return Circle(-4.0, 0.0, 5.0).apply {
             fill = Color.web("#7FE3F0")
             stroke = Color.web("#092A36")
             strokeWidth = 1.5
         }
+    }
 
+    fun crear(): Group {
         return Group().apply {
             children.addAll(
-                haz,
-                helice,
-                aletaInferior,
-                aletaSuperior,
-                casco,
-                vela,
-                periscopio,
-                ventana,
-                ventanaSecundaria
+                crearHaz(),
+                crearHelice(),
+                crearAletaInferior(),
+                crearAletaSuperior(),
+                crearCasco(),
+                crearVela(),
+                crearPeriscopio(),
+                crearVentana(),
+                crearVentanaSecundaria()
             )
         }
     }

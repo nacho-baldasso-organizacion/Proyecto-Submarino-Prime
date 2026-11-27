@@ -7,23 +7,25 @@ import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.stage.Window
 
+internal data class MovimientoTecladoState(val teclasPresionadas: MutableSet<KeyCode>)
+
 /**
  * Controla el estado de las teclas de direccion mantenidas (SRP).
  */
 class ControladorMovimientoTeclado {
 
-    private val teclasPresionadas: MutableSet<KeyCode> = mutableSetOf()
+    private val state: MovimientoTecladoState = MovimientoTecladoState(mutableSetOf())
 
     private val alPresionar = EventHandler<KeyEvent> { evento ->
         if (esTeclaDeControl(evento.code)) {
-            teclasPresionadas.add(evento.code)
+            state.teclasPresionadas.add(evento.code)
             evento.consume()
         }
     }
 
     private val alLiberar = EventHandler<KeyEvent> { evento ->
         if (esTeclaDeControl(evento.code)) {
-            teclasPresionadas.remove(evento.code)
+            state.teclasPresionadas.remove(evento.code)
             evento.consume()
         }
     }
@@ -79,12 +81,12 @@ class ControladorMovimientoTeclado {
     }
 
     private fun estaActiva(vararg teclas: KeyCode): Boolean =
-        teclas.any { teclasPresionadas.contains(it) }
+        teclas.any { state.teclasPresionadas.contains(it) }
 
     private fun esTeclaDeControl(tecla: KeyCode): Boolean = tecla in TECLAS_DE_CONTROL
 
     private fun limpiarEntrada() {
-        teclasPresionadas.clear()
+        state.teclasPresionadas.clear()
     }
 
     companion object {
@@ -104,21 +106,28 @@ class ControladorMovimientoTeclado {
 /**
  * Controla las acciones puntuales de minar y acoplar (SRP).
  */
+internal data class AccionTecladoState(
+    val teclasAccionPresionadas: MutableSet<KeyCode>,
+    var minarSolicitado: Boolean,
+    var acoplarSolicitado: Boolean
+)
+
+/**
+ * Controla las acciones puntuales de minar y acoplar (SRP).
+ */
 class ControladorAccionesTeclado {
 
-    private val teclasAccionPresionadas: MutableSet<KeyCode> = mutableSetOf()
-    private var minarSolicitado: Boolean = false
-    private var acoplarSolicitado: Boolean = false
+    private val state: AccionTecladoState = AccionTecladoState(mutableSetOf(), false, false)
 
     private val accionesPorTecla: Map<KeyCode, () -> Unit> = mapOf(
         KeyCode.SPACE to {
-            if (teclasAccionPresionadas.add(KeyCode.SPACE)) {
-                minarSolicitado = true
+            if (state.teclasAccionPresionadas.add(KeyCode.SPACE)) {
+                state.minarSolicitado = true
             }
         },
         KeyCode.E to {
-            if (teclasAccionPresionadas.add(KeyCode.E)) {
-                acoplarSolicitado = true
+            if (state.teclasAccionPresionadas.add(KeyCode.E)) {
+                state.acoplarSolicitado = true
             }
         }
     )
@@ -133,7 +142,7 @@ class ControladorAccionesTeclado {
 
     private val alLiberar = EventHandler<KeyEvent> { evento ->
         if (evento.code == KeyCode.SPACE || evento.code == KeyCode.E) {
-            teclasAccionPresionadas.remove(evento.code)
+            state.teclasAccionPresionadas.remove(evento.code)
             evento.consume()
         }
     }
@@ -168,8 +177,8 @@ class ControladorAccionesTeclado {
      * Consume la solicitud de minado acumulada desde la ultima consulta.
      */
     fun consumirMinar(): Boolean {
-        val solicitado = minarSolicitado
-        minarSolicitado = false
+        val solicitado = state.minarSolicitado
+        state.minarSolicitado = false
         return solicitado
     }
 
@@ -177,15 +186,15 @@ class ControladorAccionesTeclado {
      * Consume la solicitud de acople acumulada desde la ultima consulta.
      */
     fun consumirAcoplar(): Boolean {
-        val solicitado = acoplarSolicitado
-        acoplarSolicitado = false
+        val solicitado = state.acoplarSolicitado
+        state.acoplarSolicitado = false
         return solicitado
     }
 
     private fun limpiarEntrada() {
-        teclasAccionPresionadas.clear()
-        minarSolicitado = false
-        acoplarSolicitado = false
+        state.teclasAccionPresionadas.clear()
+        state.minarSolicitado = false
+        state.acoplarSolicitado = false
     }
 }
 
